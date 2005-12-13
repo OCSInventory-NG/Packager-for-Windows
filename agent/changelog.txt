@@ -1,0 +1,47 @@
+ver 4.0.0.9
+	- Added HKCU software search (/hkcu flag)
+
+ver 4.0.0.8
+	- Fixed registry key containing "/" bug
+	- Fixed concurrent XML access problem
+
+ver 4.0.0.7
+	- Improved host detecting speed by adding a multithreaded host scanning(ipdiscover)
+
+ver 4.0.0.6
+	- Fixed memory problem on Windows 98-95
+
+ver 4.0.0.5
+	- Fixed memory capacity conversion from biosinfo
+	- Improved memory capacity calculation
+	- Added new security features to avoid deviceid problems and redundancy
+	- Lot of minor bug fixes
+	
+ver 4.0.0.4
+By D. Liroulet
+	- Added SNMP gateway gathering	
+	
+By P. Lemmet
+	- Added /dmi: Force DMI reading for biosinfo (-T)
+	- Added /biosfunc: Force bios functions reading for biosinfo (-F)
+	- Added /conf:[filename] : Client will store infos in filename instead of ocsinventory.conf
+	- Added empty label file checking
+	- Added self version checking (no ver file needed anymore)
+	- Lot of minor bug fixes
+
+ver 4.0.0.2
+
+By D. Liroulet:
+	- Added Win 95-NT sendarp compatibility
+	- Added multiple registry values gathering
+	- Added EDID monitor informations
+	- Fixed above 2 gigs memory bug	
+	
+By P. Lemmet
+	- Added /np option: disable proxy
+	- Added /pnum:X option: forces connection on port X
+	- Fixed bring to front tag popup problem
+
+ver. 4.0.0.1
+
+Original sourceforge release

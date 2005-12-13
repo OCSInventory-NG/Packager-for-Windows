@@ -1,0 +1,17 @@
+; OcsWmi.def : Declares the module parameters for the DLL.
+
+LIBRARY      "OcsWmi"
+DESCRIPTION  'OcsWmi Windows Dynamic Link Library'
+
+EXPORTS
+    ; Explicit exports can go here
+	WMIConnect
+	WMIDisconnect
+	WMIBeginEnumClassObject
+	WMIMoveNextEnumClassObject
+	WMICloseEnumClassObject
+	WMIGetClassObjectStringValue
+	WMIGetRefElementClassObjectStringValue
+	WMIGetClassObjectDwordValue
+	WMIGetRefElementClassObjectDwordValue
+	WMIGetLastError
