@@ -672,7 +672,7 @@ BOOL COCSInventoryApp::InitInstance()
 							ipMsk = lpfn_htonl( lpfn_inet_addr(mask));
 
 							m_netNumber = lpfn_ntohl(lpfn_inet_addr (nbr));
-							maxIp = ~ipMsk-1;		
+							maxIp = ~ipMsk;		
 							
 							m_hostFound = 0;							
 							//launching threads
