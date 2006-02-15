@@ -588,6 +588,13 @@ static void CUtils::writeMacDeviceid(CString csDeviceID, CString csMac, LPCTSTR 
 	CUtils::byteToFile( pCb, fileToOpen );
 	delete pCb;
 }
+
+static void CUtils::trace(CString mess, LPCTSTR lpstrCommandLine) {
 	
+	if( !CUtils::IsRequired(lpstrCommandLine, "trace"))
+		return;
+
+	AfxMessageBox(mess);
+}	
 };
 #endif //_UTILS_H_

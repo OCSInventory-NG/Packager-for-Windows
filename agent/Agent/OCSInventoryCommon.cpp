@@ -180,7 +180,7 @@ BOOL COCSInventoryApp::InitInstance()
 		
 		cStartTime = CTime::GetCurrentTime();
 		CString cmdL = this->m_lpCmdLine;				
-		
+		CUtils::trace("GET_MODULE_FILENAME",cmdL);
 		/******************/		
 		// Get application path
 		if (GetModuleFileName( AfxGetInstanceHandle(), szExecutionFolder, _MAX_PATH) == 0)
@@ -188,6 +188,7 @@ BOOL COCSInventoryApp::InitInstance()
 			//AfxMessageBox( IDS_ERROR_INIT_FAILED, MB_ICONSTOP);
 			return FALSE;
 		}
+		CUtils::trace("GET_COMPUTER_NAME",cmdL);
 		// Get the Device netbios Name
 		ulBufferLength = MAX_COMPUTERNAME_LENGTH+1;
 		if (!GetComputerName( szDeviceName, &ulBufferLength))
@@ -195,21 +196,24 @@ BOOL COCSInventoryApp::InitInstance()
 			//AfxMessageBox( IDS_ERROR_INIT_FAILED, MB_ICONSTOP);
 			return FALSE;
 		}
+		
 		//strcpy(szDeviceName, "TEST03");
 		m_ThePC.SetDeviceName(szDeviceName);
-		
+		CUtils::trace("EXEC_FOLDER",cmdL);
 		// Construct the execution folder
 		for (uIndex = strlen( szExecutionFolder); (uIndex >= 0) && (szExecutionFolder[uIndex] != '\\') && (szExecutionFolder[uIndex] != ':'); uIndex --)
 			szExecutionFolder[uIndex] = 0;
 		// Open log file if needed
 		csMessage.Format( _T( "%s%s"), szExecutionFolder, szDeviceName);
+		CUtils::trace("OPEN_LOG",cmdL);
 		OpenLog( csMessage,cmdL );
-
+		
 		/*****
 		 *
 		 *	Gets agent version
 		 *
 		 ****/
+		CUtils::trace("GET_AGENT_VERSION",cmdL);
 		csAgentVer=CUtils::getVersion();
 		if(csAgentVer=="") {
 			AddLog( _T("ERROR: NO agent version read. 1 assumed.\n"));
@@ -223,6 +227,7 @@ BOOL COCSInventoryApp::InitInstance()
 		 ****/
 		if(CUtils::IsRequired(cmdL,"debug"))
 		{
+			CUtils::trace("HEADER_LOG",cmdL);
 			m_ThePC.SetLastCheckDate( cStartTime.Format( _T( "%Y-%m-%d")));
 			csMessage.Format( _T("\nOCS INVENTORY ver. %s "),csAgentVer);
 			AddLog( csMessage);
@@ -273,12 +278,13 @@ BOOL COCSInventoryApp::InitInstance()
 			 *
 			 *	Deviceid checkings and renewal if needed
 			 *
-			 ****/
+			 ****/			
 			CString csDeviceID, csFileDeviceID, csFileMac, csFileHname;			
 			//	WMI Connection
+			CUtils::trace("WMI_CONNECT",cmdL);
 			pSysInfo=new SysInfo();
 			//check deviceid
-
+			CUtils::trace("DEVICEID_CHECK",cmdL);
 			CUtils::getMacDeviceid(csDeviceID, csFileMac, cmdL);
 			csActualMac = CUtils::getMacs(pSysInfo, m_ThePC);
 			csFileHname = csDeviceID.Left(csDeviceID.GetLength()-20);
@@ -339,6 +345,7 @@ BOOL COCSInventoryApp::InitInstance()
 			 *	XML beginning generation
 			 *
 			 ****/	
+			CUtils::trace("XML_INIT",cmdL);
 			pXml=&((((COCSInventoryApp*)AfxGetApp())->m_markupOCS));
 			pXml->SetDoc(XML_HEADERS);
 			pXml->AddElem("REQUEST");
@@ -358,6 +365,7 @@ BOOL COCSInventoryApp::InitInstance()
 		 *	Looking for server name
 		 *
 		 ****/
+		CUtils::trace("SERVER_NAME",cmdL);
 		if( ! CUtils::IsRequired(cmdL,"local") ) {
 			csServer=CUtils::getParamValue(cmdL,"server");	
 			
@@ -383,7 +391,7 @@ BOOL COCSInventoryApp::InitInstance()
 			AddLog( _T( "OK.\n"));
 
 			iPort = CUtils::getPort( cmdL );
-						
+			CUtils::trace("SESSION_OPEN",cmdL);			
 			CInternetSession sess(csUserAgent, 1, iProxy);			
 			CString reponse,contentS;		
 			
@@ -399,6 +407,7 @@ BOOL COCSInventoryApp::InitInstance()
 						
 				// Prolog query
 				AddLog( _T( "HTTP SERVER: Sending prolog query..."));
+				CUtils::trace("SEND_PROLOG",cmdL);
 				xmlResp = CUtils::sendXml(pConnect,&myMarkup);
 				if( xmlResp.GetDoc() != "" ) {			
 					AddLog( _T( "OK.\n"));
@@ -439,6 +448,7 @@ BOOL COCSInventoryApp::InitInstance()
 				delete pConnect;
 			}
 			pConnect=NULL;
+			CUtils::trace("CLOSE_SESSION",cmdL);
 			sess.Close();
 			//AddLog( _T( "OK.\n"));
 		}
@@ -469,11 +479,17 @@ BOOL COCSInventoryApp::InitInstance()
 		 *	option was provided
 		 *
 		 ****/
-		if(bServerUp && CUtils::isActivatedOption(xmlResp,"REGISTRY") && bInventoryNeeded ) {
+		if(bServerUp && CUtils::isActivatedOption(xmlResp,"REGISTRY") && bInventoryNeeded ) 
+		{
+			
+			CUtils::trace("REGISTRY",cmdL);
 			AddLog( _T( "Registry Values: function enabled by server...\n"));
+			
 			int cmpt=1;
 			CMapStringToString* pM=NULL;
-			do {
+			
+			do 
+			{
 				CUtils::cleanCm(pM);
 				pM=CUtils::getOptionAttributes(xmlResp,cmpt,"REGISTRY","REGTREE","REGKEY","NAME");
 				
@@ -493,6 +509,7 @@ BOOL COCSInventoryApp::InitInstance()
 				pM->Lookup("VAL",csRegValue);
 				pM->Lookup("REGKEY",csRegKey);
 				pM->Lookup("NAME",csName);
+				
 				nRegTree = _ttoi( csRegTree );
 
 				if (csRegValue == REGISTRY_ALL_VALUES_OF_KEY)
@@ -503,6 +520,7 @@ BOOL COCSInventoryApp::InitInstance()
 				else
 				{
 					// Get single value
+
 					if (myRegistry.GetRegistryValue( nRegTree, csRegKey, csRegValue, csResult))
 					{
 						// Add result to list
@@ -514,6 +532,7 @@ BOOL COCSInventoryApp::InitInstance()
 				cmpt++;							
 			}
 			while(pM->GetCount()>0);
+
 			CUtils::cleanCm(pM);
 			AddLog( _T( "Registry Values: scan finished (%d query executed)\n"), cmpt);
 		}
@@ -523,10 +542,11 @@ BOOL COCSInventoryApp::InitInstance()
 		 *	Main inventory function
 		 *
 		 ****/
-		if( bInventoryNeeded ) {			
+		if( bInventoryNeeded ) {
+			CUtils::trace("INVENTORY",cmdL);
 			// Get Device info
 			AddLog( _T( "Retrieving Device informations...\n"));			
-			if (!m_ThePC.RetrieveHardwareAndOS(pSysInfo, CUtils::IsRequired(cmdL,"hkcu"))) {
+			if (!m_ThePC.RetrieveHardwareAndOS(pSysInfo, cmdL)) {
 				// Can't get Device hardware and os => stop !
 				AddLog( _T( "CANNOT RETRIEVE DEVICE INFORMATIONS !\nExiting\n\n\n"));
 				return FALSE;
@@ -541,10 +561,12 @@ BOOL COCSInventoryApp::InitInstance()
 					   m_ThePC.GetOSVersion(), NOT_AVAILABLE, m_ThePC.GetOSComment(), NOT_AVAILABLE, 0, TRUE);
 			m_ThePC.m_SoftwareList.AddTail( cFile);
 			// Connect to database and load settings
+			CUtils::trace("DB_CONNECT",cmdL);
 			ConnectDB( szExecutionFolder);
 			// Get connected username
 			if (m_pTheDB->GetLogAccess()) 
 			{
+				CUtils::trace("CONNECTED_USER",cmdL);
 				CAccessLog cAccessLog;
 				AddLog( _T( "Retrieve logon informations needed...\n"));
 				if (m_pTheDB->GetProcess())
@@ -576,6 +598,7 @@ BOOL COCSInventoryApp::InitInstance()
 				m_pTheDB->GetDisplayError();// && AfxMessageBox( IDS_ERROR_DB_UPDATING, MB_ICONSTOP);
 			}
 			
+			CUtils::trace("WMI_DISCONNECT",cmdL);
 			// WMI Disconnection
 			delete pSysInfo;
 			pSysInfo=NULL;
@@ -588,7 +611,7 @@ BOOL COCSInventoryApp::InitInstance()
 			CString forcedIpdisc = CUtils::getParamValue(cmdL,"ipdisc");
 
 			if( (bServerUp && CUtils::isActivatedOption(xmlResp,"IPDISCOVER")) || forcedIpdisc.GetLength()>0 ) {
-
+				CUtils::trace("IPDISCOVER",cmdL);
 			// Update Didier LIROULET: To allow running under Win 95 or NT4 without iphlpapi.dll
 				// Load the IPHLPAPI 32 bit and winsock 2 DLL
 				HINSTANCE	hDllIpHlpApi,	hDllWS2;
@@ -747,6 +770,7 @@ BOOL COCSInventoryApp::InitInstance()
 			else if(bServerUp)
 				AddLog( _T( "IPDISCOVER: function not required by HTTP server...\n"));
 			
+			CUtils::trace("CLEAN_XML",cmdL);
 			// Cleaning function to remove any binary character
 			CUtils::cleanXml(pXml);
 
@@ -757,6 +781,7 @@ BOOL COCSInventoryApp::InitInstance()
 			 *
 			 ****/
 			if(CUtils::IsRequired(cmdL,"xml")) {
+				CUtils::trace("WRITING_XML_FILE",cmdL);
 				AddLog( _T( "Writing results to standard XML file <ocsinventory.xml> required by argument -XML..."));
 				CFile xm;
 				try	{
@@ -781,6 +806,7 @@ BOOL COCSInventoryApp::InitInstance()
 			 *
 			 ****/
 			if(CUtils::IsRequired(cmdL,"file") || CUtils::IsRequired(cmdL,"local"))	{
+				CUtils::trace("WRITING_OCS_FILE",cmdL);
 				AddLog( _T( "Writing results to compressed XML file <%s.ocs> required by argument -FILE or -LOCAL..."),
 						m_ThePC.GetDeviceID());
 				try {
@@ -800,7 +826,8 @@ BOOL COCSInventoryApp::InitInstance()
 		}
 		
 		// WMI Disconnection
-		if(pSysInfo != NULL ) {		
+		if(pSysInfo != NULL ) {
+			CUtils::trace("WMI_DISCONNECT",cmdL);
 			delete pSysInfo;
 			pSysInfo=NULL;
 		}
@@ -809,7 +836,7 @@ BOOL COCSInventoryApp::InitInstance()
 		{
 			try {
 				AddLog( _T( "HTTP SERVER: Creating CInternetSession to send inventory results..."));
-
+				CUtils::trace("SESSION_2_CONNECT",cmdL);
 				CInternetSession sess2(csUserAgent, 1, iProxy);
 				AddLog( _T( "OK.\n"));
 
@@ -818,7 +845,7 @@ BOOL COCSInventoryApp::InitInstance()
 				AddLog( _T( "OK\n"));
 				
 				if(bServerUp && ! CUtils::IsRequired(cmdL,"test") && bInventoryNeeded ) {				
-					
+					CUtils::trace("SEND_INVENTORY",cmdL);
 					AddLog( _T( "HTTP SERVER: INV : SEND received, sending inventory..."));
 					xmlResp=CUtils::sendXml(pConnect,pXml);
 					AddLog( _T( "OK.\n"));
@@ -845,6 +872,7 @@ BOOL COCSInventoryApp::InitInstance()
 				
 				if(bServerUp) 
 				{					
+					CUtils::trace("SENDING_UPDATE",cmdL);
 					myMarkup.SetDoc(XML_HEADERS);
 					myMarkup.AddElem("REQUEST");
 					myMarkup.IntoElem();
@@ -894,6 +922,7 @@ BOOL COCSInventoryApp::InitInstance()
 					}
 					else if(!rep3.CompareNoCase("update")&&!CUtils::IsRequired(cmdL,"test"))
 					{
+						CUtils::trace("UPDATING",cmdL);
 						m_bNeedUpdate=TRUE;
 						xmlResp.ResetPos();
 						xmlResp.FindElem("REPLY");
@@ -943,6 +972,7 @@ BOOL COCSInventoryApp::InitInstance()
 			}
 			catch (CInternetException* pEx)
 			{
+				CUtils::trace("EXCEPTION",cmdL);
 				TCHAR sz[1024];
 				pEx->GetErrorMessage(sz, 1024);
 				AddLog("ERREUR HTTP: BASE: %s\n", sz);
@@ -951,6 +981,7 @@ BOOL COCSInventoryApp::InitInstance()
 		}		
 		
 		if(bInventoryNeeded ) {
+			CUtils::trace("CLOSING",cmdL);
 			m_pTheDB->CloseDB();
 			delete m_pTheDB;
 			m_pTheDB = NULL;

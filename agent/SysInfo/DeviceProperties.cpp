@@ -17,6 +17,7 @@
 
 #include "stdafx.h"
 #include "sysinfo.h"
+#include "../agent/utils.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -290,52 +291,92 @@ UINT CDeviceProperties::GetDeviceType()
 	return m_uType;
 }
 
-BOOL CDeviceProperties::RetrieveHardwareAndOS(SysInfo * myPC, BOOL hkcu)
+BOOL CDeviceProperties::RetrieveHardwareAndOS(SysInfo * myPC, LPCSTR cmdL)
 {
 	// Get logged on user
+	CUtils::trace("USERNAME",cmdL);
 	myPC->getUserName( m_csLoggedOnUser);
+
 	// Get OS informations and device type (windows station or windows server)
+	CUtils::trace("OS",cmdL);
 	m_uType = myPC->getOS( m_csOSName, m_csOSVersion, m_csOSComment, m_csDescription);
+
 	// Check if it is a notebook
+	CUtils::trace("NOTEBOOK",cmdL);
 	if (myPC->isNotebook())
 		m_uType = WINDOWS_NOTEBOOK;
 	AddLog( _T( "Detected device type: %u.\n"), m_uType);
+
 	// Get NT Domain or Workgroup
+	CUtils::trace("NT_DOMAIN",cmdL);
 	myPC->getDomainOrWorkgroup( m_csDomain);
+
 	// Get BIOS informations
+	CUtils::trace("BIOS",cmdL);
 	myPC->getBiosInfo( &m_BIOS);
+
 	// Get Processor infos
+	CUtils::trace("CPU",cmdL);
 	m_dwNumberOfProcessor = myPC->getProcessors( m_csProcessorType, m_csProcessorSpeed);
+
 	// Get memory informations
+	CUtils::trace("RAM",cmdL);
 	myPC->getMemory( &m_ulPhysicalMemory, &m_ulSwapSize);
 	myPC->getMemorySlots( &m_MemoryList);
+
 	// Get Input Devices
+	CUtils::trace("INPUT",cmdL);
 	myPC->getInputDevices( &m_InputList);
+
 	// Get System ports
+	CUtils::trace("PORTS",cmdL);
 	myPC->getSystemPorts( &m_PortList);
+
 	// Get System Slots
+	CUtils::trace("SLOTS",cmdL);
 	myPC->getSystemSlots( &m_SlotList);
+
 	// Get System controlers
+	CUtils::trace("CONTROLLERS",cmdL);
 	myPC->getSystemControllers( &m_SystemControllerList);
+
 	// Get Physical storage devices
+	CUtils::trace("STORAGE",cmdL);
 	myPC->getStoragePeripherals( &m_StorageList);
+
 	// Get Sound Devices
+	CUtils::trace("SOUND",cmdL);
 	myPC->getSoundDevices( &m_SoundList);
+
 	// Get Modems
+	CUtils::trace("MODEMS",cmdL);
 	myPC->getModems( &m_ModemList);
+
 	// Get network adapter(s) hardware and IP informations
+	CUtils::trace("NETWORK",cmdL);
 	myPC->getNetworkAdapters( &m_NetworkList);
+
 	// Get Printer(s) informations
+	CUtils::trace("PRINTER",cmdL);
 	myPC->getPrinters( &m_PrinterList);
+
 	// Get Video adapter(s) informations
+	CUtils::trace("VIDEO",cmdL);
 	myPC->getVideoAdapters( &m_VideoList);
+	CUtils::trace("MONITORS",cmdL);
 	myPC->getMonitors( &m_MonitorList);
+
 	// Get the primary local IP Address 
+	CUtils::trace("IP",cmdL);
 	m_csIPAddress = myPC->getLocalIP();
+
 	// Get Windows registration infos
+	CUtils::trace("REGISTRATION",cmdL);
 	myPC->getWindowsRegistration( m_csWinRegCompany, m_csWinRegOwner, m_csWinRegProductID);
+
 	// Get apps from registry
-	myPC->getRegistryApplications( &m_SoftwareList, hkcu);
+	CUtils::trace("REGAPPS",cmdL);
+	myPC->getRegistryApplications( &m_SoftwareList, CUtils::IsRequired(cmdL,"hkcu"));
 	return TRUE;
 }
 

@@ -23,6 +23,8 @@ Debug:
 	/force		Le client renvoie toujours un inventaire, indépendamment de ce que le serveur décide.
 	
 	/uid		Le client régénère son deviceid
+	
+	/trace		Affiche des popups pour suivre l'execution du client
 
 Interne:
 

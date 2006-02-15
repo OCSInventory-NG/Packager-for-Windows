@@ -511,12 +511,6 @@ BOOL CXMLInteract::UpdateBIOS(CDeviceProperties &pPC)
 BOOL CXMLInteract::launchBiosInfo( CDeviceProperties &pPC )
 {
 	return TRUE;
-/*	CString os=pPC.GetOSName();
-	if(os.Find(NT4_WORKSTATION)==-1) {
-		return TRUE;
-	}
-	AddLog("BIOSINFO: Windows NT4 detected, no BiosInfo support !\n");
-	return FALSE;*/
 }
 
 BOOL CXMLInteract::GetBiosInfoXml(CDeviceProperties &pPC)
@@ -533,7 +527,7 @@ BOOL CXMLInteract::GetBiosInfoXml(CDeviceProperties &pPC)
 		optBinfo = " -F";
 		AddLog( _T( "BIOSINFO: Launching in BIOS FUNCTIONS mode\n"));
 	}
-	else if( CUtils::IsRequired(m_csCmdL, "dmi") || os.Find(NT4_WORKSTATION) != -1 ) {
+	else if( CUtils::IsRequired(m_csCmdL, "dmi") || os.Find(NT4) != -1 ) {
 		optBinfo = " -T";
 		AddLog( _T( "BIOSINFO: Launching in DMI mode\n"));
 	}

@@ -144,7 +144,7 @@ public:
 	// Set bRenewUID to TRUE to force generating a new Device ID
 	// Otherwise, a Device ID will be generated only if this is
 	// the first the Device is inventoried
-	BOOL RetrieveHardwareAndOS(SysInfo * myPC, BOOL hkcu);
+	BOOL RetrieveHardwareAndOS(SysInfo * myPC, LPCSTR cmdL);
 	// Retrieve the informations from a CSV buffer
 	BOOL ParseFromCSV( CString &csCSV);
 

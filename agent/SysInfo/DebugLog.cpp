@@ -72,6 +72,7 @@ void AddLog(LPCTSTR lpstrLog,...)
 		va_end( argList);
 		// Write string
 		myFile.WriteString( csBuffer);
+		myFile.Flush();
 	}
 	catch (CException *pEx)
 	{

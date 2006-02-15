@@ -1628,7 +1628,7 @@ BOOL CWmi::GetMemorySlots(CMemorySlotList *pMyList)
 	{
 		CMemorySlot			myObject;
 		UINT				uIndex = 0;
-		CString				csBuffer;
+		CString				csBuffer, csCaption;
 		DWORD				dwValue,
 							dwUse,
 							dwECC;
@@ -1673,17 +1673,30 @@ BOOL CWmi::GetMemorySlots(CMemorySlotList *pMyList)
 		AddLog( _T( "WMI GetMemorySlots: Trying to find Win32_PhysicalMemoryArray WMI objects..."));
 		pPosNext = pMyList->GetHeadPosition();
 		pPosCur = pMyList->GetHeadPosition();
+		UINT nbFilled = uIndex;
 		uIndex = 0;
 		if (m_dllWMI.BeginEnumClassObject( _T( "Win32_PhysicalMemoryArray")))
 		{
 			// One Physical Memory Array object may include one or more Physical Memory objects
 			while (m_dllWMI.MoveNextEnumClassObject())
 			{
-				// The value MemoryDevices indocates the number of Physical Memory object in the array
+				// The value MemoryDevices indicates the number of Physical Memory object in the array
 				dwValue = m_dllWMI.GetClassObjectDwordValue( _T( "MemoryDevices"));
+				while( nbFilled < dwValue ) {
+					myObject.SetCaption("");
+					myObject.SetDescription("");
+					myObject.SetCapacity( "0");
+					myObject.SetSlotNumber( nbFilled+1 );
+					myObject.SetSpeed( "N/A");
+					myObject.SetType( "Empty slot");
+					pMyList->AddTail( myObject);
+					nbFilled++;
+				}
 				dwUse = m_dllWMI.GetClassObjectDwordValue( _T( "Use"));
 				dwECC = m_dllWMI.GetClassObjectDwordValue( _T( "MemoryErrorCorrection"));
 				csBuffer = m_dllWMI.GetClassObjectStringValue( _T( "Description"));
+				csCaption = m_dllWMI.GetClassObjectStringValue( _T( "Caption"));
+
 				// Each properties of Physical Memory Array have to be set in MemorySlot object 
 				// corresponding to current array
 				if (pPosNext != NULL)
@@ -1691,9 +1704,18 @@ BOOL CWmi::GetMemorySlots(CMemorySlotList *pMyList)
 				while ((pPosCur != NULL) && (myObject.GetSlotNumber() <= (uIndex+dwValue)))
 				{
 					if (_tcslen( myObject.GetCaption()) == 0)
-						myObject.SetCaption( csBuffer);
+						myObject.SetCaption( csCaption);
+					if (_tcslen( myObject.GetDescription()) == 0)
+						myObject.SetDescription( csBuffer );					
+					
+					if (_tcslen( myObject.GetCaption()) == 0)
+						myObject.SetCaption( csBuffer );
+					if (_tcslen( myObject.GetDescription()) == 0)
+						myObject.SetDescription( csCaption );
+
 					myObject.SetUsage( dwUse);
-					myObject.SetTypeECC( dwECC);
+					if( strcmp(myObject.GetType(),"Empty slot") != 0 )
+						myObject.SetTypeECC( dwECC);
 					pMyList->SetAt( pPosCur, myObject);
 					pPosCur = pPosNext;
 					if (pPosNext != NULL)

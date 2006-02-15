@@ -1,3 +1,12 @@
+ver 4.0.1.1
+	- Added empty memory slots inventory
+	- Added /trace option
+	- Added log files flushing on every write
+	- Runs -T flag for every NT 4.0 computer
+
+ver 4.0.1.0 RC 1.0
+	- RC1 sourceforge release
+
 ver 4.0.0.9
 	- Added HKCU software search (/hkcu flag)
 

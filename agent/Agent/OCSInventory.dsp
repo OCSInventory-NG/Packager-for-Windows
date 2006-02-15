@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wbemuuid.lib Zlib\zlibstat.lib /nologo /subsystem:windows /pdb:"Debug/de.pdb" /debug /machine:I386 /nodefaultlib:"libc.lib" /out:"../Debug/OCSInventory.exe" /pdbtype:sept /libpath:"C:\Program Files\Microsoft SDK\Lib" /nodefaultlib:"libc.lib"/out:"..\Debug\OCSInventory.exe"
+# ADD LINK32 wbemuuid.lib Zlib\zlibstat.lib /nologo /subsystem:windows /pdb:"Debug/de.pdb" /debug /machine:I386 /nodefaultlib:"libc.lib" /out:"../Debug/OCSInventory.exe" /pdbtype:sept /libpath:"C:\Program Files\Microsoft platform SDK\Lib" /nodefaultlib:"libc.lib"/out:"..\Debug\OCSInventory.exe"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 

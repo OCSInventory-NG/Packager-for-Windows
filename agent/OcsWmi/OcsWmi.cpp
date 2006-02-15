@@ -812,8 +812,8 @@ LPCTSTR COcsWmi::strVariant( VARIANT pVal)
 			strRet.Format(_T( "%ld"),V_I4(&pVal));
 			break;
 		case VT_I8:
-			strRet.Format(_T( "%I64d"), V_I8(&pVal));;
-			break;
+			strRet.Format(_T( "%I64d"), V_I8(&pVal));
+			break; 
 		case VT_UI1:
 			strRet.Format(_T( "%hu"),V_UI1(&pVal));
 			break;

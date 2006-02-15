@@ -19,9 +19,9 @@
 #define VER_D1					4
 #define VER_D2					0
 #define VER_D3					1
-#define VER_D4				    0
+#define VER_D4				    3
 
-#define NT4_WORKSTATION			_T( "NT 4.0 Workstation")
+#define NT4						_T( "NT 4.0")
 #define URL_SUFFIX				_T( "/ocsinventory")
 #define DEFAULT_SERVER_NAME		_T( "ocsinventory-ng")
 #define PLATFORM_NAME			_T( "WINDOWS")
