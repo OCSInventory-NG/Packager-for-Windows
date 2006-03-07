@@ -302,10 +302,10 @@ BOOL CDeviceProperties::RetrieveHardwareAndOS(SysInfo * myPC, LPCSTR cmdL)
 	m_uType = myPC->getOS( m_csOSName, m_csOSVersion, m_csOSComment, m_csDescription);
 
 	// Check if it is a notebook
-	CUtils::trace("NOTEBOOK",cmdL);
+	/*CUtils::trace("NOTEBOOK",cmdL);
 	if (myPC->isNotebook())
 		m_uType = WINDOWS_NOTEBOOK;
-	AddLog( _T( "Detected device type: %u.\n"), m_uType);
+	AddLog( _T( "Detected device type: %u.\n"), m_uType);*/
 
 	// Get NT Domain or Workgroup
 	CUtils::trace("NT_DOMAIN",cmdL);

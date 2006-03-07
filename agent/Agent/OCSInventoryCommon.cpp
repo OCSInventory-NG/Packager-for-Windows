@@ -491,7 +491,7 @@ BOOL COCSInventoryApp::InitInstance()
 			do 
 			{
 				CUtils::cleanCm(pM);
-				pM=CUtils::getOptionAttributes(xmlResp,cmpt,"REGISTRY","REGTREE","REGKEY","NAME");
+				pM=CUtils::getOptionAttributes(xmlResp,cmpt,"REGISTRY","REGTREE","REGKEY","NAME", "");
 				
 				if ( pM->GetCount() == 0 )
 					break;
@@ -639,7 +639,7 @@ BOOL COCSInventoryApp::InitInstance()
 						CMapStringToString* pM=NULL;	
 						CString		nbr,mask;
 
-						pM=CUtils::getOptionAttributes(xmlResp,1,"IPDISCOVER");
+						pM=CUtils::getOptionAttributes(xmlResp,1,"IPDISCOVER", "");
 						pM->Lookup("VAL",nbr);
 						if( forcedIpdisc.GetLength() == 0 )
 							AddLog( _T( "IPDISCOVER: function required by HTTP server...\n"));
