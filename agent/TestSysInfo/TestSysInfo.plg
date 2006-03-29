@@ -1,0 +1,37 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: TestSysInfo - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C66.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /I "../SysInfo" /I "../OcsWmi" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fp"Release/TestSysInfo.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\TestSysInfo\TestSysInfoDlg.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C66.tmp" 
+Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C67.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:no /pdb:"Release/TestSysInfo.pdb" /machine:I386 /out:"..\Release\TestSysInfo.exe" 
+".\Release\StdAfx.obj"
+".\Release\TestSysInfo.obj"
+".\Release\TestSysInfoDlg.obj"
+".\Release\TestSysInfo.res"
+"\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\OcsWmi\Release\OcsWmi.lib"
+"\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\Release\SysInfo.lib"
+]
+Creating command line "link.exe @C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C67.tmp"
+<h3>Output Window</h3>
+Compiling...
+TestSysInfoDlg.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+TestSysInfo.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>
