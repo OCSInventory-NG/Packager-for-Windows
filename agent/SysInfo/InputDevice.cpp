@@ -1,16 +1,12 @@
-// Document modified at : Sunday, January 04, 2004 6:48:10 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
-
+// Document modified at : Wednesday, March 29, 2006 11:10:21 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
-
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
 // Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 //====================================================================================
-
 // InputDevice.cpp: implementation of the CInputDevice class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -226,54 +222,6 @@ BOOL CInputDevice::FormatXML(CMarkup* pX)
 		pX->AddElemNV("INTERFACE",m_csInterface);
 		pX->AddElemNV("POINTTYPE",m_csPointingType);
 	pX->OutOfElem();
-	return TRUE;
-}
-
-BOOL CInputDevice::ParseFromCSV(CString &csCSV)
-{
-	CString		csBuffer = csCSV,
-				csTemp;
-	int			nPos;
-
-	// Read Computer ID
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read type
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csType = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Manufacturer
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csManufacturer = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Caption
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csCaption = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Description
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csDescription = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Pointing type
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csPointingType = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Pointing Interface
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csInterface = csBuffer.Left( nPos);
 	return TRUE;
 }
 

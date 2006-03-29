@@ -1,10 +1,9 @@
-// Document modified at : Saturday, December 06, 2003 11:36:20 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:46:24 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -43,5 +42,5 @@ public: // Methods
 protected: // Attributes
 	CString m_csIP;
 };
-
 #endif // !defined(AFX_WINDOWSSOCKET_H__91E29D3E_FE3D_49BC_A386_611A6718999E__INCLUDED_)
+

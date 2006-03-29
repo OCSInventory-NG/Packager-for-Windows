@@ -1,10 +1,10 @@
-// Document modified at : Saturday, December 06, 2003 11:25:04 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:41:19 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -40,5 +40,5 @@ public: // Methods
 
 	static BOOL GetNetworkAdapters( CNetworkAdapterList *pList);
 };
-
 #endif // !defined(AFX_SNMP_H__3CFE0AD8_CC5A_4A0C_8BED_28A055A3C960__INCLUDED_)
+

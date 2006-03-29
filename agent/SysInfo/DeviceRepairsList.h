@@ -1,10 +1,9 @@
-// Document modified at : Wednesday, December 10, 2003 12:05:22 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:29:18 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -33,7 +32,6 @@ public: // Methods
 	//////////////////////////////////
 	CDeviceRepairsList();
 	virtual ~CDeviceRepairsList();
-
 };
-
 #endif // !defined(AFX_DEVICEREPAIRSLIST_H__373129CF_544C_4DC3_9536_313B900BC615__INCLUDED_)
+

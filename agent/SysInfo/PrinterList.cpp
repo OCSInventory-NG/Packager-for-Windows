@@ -1,10 +1,9 @@
-// Document modified at : Monday, November 03, 2003 11:26:26 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 3:00:58 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -16,9 +15,9 @@
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
-
 #include "Printer.h"
 #include "PrinterList.h"
+#include "OcsCrypto.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -32,10 +31,35 @@ static char THIS_FILE[]=__FILE__;
 
 CPrinterList::CPrinterList()
 {
-
 }
 
 CPrinterList::~CPrinterList()
 {
+}
 
+LPCTSTR CPrinterList::GetHash()
+{
+	COcsCrypto	myHash;
+	CPrinter	myObject;
+	POSITION	pos;
+	BOOL		bContinue;
+	CString		csToHash;
+
+	if (!myHash.HashInit())
+		return NULL;
+	pos = GetHeadPosition();
+	bContinue = (pos != NULL);
+	if (bContinue)
+		// There is one record => get the first
+		myObject = GetNext( pos);
+	while (bContinue)
+	{
+		csToHash.Format( _T( "%s%s%s"), myObject.GetName(), myObject.GetDriver(),
+						 myObject.GetPort());
+		myHash.HashUpdate( LPCTSTR( csToHash), csToHash.GetLength());
+		bContinue = (pos != NULL);
+		if (bContinue)
+			myObject = GetNext( pos);
+	}
+	return myHash.HashFinal();
 }

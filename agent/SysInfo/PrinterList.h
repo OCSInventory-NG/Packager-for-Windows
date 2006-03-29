@@ -1,10 +1,9 @@
-// Document modified at : Monday, November 03, 2003 11:02:30 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Tuesday, March 28, 2006 8:04:55 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -33,7 +32,8 @@ public: // Methods
 	//////////////////////////////////
 	CPrinterList();
 	virtual ~CPrinterList();
-
+	// Get hash code of data, to determine if changed since last inventory
+	LPCTSTR GetHash();
 };
-
 #endif // !defined(AFX_PRINTERLIST_H__EB59F014_89CE_11D5_B284_0040055338AF__INCLUDED_)
+

@@ -1,10 +1,9 @@
-// Document modified at : Saturday, January 03, 2004 11:32:46 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:04:14 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -58,7 +57,11 @@ public: // Methods
 	LPCTSTR GetBiosDate();
 	// Format informations in a XML string
 	BOOL FormatXML( CMarkup* pX );
+	// Read informations in a XML string
 	BOOL ParseFromXML(CString &xml);
+	// Get hash code of data, to determine if changed since last inventory
+	LPCTSTR GetHash();
+
 	//////////////////////////////////
 	// Set attributes values
 	//////////////////////////////////
@@ -85,8 +88,6 @@ public: // Methods
 	void SetBiosVersion( LPCTSTR lpstrBiosVersion);
 	// Set BIOS date
 	void SetBiosDate( LPCTSTR lpstrBiosDate);
-	// Retrieve the informations from a CSV buffer
-	BOOL ParseFromCSV( CString &csCSV);
 
 protected: // Attributes
 	CString		m_csDeviceID;			// Device unique ID
@@ -99,5 +100,5 @@ protected: // Attributes
 	CString		m_csBiosVersion;		// BIOS version
 	CString		m_csBiosDate;			// BIOS date
 };
-
 #endif // !defined(AFX_BIOS_H__0769B90F_185D_424A_A8E9_121705E35122__INCLUDED_)
+

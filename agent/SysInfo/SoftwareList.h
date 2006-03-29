@@ -1,10 +1,9 @@
-// Document modified at : Sunday, December 07, 2003 11:23:26 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Tuesday, March 28, 2006 8:09:34 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -24,7 +23,6 @@
 
 #include "SysInfoClasses.h"
 
-
 class DLL_CLASS CSoftwareList : public CList<CSoftware, CSoftware&>   
 {
 public: // Methods
@@ -33,7 +31,8 @@ public: // Methods
 	//////////////////////////////////
 	CSoftwareList();
 	virtual ~CSoftwareList();
-
+	// Get hash code of data, to determine if changed since last inventory
+	LPCTSTR GetHash();
 };
-
 #endif // !defined(AFX_SOFTWARELIST_H__E36BC909_5DB5_4FD4_BB2F_260128477168__INCLUDED_)
+

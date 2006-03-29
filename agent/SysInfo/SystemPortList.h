@@ -1,10 +1,9 @@
-// Document modified at : Sunday, January 04, 2004 5:47:24 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Tuesday, March 28, 2006 9:18:43 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -32,7 +31,8 @@ public: // Methods
 	//////////////////////////////////
 	CSystemPortList();
 	virtual ~CSystemPortList();
-
+	// Get hash code of data, to determine if changed since last inventory
+	LPCTSTR GetHash();
 };
-
 #endif // !defined(AFX_SYSTEMPORTLIST_H__2A8DF271_A4B9_47A1_ACD7_455B1E6C24B5__INCLUDED_)
+

@@ -1,10 +1,9 @@
-// Document modified at : Saturday, January 03, 2004 11:32:46 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:13:27 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -63,18 +62,18 @@ public: // Methods
 	void SetDeviceID( LPCTSTR lpstrDeviceID);
 	// Set the device NetBIOS name
 	void SetDeviceName( LPCTSTR lpstrName);
+	// Set the user ID
 	void SetUserID( LPCTSTR lpstrUserID);
+	// Set user's logon date from string
 	void SetLogonDate( LPCTSTR lpstrDate);
+	// Set user's logon date from date object
 	void SetLogonDate( COleDateTime &dtDate);
+	// Set process status string
 	void SetProcessesStatus( LPCTSTR lpstrProcess);
 	// Retrieve the informations for the current Device
 	BOOL Retrieve( LPCTSTR lpstrDeviceID, LPCTSTR lpstrUserID, LPCTSTR lpstrProcessesNames);
-	// Retrieve the informations from a CSV buffer
-	BOOL ParseFromCSV( CString &csCSV);
 
 protected: // Methods
-	// Check for a string comma separated list of processes to see if they are ruuning and
-	// store results in a status string 
 	// Return TRUE if no error
 	BOOL CheckRunningProcesses( LPCTSTR lpstrProcessesNames, CString &csProcessesStatus);
 
@@ -86,5 +85,5 @@ protected: // Attributes
 	CString m_csLogonDate;		// User logon date
 	CString m_csProcessesStatus;// Result of the processes check status
 };
-
 #endif // !defined(AFX_ACCESSLOG_H__3A200601_4875_11D5_B231_0040055338AF__INCLUDED_)
+

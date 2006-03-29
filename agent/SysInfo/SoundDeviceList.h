@@ -1,10 +1,9 @@
-// Document modified at : Saturday, December 06, 2003 11:25:04 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Tuesday, March 28, 2006 8:12:38 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -33,7 +32,8 @@ public: // Methods
 	//////////////////////////////////
 	CSoundDeviceList();
 	virtual ~CSoundDeviceList();
-
+	// Get hash code of data, to determine if changed since last inventory
+	LPCTSTR GetHash();
 };
-
 #endif // !defined(AFX_SOUNDDEVICELIST_H__C69CD4E2_060A_488D_982C_CE8626CFD27B__INCLUDED_)
+

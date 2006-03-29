@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /machine:I386
-# ADD LINK32 wbemuuid.lib ws2_32.lib /nologo /dll /machine:I386 /out:"..\Release\SysInfo.dll" /libpath:"C:\Program Files\Microsoft SDK\Lib"
+# ADD LINK32 wbemuuid.lib ws2_32.lib libeay32.lib /nologo /dll /machine:I386 /out:"..\Release\SysInfo.dll" /libpath:"C:\Program Files\Microsoft SDK\Lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "SysInfo - Win32 Debug"
@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wbemuuid.lib ws2_32.lib /nologo /dll /debug /machine:I386 /out:"..\Debug\SysInfo.dll" /pdbtype:sept /libpath:"C:\Program Files\Microsoft platform SDK\Lib"
+# ADD LINK32 wbemuuid.lib ws2_32.lib  libeay32.lib /nologo /dll /debug /machine:I386 /out:"..\Debug\SysInfo.dll" /pdbtype:sept /libpath:"C:\Program Files\Microsoft platform SDK\Lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -211,6 +211,10 @@ SOURCE=.\NetworkAdapter.cpp
 # Begin Source File
 
 SOURCE=.\NetworkAdapterList.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\OcsCrypto.cpp
 # End Source File
 # Begin Source File
 
@@ -440,6 +444,10 @@ SOURCE=.\NetworkAdapter.h
 # Begin Source File
 
 SOURCE=.\NetworkAdapterList.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\OcsCrypto.h
 # End Source File
 # Begin Source File
 

@@ -1,10 +1,9 @@
-// Document modified at : Saturday, January 03, 2004 11:32:48 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:42:09 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -94,8 +93,6 @@ public: // Methods
 	void SetFilesize( ULONG ulSize);
 	// Set if the app is extracted from the registry
 	void SetFromRegistry( BOOL bFromRegistry = FALSE);
-	// Retrieve the informations from a CSV buffer
-	BOOL ParseFromCSV( CString &csCSV);
 
 protected: // Attributes
 	ULONG	m_ulID;			// Database record ID
@@ -110,5 +107,5 @@ protected: // Attributes
 	ULONG	m_ulFilesize;	// Size in bytes of file app
 	BOOL	m_bFromRegistry;// Extracted from registry ?
 };
-
 #endif // !defined(AFX_SOFTWARE_H__C4903B6B_8BDE_11D4_8077_0040055338AF__INCLUDED_)
+

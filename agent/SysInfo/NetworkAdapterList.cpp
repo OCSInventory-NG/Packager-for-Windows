@@ -1,10 +1,10 @@
-// Document modified at : Monday, November 24, 2003 7:39:36 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 3:00:32 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -14,30 +14,25 @@
 // NetworkAdapterList.cpp: implementation of the CNetworkAdapterList class.
 //
 //////////////////////////////////////////////////////////////////////
-
 #include "stdafx.h"
-
 #include "NetworkAdapter.h"
 #include "NetworkAdapterList.h"
+#include "OcsCrypto.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
 static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
-
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-
 CNetworkAdapterList::CNetworkAdapterList()
 {
-
 }
 
 CNetworkAdapterList::~CNetworkAdapterList()
 {
-
 }
 
 BOOL CNetworkAdapterList::SetIpAddrEntry(LONG lIfIndex, LPCTSTR lpstrIPAddr, LPCTSTR lpstrIPNetMask, LPCTSTR lpstrNetNumber)
@@ -120,8 +115,8 @@ BOOL CNetworkAdapterList::SetIpAddrEntry(LPCTSTR lpstrMAC, LPCTSTR lpstrIPAddr, 
 	return FALSE;
 }
 
-CString CNetworkAdapterList::GetMaskByGateway(CString gtw) {
-	
+CString CNetworkAdapterList::GetMaskByGateway(CString gtw)
+{
 	CNetworkAdapter cAdapter;
 	POSITION	pPosNext;
 
@@ -134,12 +129,11 @@ CString CNetworkAdapterList::GetMaskByGateway(CString gtw) {
 			return cAdapter.GetIPNetMask();
 		}		
 	}
-	
 	return _T("");
 }
 
-CString CNetworkAdapterList::GetMaskByNetNumber(CString nbr) {
-	
+CString CNetworkAdapterList::GetMaskByNetNumber(CString nbr)
+{
 	CNetworkAdapter cAdapter;
 	POSITION	pPosNext;
 
@@ -152,12 +146,10 @@ CString CNetworkAdapterList::GetMaskByNetNumber(CString nbr) {
 			return cAdapter.GetIPNetMask();
 		}		
 	}
-	
 	return _T("");
 }
-
-CString CNetworkAdapterList::GetIpByGateway(CString gtw) {
-	
+CString CNetworkAdapterList::GetIpByGateway(CString gtw)
+{
 	CNetworkAdapter cAdapter;
 	POSITION	pPosNext;
 
@@ -170,6 +162,33 @@ CString CNetworkAdapterList::GetIpByGateway(CString gtw) {
 			return cAdapter.GetIPAddress();
 		}		
 	}
-	
 	return _T("");
+}
+LPCTSTR CNetworkAdapterList::GetHash()
+{
+	COcsCrypto	myHash;
+	CNetworkAdapter myObject;
+	POSITION	pos;
+	BOOL		bContinue;
+	CString		csToHash;
+
+	if (!myHash.HashInit())
+		return NULL;
+	pos = GetHeadPosition();
+	bContinue = (pos != NULL);
+	if (bContinue)
+		// There is one record => get the first
+		myObject = GetNext( pos);
+	while (bContinue)
+	{
+		csToHash.Format( _T( "%s%s%s%s%s%s%s%s%s"), myObject.GetDescription(), myObject.GetType(),
+						 myObject.GetTypeMIB(), myObject.GetSpeed(), myObject.GetMACAddress(),
+						 myObject.GetOperationalStatus(), myObject.GetIPNetMask(),
+						 myObject.GetGateway(), myObject.GetDhcpServer());
+		myHash.HashUpdate( LPCTSTR( csToHash), csToHash.GetLength());
+		bContinue = (pos != NULL);
+		if (bContinue)
+			myObject = GetNext( pos);
+	}
+	return myHash.HashFinal();
 }

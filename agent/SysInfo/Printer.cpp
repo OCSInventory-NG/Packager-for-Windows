@@ -1,16 +1,12 @@
-// Document modified at : Saturday, December 06, 2003 1:28:06 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
-
+// Document modified at : Wednesday, March 29, 2006 11:11:49 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
-
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
 // Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 //====================================================================================
-
 // Printer.cpp: implementation of the CPrinter class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -101,36 +97,6 @@ LPCTSTR CPrinter::GetDriver()
 LPCTSTR CPrinter::GetPort()
 {
 	return m_csPort;
-}
-
-BOOL CPrinter::ParseFromCSV(CString &csCSV)
-{
-	CString		csBuffer = csCSV,
-				csTemp;
-	int			nPos;
-
-	// Read Computer ID
-	if ((nPos = csBuffer.Find(_T(";"))) == -1)
-		return FALSE;
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Printer description
-	if ((nPos = csBuffer.Find(_T(";"))) == -1)
-		return FALSE;
-	m_csName = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Driver
-	if ((nPos = csBuffer.Find(_T(";"))) == -1)
-		return FALSE;
-	m_csDriver = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Port
-	if ((nPos = csBuffer.Find(_T(";"))) == -1)
-		return FALSE;
-	m_csPort = csBuffer.Left( nPos);
-	return TRUE;
 }
 
 BOOL CPrinter::FormatXML(CMarkup* pX)

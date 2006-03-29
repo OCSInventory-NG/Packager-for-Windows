@@ -1,11 +1,9 @@
-// Document modified at : Saturday, December 06, 2003 11:36:20 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
-//------------------------------------------------------------------------------
+// Document modified at : Wednesday, March 29, 2006 1:32:43 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -63,5 +61,4 @@ protected: // Attributes
    ULONGLONG m_ulTotalVirtual;	// Total virtual memory (pkysical + swap)
    ULONGLONG m_ulAvailVirtual;	// Free virtual memory (physical + swap)
 };
-
 #endif

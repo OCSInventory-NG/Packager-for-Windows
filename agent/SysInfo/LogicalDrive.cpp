@@ -1,16 +1,12 @@
-// Document modified at : Saturday, January 03, 2004 11:32:46 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
-
+// Document modified at : Wednesday, March 29, 2006 11:10:35 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
-
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
 // Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 //====================================================================================
-
 // LogicalDrive.cpp: implementation of the CLogicalDrive class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -251,64 +247,6 @@ void CLogicalDrive::SetFreeSpace( LONG lFree)
 void CLogicalDrive::SetFilesNumber(LONG lNum)
 {
 	m_lNumberOfFiles = lNum;
-}
-
-BOOL CLogicalDrive::ParseFromCSV(CString &csCSV)
-{
-	CString		csBuffer = csCSV,
-				csTemp,
-				csData;
-	int			nPos;
-
-	// Read Computer ID
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Drive letter
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csDriveLetter = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Drive type
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csDriveType = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Drive total size
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csData = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	m_lTotalSize = _ttol( csData);
-	// Read Drive free space
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csData = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	m_lFreeSpace = _ttol( csData);
-	// Read Drive volum name
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csVolumName = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Drive filesystem
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csFileSystem = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read number of files
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csData = csBuffer.Left( nPos);
-	m_lNumberOfFiles = _ttol( csData);
-	return TRUE;
 }
 
 ULONG CLogicalDrive::RetrieveTotalSize(LPCTSTR lpstrDrive)

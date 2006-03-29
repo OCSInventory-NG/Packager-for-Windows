@@ -1,10 +1,9 @@
-// Document modified at : Sunday, January 04, 2004 5:05:20 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:30:33 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -77,8 +76,6 @@ public: // Methods
 	void SetPointingType( DWORD dwPointingType);
 	void SetPointingInterface( LPCTSTR lpstrInterface);
 	void SetPointingInterface( DWORD dwInterface);
-	// Retrieve the informations from a CSV buffer
-	BOOL ParseFromCSV( CString &csCSV);
 
 protected: // Attributes
 	ULONG	m_ulID;				// Database record ID
@@ -91,5 +88,5 @@ protected: // Attributes
 	CString m_csPointingType;	// Pointing device type (trackball, trackpoint,touchpad,mouse...)
 	CString m_csInterface;		// Pointing device interface (Serial, PS/2, Infrared, USB...)
 };
-
 #endif // !defined(AFX_INPUTDEVICE_H__5BCE7A79_F8EC_4281_BF76_58D394AE4E08__INCLUDED_)
+

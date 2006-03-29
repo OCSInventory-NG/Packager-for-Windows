@@ -1,10 +1,9 @@
-// Document modified at : Sunday, January 04, 2004 7:34:14 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:46:54 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -72,5 +71,5 @@ protected: // Attributes
 	COcsWmi m_dllWMI;	// Class to access WMI
 	BOOL m_bConnected;	// Do we are already connected to WMI namespace
 };
-
 #endif // !defined(AFX_WMI_H__73831499_4F80_4168_AB5B_6CB71A878DE1__INCLUDED_)
+

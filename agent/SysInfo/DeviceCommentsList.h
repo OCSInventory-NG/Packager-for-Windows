@@ -1,10 +1,9 @@
-// Document modified at : Tuesday, December 09, 2003 11:34:06 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:27:04 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -34,5 +33,5 @@ public:
 	CDeviceCommentsList();
 	virtual ~CDeviceCommentsList();
 };
-
 #endif // !defined(AFX_DEVICECOMMENTSLIST_H__657D97A6_9211_4919_82BA_20794D56AFF4__INCLUDED_)
+

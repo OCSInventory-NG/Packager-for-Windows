@@ -1,10 +1,9 @@
-// Document modified at : Thursday, May 06, 2004 1:59:38 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:40:11 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -63,7 +62,6 @@ public: // Methods
 	BOOL GetVideoAdapters( CVideoAdapterList *pMyList);
 	BOOL GetWindowsRegistration( CString &csCompany, CString &csOwner, CString &csProductID);
 	BOOL IsNotebook();
-
 	BOOL GetRegistryValue( UINT uKeyTree, LPCTSTR lpstrSubKey, LPCTSTR lpstrValue, CString &csResult);
 	BOOL GetRegistryMultipleValues( LPCTSTR lpstrDeviceID, LPCTSTR lpstrName, UINT uKeyTree, LPCTSTR lpstrSubKey, CRegistryValueList *pMyList);
 
@@ -119,5 +117,5 @@ protected: // Attributes
 	DWORD m_dwPlatformId;	// OS Platform ID to determine if Win9X or NT
 	BOOL  m_bIsXP;			// TRUE if Win XP or higher
 };
-
 #endif // !defined(AFX_REGISTRY_H__599ACCD2_83FA_4ED3_9006_8C315E043D08__INCLUDED_)
+

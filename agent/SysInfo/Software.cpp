@@ -1,16 +1,12 @@
-// Document modified at : Tuesday, May 25, 2004 11:00:48 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
-
+// Document modified at : Wednesday, March 29, 2006 11:12:25 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
-
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
 // Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 //====================================================================================
-
 // Software.cpp: implementation of the CSoftware class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -112,70 +108,6 @@ void CSoftware::Set( LPCTSTR lpstrPublisher, LPCTSTR lpstrName, LPCTSTR lpstrVer
 	StrForSQL( m_csFilename);
 	m_ulFilesize = ulSize;
 	m_bFromRegistry = bFromRegistry;
-}
-
-BOOL CSoftware::ParseFromCSV(CString &csCSV)
-{
-	CString		csBuffer = csCSV,
-				csTemp;
-	int			nPos;
-
-	// Read Computer ID
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Publisher
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csPublisher = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read name
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csName = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read version
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csVersion = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read folder
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csFolder = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read comments
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csComments = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read filename
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csFilename = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read filesize
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_ulFilesize = _tcstoul( csBuffer.Left( nPos), NULL, 10);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read flag IsFromRegistry
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csTemp = csBuffer.Left( nPos);
-	if (csTemp.IsEmpty())
-		m_bFromRegistry = FALSE;
-	else
-		m_bFromRegistry = (_ttoi( csTemp) != 0);
-	return TRUE;
 }
 
 void CSoftware::SetID( ULONG ulID)

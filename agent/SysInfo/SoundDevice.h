@@ -1,10 +1,9 @@
-// Document modified at : Saturday, January 03, 2004 11:32:48 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:42:44 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -65,8 +64,6 @@ public: // Methods
 	void SetDescription( LPCTSTR lpstrDescription);
 	void SetName( LPCTSTR lpstrName);
 	void SetManufacturer( LPCTSTR lpstrManufacturer);
-	// Retrieve the informations from a CSV buffer
-	BOOL ParseFromCSV( CString &csCSV);
 
 protected: // Attributes
 	ULONG	m_ulID;				// Database record ID
@@ -76,5 +73,5 @@ protected: // Attributes
 	CString m_csName;			// Sound Device name
 	CString m_csDescription;	// Sound Device description
 };
-
 #endif // !defined(AFX_SOUNDDEVICE_H__ACFCECE1_8559_4161_8305_B8E69BF21C25__INCLUDED_)
+

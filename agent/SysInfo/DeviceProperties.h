@@ -1,10 +1,9 @@
-// Document modified at : Sunday, January 04, 2004 7:36:22 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:17:32 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -107,6 +106,8 @@ public:
 	LPCTSTR GetWindowsProductID();
 	// Format informations in a XML string
 	BOOL FormatXML( CMarkup* pX );
+	// Get hash code of data, to determine if changed since last inventory
+	LPCTSTR GetHash();
 
 	//////////////////////////////////
 	// Set attributes values
@@ -145,11 +146,9 @@ public:
 	// Otherwise, a Device ID will be generated only if this is
 	// the first the Device is inventoried
 	BOOL RetrieveHardwareAndOS(SysInfo * myPC, LPCSTR cmdL);
-	// Retrieve the informations from a CSV buffer
-	BOOL ParseFromCSV( CString &csCSV);
-
 	// Generate a unique device ID
 	void GenerateUID();
+
 	//////////////////////////////////
 	// Public Attributes
 	//////////////////////////////////
@@ -193,9 +192,6 @@ public:
 	// List of Video adapters
 	CVideoAdapterList m_VideoList;
 
-protected: // Methods
-
-
 protected: // Attributes
 	CString	m_csDeviceID;		// Device unique ID
 	CString	m_csDeviceName;		// Device netbios or DNS name
@@ -218,5 +214,5 @@ protected: // Attributes
 	CString	m_csWinRegOwner;	// Windows registered owner
 	CString m_csWinRegProductID;// Windows product ID
 };
-
 #endif // !defined(AFX_DEVICEPROPERTIES_H__02015421_D9B0_11D4_8F75_00600889DFA5__INCLUDED_)
+

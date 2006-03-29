@@ -1,10 +1,9 @@
-// Document modified at : Thursday, May 06, 2004 2:59:56 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:48:40 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -68,6 +67,7 @@
 #include "Registry.h"
 #include "DebugLog.h"
 #include "AccountInfo.h"
+#include "OcsCrypto.h"
 
 class DLL_CLASS SysInfo
 {
@@ -128,12 +128,10 @@ protected: // Methods
 
 protected: // Attributes
 	SYSTEM_INFO m_SystemInfo;	// System informations
-	
 	CRegistry	m_registryInfo;	// Class to get informations from registry
 	CWindowsSocket	m_Sock;		// Class to get informations from Windows Sockets
 	CEdid		m_edidInfo;		// Class to get information for EDID enabled display
 };
-
 
 inline BOOL getFileVersion( LPCTSTR lpstrFile, CString &csPublisher, CString &csName, CString &csVersion, CString &csComment)
 {

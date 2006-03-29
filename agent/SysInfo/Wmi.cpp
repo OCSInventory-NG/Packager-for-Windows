@@ -1,17 +1,13 @@
-// Document modified at : Sunday, January 04, 2004 7:45:00 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
-
+// Document modified at : Tuesday, March 28, 2006 12:50:28 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 //====================================================================================
 // Open Computer and Software Inventory
 // Copyleft Didier LIROULET 2003
 // Modified by Pierre LEMMET
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
-
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
 // Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 //====================================================================================
-
 // Wmi.cpp: implementation of the CWmi class.
 //
 //////////////////////////////////////////////////////////////////////

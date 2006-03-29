@@ -1,16 +1,12 @@
-// Document modified at : Saturday, December 06, 2003 1:26:14 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
-
+// Document modified at : Wednesday, March 29, 2006 11:13:43 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
-
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
 // Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 //====================================================================================
-
 // VideoAdapter.cpp: implementation of the CVideoAdapter class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -125,42 +121,6 @@ LPCTSTR CVideoAdapter::GetMemory()
 LPCTSTR CVideoAdapter::GetScreenResolution()
 {
 	return m_csResolution;
-}
-
-BOOL CVideoAdapter::ParseFromCSV(CString &csCSV)
-{
-	CString		csBuffer = csCSV,
-				csTemp;
-	int			nPos;
-
-	// Read Computer ID
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Adapter description
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csName = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Chipset
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csChipset = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Memory
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csMemory = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read resolution (optional)
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csResolution = csBuffer.Left( nPos);
-	return TRUE;
 }
 
 BOOL CVideoAdapter::FormatXML(CMarkup* pX)

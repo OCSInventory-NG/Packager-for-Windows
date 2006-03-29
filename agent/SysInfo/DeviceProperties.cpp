@@ -1,16 +1,12 @@
-// Document modified at : Sunday, January 04, 2004 7:37:06 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
-
+// Document modified at : Wednesday, March 29, 2006 1:24:45 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
-
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
 // Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 //====================================================================================
-
 // DeviceProperties.cpp: implementation of the CDeviceProperties class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -18,6 +14,7 @@
 #include "stdafx.h"
 #include "sysinfo.h"
 #include "../agent/utils.h"
+#include "OcsCrypto.h"
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -222,30 +219,25 @@ LPCTSTR CDeviceProperties::GetProcessorSpeed()
 	return m_csProcessorSpeed;
 }
 
-
 DWORD CDeviceProperties::GetNumberOfProcessors()
 {
 	return m_dwNumberOfProcessor;
 }
-
 
 ULONG CDeviceProperties::GetPhysicalMemory()
 {
 	return m_ulPhysicalMemory;
 }
 
-
 ULONG CDeviceProperties::GetPageFileSize()
 {
 	return m_ulSwapSize;
 }
 
-
 LPCTSTR CDeviceProperties::GetIPAddress()
 {
 	return m_csIPAddress;
 }
-
 LPCTSTR CDeviceProperties::GetExecutionDuration()
 {
 	return m_csExecutionDuration;
@@ -379,142 +371,8 @@ BOOL CDeviceProperties::RetrieveHardwareAndOS(SysInfo * myPC, LPCSTR cmdL)
 	myPC->getRegistryApplications( &m_SoftwareList, CUtils::IsRequired(cmdL,"hkcu"));
 	return TRUE;
 }
-
-BOOL CDeviceProperties::ParseFromCSV(CString &csCSV)
-{
-	CString		csBuffer = csCSV,
-				csTemp,
-				csData;
-	int			nPos;
-
-	// Read Device netbios Name
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csDeviceName = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read OS Name
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csOSName = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read OS Version
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csOSVersion = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read OS Comment
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csOSComment = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read processor type
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csProcessorType = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read processor speed
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csProcessorSpeed = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read number of processors
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csData = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	m_dwNumberOfProcessor = _tcstoul( csData, NULL, 10);
-	// Read physical memory
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csData = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	m_ulPhysicalMemory = _tcstoul( csData, NULL, 10);
-	// Read paging file
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csData = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	m_ulSwapSize = _tcstoul( csData, NULL, 10);
-	// Read IP address
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csIPAddress = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read execution duration
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csExecutionDuration = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read last check date
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csLastCheckDate = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read logged on user
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csLoggedOnUser = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read device type
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csTemp = csBuffer.Left( nPos);
-	m_uType = _tcstoul( csBuffer, NULL, 10);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read computer description
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csDescription = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read device UID
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csDeviceID = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read the domain or workgroup
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csDomain = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read windows registered company
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csWinRegCompany = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read windows registered owner
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csWinRegOwner = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read windows product ID
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csWinRegProductID = csBuffer.Left( nPos);
-	return TRUE;
-}
-
 BOOL CDeviceProperties::FormatXML(CMarkup* pX)
 {
-		
 	pX->AddElem("HARDWARE");
 	pX->IntoElem();
 		pX->AddElemNV("NAME",m_csDeviceName);
@@ -538,5 +396,17 @@ BOOL CDeviceProperties::FormatXML(CMarkup* pX)
 		pX->AddElemNV("WINPRODID",m_csWinRegProductID);
 	pX->OutOfElem();
 	return TRUE;
-
+}
+LPCTSTR CDeviceProperties::GetHash()
+{
+	COcsCrypto	myHash;
+	static CString		csToHash;
+	if (!myHash.HashInit())
+		return NULL;
+	csToHash.Format( _T( "%s%s%s%s%s%s%u%lu%s%s%s"), m_csDomain, m_csOSName,
+					 m_csOSVersion, m_csOSComment, m_csProcessorType,
+					 m_csProcessorSpeed,m_dwNumberOfProcessor,m_ulPhysicalMemory,
+					 m_csWinRegCompany, m_csWinRegOwner, m_csWinRegProductID);
+	myHash.HashUpdate( LPCTSTR( csToHash), csToHash.GetLength());
+	return myHash.HashFinal();
 }

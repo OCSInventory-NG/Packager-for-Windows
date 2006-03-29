@@ -1,9 +1,9 @@
+// Document modified at : Tuesday, March 28, 2006 9:20:19 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -31,7 +31,8 @@ public: // Methods
 	//////////////////////////////////
 	CSystemSlotList();
 	virtual ~CSystemSlotList();
-
+	// Get hash code of data, to determine if changed since last inventory
+	LPCTSTR GetHash();
 };
-
 #endif // !defined(AFX_SYSTEMSLOTLIST_H__206470BA_A221_41A4_B55E_4BD618E23911__INCLUDED_)
+

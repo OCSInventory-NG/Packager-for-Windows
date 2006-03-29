@@ -1,10 +1,9 @@
-// Document modified at : Saturday, December 06, 2003 11:25:04 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Tuesday, March 28, 2006 9:12:29 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -33,7 +32,8 @@ public: // Methods
 	//////////////////////////////////
 	CStoragePeripheralList();
 	virtual ~CStoragePeripheralList();
-
+	// Get hash code of data, to determine if changed since last inventory
+	LPCTSTR GetHash();
 };
-
 #endif // !defined(AFX_STORAGEPERIPHERALLIST_H__21D2FFA5_E1B2_460A_AA3E_56712989CAC3__INCLUDED_)
+

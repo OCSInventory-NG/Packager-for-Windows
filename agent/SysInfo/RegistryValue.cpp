@@ -1,16 +1,12 @@
-// Document modified at : Wednesday, December 10, 2003 12:06:06 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
-
+// Document modified at : Wednesday, March 29, 2006 11:12:13 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
-
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
 // Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 //====================================================================================
-
 // RegistryValue.cpp: implementation of the CRegistryValue class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -91,30 +87,6 @@ BOOL CRegistryValue::FormatXML(CMarkup* pX)
 		pX->AddElemNV("REGVALUE",m_csValue);
 	pX->OutOfElem();
 
-	return TRUE;
-}
-
-BOOL CRegistryValue::ParseFromCSV(CString &csCSV)
-{
-	CString		csBuffer = csCSV,
-				csTemp;
-	int			nPos;
-
-	// Read Computer ID
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Name
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csName = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Value
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csValue = csBuffer.Left( nPos);
 	return TRUE;
 }
 

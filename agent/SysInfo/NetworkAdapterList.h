@@ -1,10 +1,9 @@
-// Document modified at : Monday, November 24, 2003 7:39:10 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Tuesday, March 28, 2006 7:54:32 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -26,7 +25,6 @@
 #include <Winsock2.h>
 #include <iphlpapi.h>
 
-
 class DLL_CLASS CNetworkAdapterList : public CList<CNetworkAdapter, CNetworkAdapter&> 
 {
 public: // Methods
@@ -35,7 +33,6 @@ public: // Methods
 	//////////////////////////////////
 	CNetworkAdapterList();
 	virtual ~CNetworkAdapterList();
-
 
 	//////////////////////////////////
 	// Set attributes values
@@ -52,6 +49,8 @@ public: // Methods
 	// Didier LIROULET 2005-10-17 END
 	// Set the adapter infos IP @, net mask, gateways and DCHP server by the adapter MAC @ in the list
 	BOOL SetIpAddrEntry(LPCTSTR lpstrMAC, LPCTSTR lpstrIPAddr, LPCTSTR lpstrIPNetMask, LPCTSTR lpstrGateway, LPCTSTR lpstrDhcpServer, LPCSTR lpstrNetNumber);
+	// Get hash code of data, to determine if changed since last inventory
+	LPCTSTR GetHash();
 };
-
 #endif // !defined(AFX_NETWORKADAPTERLIST_H__DE761F11_8847_11D5_B278_0040055338AF__INCLUDED_)
+

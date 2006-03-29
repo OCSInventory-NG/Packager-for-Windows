@@ -1,10 +1,9 @@
-// Document modified at : Sunday, January 04, 2004 5:46:36 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:44:45 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -69,8 +68,6 @@ public: // Methods
 	void SetName( LPCTSTR lpstrName);
 	void SetCaption( LPCTSTR lpstrCaption);
 	void SetType( LPCTSTR lpstrType);
-	// Retrieve the informations from a CSV buffer
-	BOOL ParseFromCSV( CString &csCSV);
 
 protected: // Attributes
 	ULONG	m_ulID;			// Database record ID
@@ -81,5 +78,5 @@ protected: // Attributes
 	CString m_csCaption;	// Caption
 	CString m_csDescription;// Description
 };
-
 #endif // !defined(AFX_SYSTEMPORT_H__FC47C324_9B26_4C73_945F_5E7761E676F9__INCLUDED_)
+

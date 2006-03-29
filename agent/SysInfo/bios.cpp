@@ -1,23 +1,21 @@
-// Document modified at : Sunday, January 04, 2004 7:39:54 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 2:55:12 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
 // Copyleft Didier LIROULET 2003
 // Modified by Pierre LEMMET 2005
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
-
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
 // Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 //====================================================================================
-
 // Bios.cpp: implementation of the CBios class.
 //
 //////////////////////////////////////////////////////////////////////
 
 #include "stdafx.h"
 #include "Bios.h"
+#include "OcsCrypto.h"
 
 #ifdef _DEBUG
 #undef THIS_FILE
@@ -28,7 +26,6 @@ static char THIS_FILE[]=__FILE__;
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
-
 CBios::CBios()
 {
 	Clear();
@@ -36,7 +33,6 @@ CBios::CBios()
 
 CBios::~CBios()
 {
-
 }
 
 void CBios::Set( LPCTSTR lpstrSystemManufacturer, LPCTSTR lpstrSystemModel, LPCTSTR lpstrSystemSerialNumber, LPCTSTR lpstrMachineType, LPCTSTR lpstrBiosManufacturer, LPCTSTR lpstrBiosVersion, LPCTSTR lpstrBiosDate)
@@ -102,7 +98,6 @@ void CBios::SetDeviceID( LPCTSTR lpstrDeviceID)
 void CBios::SetBiosDate(LPCTSTR lpstrBiosDate)
 {
 	m_csBiosDate = lpstrBiosDate;
-
 	//Interpretation dates avec *** ou 000
 	if(m_csBiosDate.GetLength()>8)
 		if(m_csBiosDate.GetAt(8)=='*'||m_csBiosDate.GetAt(8)=='0')
@@ -114,7 +109,6 @@ void CBios::SetBiosDate(LPCTSTR lpstrBiosDate)
 			y+=m_csBiosDate[2]; y+=m_csBiosDate[3];
 			m_csBiosDate.Format("%s/%s/%s",d,m,y);
 		}
-
 	StrForSQL( m_csBiosDate);
 }
 
@@ -158,61 +152,6 @@ LPCTSTR CBios::GetBiosDate()
 	return m_csBiosDate;
 }
 
-BOOL CBios::ParseFromCSV(CString &csCSV)
-{
-	CString		csBuffer = csCSV,
-				csTemp,
-				csData;
-	int			nPos;
-
-	// Read Computer ID
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read System S/N
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csSystemSerialNumber = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read System model
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csSystemModel = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read BIOS version
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csBiosVersion = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read BIOS Date
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csBiosDate = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read System Manufacturer
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csSystemManufacturer = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read BIOS Manufacturer
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csBiosManufacturer = csBuffer.Left( nPos);
-	csTemp = csBuffer.Mid( nPos + 1);
-	csBuffer = csTemp;
-	// Read Machine type
-	if ((nPos = csBuffer.Find(_T( ";"))) == -1)
-		return FALSE;
-	m_csMachineType = csBuffer.Left( nPos);
-	return TRUE;
-}
-
 BOOL CBios::ParseFromXML(CString &xml)
 {
 	CMarkup x;
@@ -221,7 +160,6 @@ BOOL CBios::ParseFromXML(CString &xml)
 	x.FindElem("OCSINVENTORY");
 	x.IntoElem();
 	x.FindElem("BIOS");
-
 	x.FindChildElem("SSN");		
 	m_csSystemSerialNumber = x.GetChildData();
 	x.ResetChildPos();
@@ -253,7 +191,6 @@ BOOL CBios::ParseFromXML(CString &xml)
 	return TRUE;
 }
 
-
 void CBios::Clear()
 {
 	m_csSystemManufacturer.Empty();
@@ -264,7 +201,6 @@ void CBios::Clear()
 	m_csBiosVersion.Empty();
 	m_csBiosDate.Empty();
 }
-
 
 BOOL CBios::FormatXML(CMarkup* pX)
 {
@@ -290,4 +226,18 @@ void CBios::SetDeviceName( LPCTSTR lpstrDeviceName)
 LPCTSTR CBios::GetDeviceName()
 {
 	return m_csDeviceName;
+}
+
+LPCTSTR CBios::GetHash()
+{
+	COcsCrypto	myHash;
+	static CString		csToHash;
+
+	if (!myHash.HashInit())
+		return NULL;
+	csToHash.Format( _T( "%s%s%s%s%s%s"), m_csSystemManufacturer, m_csSystemModel,
+					 m_csSystemSerialNumber, m_csBiosManufacturer, m_csBiosVersion,
+					 m_csBiosDate);
+	myHash.HashUpdate( LPCTSTR( csToHash), csToHash.GetLength());
+	return myHash.HashFinal();
 }

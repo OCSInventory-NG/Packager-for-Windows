@@ -1,10 +1,9 @@
-// Document modified at : Saturday, January 03, 2004 11:32:46 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:33:50 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -121,8 +120,6 @@ public: // Methods
 	void SetType( DWORD dwType);
 	void SetTypeECC( DWORD dwECC);
 	void SetSlotNumber( UINT uNumber);
-	// Retrieve the informations from a CSV buffer
-	BOOL ParseFromCSV( CString &csCSV);
 
 protected: // Attributes
 	ULONG	m_ulID;			// Database record ID
@@ -136,5 +133,5 @@ protected: // Attributes
 	CString	m_csUsage;		// Memory usage (system, video, flash...)
 	UINT	m_uSlotNumber;	// Number of slots in the memory block
 };
-
 #endif // !defined(AFX_MEMORYSLOT_H__B07E0FAA_CE82_4915_B2B4_5E622AA26582__INCLUDED_)
+

@@ -1,10 +1,10 @@
-// Document modified at : Saturday, January 03, 2004 11:32:46 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 1:37:18 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -98,7 +98,6 @@ public: // Methods
 	void SetGateway( LPCTSTR lpstrGateway);
 	void SetDhcpServer( LPCTSTR lpstrDhcpServer);
 	// Retrieve the informations from a CSV buffer
-	BOOL ParseFromCSV( CString &csCSV);
 
 protected: // Attributes
 	CString	m_csNetNumber;
@@ -118,5 +117,5 @@ protected: // Attributes
 	CString	m_csGateway;		// Network Adapter Gateways if available (ex "192.3.4.1" or "Unavailable")
 	CString m_csDhcpServer;		// Network Adapter DHCP server used if available (ex "192.3.4.1" or "Unavailable")
 };
-
 #endif // !defined(AFX_NETWORKADAPTER_H__E2E36333_7E8A_11D5_B270_0040055338AF__INCLUDED_)
+
