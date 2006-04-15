@@ -1,10 +1,9 @@
-// Document modified at : Sunday, December 07, 2003 4:05:20 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Wednesday, March 29, 2006 4:37:16 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -29,7 +28,6 @@
 #include <afxext.h>         // MFC extensions
 #include <afxdisp.h>        // MFC Automation classes
 #include <afxmt.h>			// MFC for threads
-
 #include <afxtempl.h>		// MFC templates
 
 
@@ -37,3 +35,4 @@
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
 
 #endif // !defined(AFX_STDAFX_H__C4903B59_8BDE_11D4_8077_0040055338AF__INCLUDED_)
+

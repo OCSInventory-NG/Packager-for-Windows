@@ -3,16 +3,216 @@
 <pre>
 <h1>Build Log</h1>
 <h3>
+--------------------Configuration: SysInfo - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x40c /fo"Release/SysInfo.res" /d "NDEBUG" /d "_AFXDLL" "D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SysInfo.rc"" 
+Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C92.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /I "../includes" /I "../OcsWmi" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SYSINFO_EXPORTS" /D "_WINDLL" /D "_AFXDLL" /FR"Release/" /Fp"Release/SysInfo.pch" /YX"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\AccessLog.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\AccountInfo.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\BIOS.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\cpu_info.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\DebugLog.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\DeviceComments.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\DeviceCommentsList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\DeviceInventory.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\DeviceInventoryList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\DeviceProperties.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\DeviceRepairs.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\DeviceRepairsList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\Dtwinver.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\EDID.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\FileVersion.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\InputDevice.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\InputDeviceList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\IPHelper.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\LogicalDrive.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\LogicalDriveList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\Markup.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\Memory.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\MemorySlot.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\MemorySlotList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\Modem.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\ModemList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\Monitor.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\MonitorList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\NetworkAdapter.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\NetworkAdapterList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\OcsCrypto.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\OcsProcess.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\Printer.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\PrinterList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\Registry.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\RegistryValue.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\RegistryValueList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SNMP.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SnmpAPI.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\Software.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SoftwareList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SoundDevice.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SoundDeviceList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\StoragePeripheral.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\StoragePeripheralList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SysInfo.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SystemController.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SystemControllerList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SystemPort.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SystemPortList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SystemSlot.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\SystemSlotList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\VideoAdapter.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\VideoAdapterList.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\WindowsSocket.cpp"
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\Wmi.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C92.tmp" 
+Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C93.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /I "../includes" /I "../OcsWmi" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SYSINFO_EXPORTS" /D "_WINDLL" /D "_AFXDLL" /FR"Release/" /Fp"Release/SysInfo.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C93.tmp" 
+Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C94.tmp" with contents
+[
+wbemuuid.lib ws2_32.lib libeay32.lib /nologo /dll /incremental:no /pdb:"Release/SysInfo.pdb" /machine:I386 /out:"..\Release\SysInfo.dll" /implib:"Release/SysInfo.lib" /libpath:"C:\Program Files\Microsoft SDK\Lib" 
+".\Release\AccessLog.obj"
+".\Release\AccountInfo.obj"
+".\Release\BIOS.obj"
+".\Release\cpu_info.obj"
+".\Release\DebugLog.obj"
+".\Release\DeviceComments.obj"
+".\Release\DeviceCommentsList.obj"
+".\Release\DeviceInventory.obj"
+".\Release\DeviceInventoryList.obj"
+".\Release\DeviceProperties.obj"
+".\Release\DeviceRepairs.obj"
+".\Release\DeviceRepairsList.obj"
+".\Release\Dtwinver.obj"
+".\Release\EDID.obj"
+".\Release\FileVersion.obj"
+".\Release\InputDevice.obj"
+".\Release\InputDeviceList.obj"
+".\Release\IPHelper.obj"
+".\Release\LogicalDrive.obj"
+".\Release\LogicalDriveList.obj"
+".\Release\Markup.obj"
+".\Release\Memory.obj"
+".\Release\MemorySlot.obj"
+".\Release\MemorySlotList.obj"
+".\Release\Modem.obj"
+".\Release\ModemList.obj"
+".\Release\Monitor.obj"
+".\Release\MonitorList.obj"
+".\Release\NetworkAdapter.obj"
+".\Release\NetworkAdapterList.obj"
+".\Release\OcsCrypto.obj"
+".\Release\OcsProcess.obj"
+".\Release\Printer.obj"
+".\Release\PrinterList.obj"
+".\Release\Registry.obj"
+".\Release\RegistryValue.obj"
+".\Release\RegistryValueList.obj"
+".\Release\SNMP.obj"
+".\Release\SnmpAPI.obj"
+".\Release\Software.obj"
+".\Release\SoftwareList.obj"
+".\Release\SoundDevice.obj"
+".\Release\SoundDeviceList.obj"
+".\Release\StdAfx.obj"
+".\Release\StoragePeripheral.obj"
+".\Release\StoragePeripheralList.obj"
+".\Release\SysInfo.obj"
+".\Release\SystemController.obj"
+".\Release\SystemControllerList.obj"
+".\Release\SystemPort.obj"
+".\Release\SystemPortList.obj"
+".\Release\SystemSlot.obj"
+".\Release\SystemSlotList.obj"
+".\Release\VideoAdapter.obj"
+".\Release\VideoAdapterList.obj"
+".\Release\WindowsSocket.obj"
+".\Release\Wmi.obj"
+".\Release\SysInfo.res"
+"\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\OcsWmi\Release\OcsWmi.lib"
+]
+Creating command line "link.exe @C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C94.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+AccessLog.cpp
+AccountInfo.cpp
+BIOS.cpp
+cpu_info.cpp
+DebugLog.cpp
+DeviceComments.cpp
+DeviceCommentsList.cpp
+DeviceInventory.cpp
+DeviceInventoryList.cpp
+DeviceProperties.cpp
+DeviceRepairs.cpp
+DeviceRepairsList.cpp
+Dtwinver.cpp
+EDID.cpp
+FileVersion.cpp
+InputDevice.cpp
+InputDeviceList.cpp
+IPHelper.cpp
+LogicalDrive.cpp
+LogicalDriveList.cpp
+Markup.cpp
+Note: MBCS build (not UTF-8)
+Memory.cpp
+MemorySlot.cpp
+MemorySlotList.cpp
+Modem.cpp
+ModemList.cpp
+Monitor.cpp
+MonitorList.cpp
+NetworkAdapter.cpp
+NetworkAdapterList.cpp
+OcsCrypto.cpp
+OcsProcess.cpp
+Printer.cpp
+PrinterList.cpp
+Registry.cpp
+RegistryValue.cpp
+RegistryValueList.cpp
+SNMP.cpp
+SnmpAPI.cpp
+Software.cpp
+SoftwareList.cpp
+SoundDevice.cpp
+SoundDeviceList.cpp
+StoragePeripheral.cpp
+StoragePeripheralList.cpp
+SysInfo.cpp
+SystemController.cpp
+SystemControllerList.cpp
+SystemPort.cpp
+SystemPortList.cpp
+SystemSlot.cpp
+SystemSlotList.cpp
+VideoAdapter.cpp
+VideoAdapterList.cpp
+WindowsSocket.cpp
+Wmi.cpp
+Linking...
+   Creating library Release/SysInfo.lib and object Release/SysInfo.exp
+<h3>
 --------------------Configuration: TestSysInfo - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C66.tmp" with contents
+Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C98.tmp" with contents
 [
 /nologo /MD /W3 /GX /O2 /I "../SysInfo" /I "../OcsWmi" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fp"Release/TestSysInfo.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
 "D:\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\TestSysInfo\TestSysInfoDlg.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C66.tmp" 
-Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C67.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C98.tmp" 
+Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C99.tmp" with contents
 [
 /nologo /subsystem:windows /incremental:no /pdb:"Release/TestSysInfo.pdb" /machine:I386 /out:"..\Release\TestSysInfo.exe" 
 ".\Release\StdAfx.obj"
@@ -22,7 +222,7 @@ Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C67.tmp" with co
 "\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\OcsWmi\Release\OcsWmi.lib"
 "\Developp\OCS Inventory NG\sources\tmp\win32_agent\agent\SysInfo\Release\SysInfo.lib"
 ]
-Creating command line "link.exe @C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C67.tmp"
+Creating command line "link.exe @C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP9C99.tmp"
 <h3>Output Window</h3>
 Compiling...
 TestSysInfoDlg.cpp

@@ -1,11 +1,10 @@
-// Document modified at : Tuesday, May 25, 2004 11:25:24 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Friday, March 31, 2006 3:43:44 PM , by user : didier , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // MODIFIED BY PIERRE LEMMET
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -19,6 +18,7 @@
 #include "StdAfx.h"
 #include "Resource.h"
 #include "SysInfo.h"
+#include "OCSInventoryState.h"
 #include "StoreInteract.h"
 #include "XMLInteract.h"
 #include "OCSInventory.h"
@@ -1397,6 +1397,90 @@ BOOL CXMLInteract::ReadBIOS(LPCTSTR lpstrFilename, CDeviceProperties &pPC)
 			AddLog( _T( "\tXML Read BIOS: Failed because Unknown Exception !\n"));
 		pEx->Delete();
 		cFile.Abort();
+		return FALSE;
+	}
+	return TRUE;
+}
+
+BOOL CXMLInteract::ReadLastInventoryState(LPCTSTR lpstrFilename, COCSInventoryState &myState)
+{
+	CStdioFile cFile;
+	CString		csBuffer,
+				csTmp;
+
+	try
+	{
+		csBuffer.Empty();
+		AddLog( _T( "\tXML Read last inventory state from file <%s>..."), lpstrFilename);
+		if (cFile.Open( lpstrFilename,CFile::modeRead, NULL))
+		{
+			while (cFile.ReadString( csTmp))
+				csBuffer+=csTmp;
+			cFile.Close();
+			// Fill Device hardware properties from string
+			if (!myState.ParseFromXML( csBuffer))
+			{
+				cFile.Abort();
+				AddLog( _T( "Failed because unable to parse XML buffer <%s> !\n"), csBuffer);
+				return FALSE;
+			}
+		}
+		else
+		{
+			AddLog("Unable to open file !\n");
+			return FALSE;
+		}
+		AddLog( _T( "OK\n"));
+	}
+	catch( CException *pEx)
+	{
+		// Exception=> free exception, but continue
+		if (pEx->IsKindOf( RUNTIME_CLASS( CFileException)))
+			// XML exception
+			AddLog( _T( "Failed because XML Exception <%s> !\n"), GetErrorMessage( pEx));
+		else
+			// Unknown error 
+			AddLog( _T( "Failed because Unknown Exception !\n"));
+		pEx->Delete();
+		cFile.Abort();
+		return FALSE;
+	}
+	return TRUE;
+}
+
+BOOL CXMLInteract::WriteLastInventoryState(LPCTSTR lpstrFilename, COCSInventoryState &myState)
+{
+	CMarkup	myXml;
+	CStdioFile cFile;
+
+	try
+	{
+		AddLog( _T( "\tXML Write new inventory state to file <%s>..."), lpstrFilename);
+		if (cFile.Open( lpstrFilename,CFile::modeCreate|CFile::modeWrite, NULL))
+		{
+			myXml.SetDoc( XML_HEADERS);
+			myState.FormatXML( &myXml);
+			cFile.Write( myXml.GetDoc(),myXml.GetDoc().GetLength());
+			cFile.Close();
+		}
+		else
+		{
+			AddLog("Unable to open file !\n");
+			return FALSE;
+		}
+		AddLog( _T( "OK\n"));
+	}
+	catch( CException *pEx)
+	{
+		// Exception=> free exception, but continue
+		if (pEx->IsKindOf( RUNTIME_CLASS( CFileException)))
+			// XML exception
+			AddLog( _T( "Failed because XML Exception <%s> !\n"), GetErrorMessage( pEx));
+		else
+			// Unknown error 
+			AddLog( _T( "Failed because Unknown Exception !\n"));
+		cFile.Abort();
+		pEx->Delete();
 		return FALSE;
 	}
 	return TRUE;

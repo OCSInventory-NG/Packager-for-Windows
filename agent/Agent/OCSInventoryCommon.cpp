@@ -1,11 +1,10 @@
-// Document modified at : Tuesday, May 25, 2004 10:57:54 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Friday, March 31, 2006 3:57:48 PM , by user : didier , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
 // Copyleft Didier LIROULET 2003
 // MODIFIED BY PIERRE LEMMET 2005
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -18,6 +17,7 @@
 #include "StdAfx.h"
 #include "Resource.h"		// main symbols
 #include "SysInfo.h"
+#include "OCSInventoryState.h"
 #include "StoreInteract.h"
 #include "XMLInteract.h"
 #include "OCSInventory.h"
@@ -592,6 +592,8 @@ BOOL COCSInventoryApp::InitInstance()
 			m_pTheDB->RetrieveRegistryValues( m_ThePC);
 			// Load external BIOS infos from CSV if needed
 			LoadBIOS( cmdL, szExecutionFolder, m_ThePC);
+			// Check state to see if changed
+			HasChanged( &m_ThePC, szExecutionFolder);
 			// Update the database
 			if (!m_pTheDB->UpdateDevice( m_ThePC))
 			{
@@ -1160,7 +1162,7 @@ BOOL COCSInventoryApp::LoadBIOS( LPCTSTR lpstrCommandLine, LPCTSTR lpstrExecutio
 {
 	CString	csCommand = lpstrCommandLine,
 			csFilename;
-	CXMLInteract	myCsvDB;
+	CXMLInteract	myXmlDB;
 
 	// Read BIOS from XML file
 	// Optional; perhaps no BIOS infos
@@ -1169,7 +1171,7 @@ BOOL COCSInventoryApp::LoadBIOS( LPCTSTR lpstrCommandLine, LPCTSTR lpstrExecutio
 		return TRUE;
 	// Try to load BIOS infos from CSV
 	pPC.m_BIOS.Set( NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE);
-	if (myCsvDB.ReadBIOS( csFilename, pPC))
+	if (myXmlDB.ReadBIOS( csFilename, pPC))
 	{
 		// BIOS read => Try to find if laptop chassis
 		if ((_tcsicmp( pPC.m_BIOS.GetMachineType(), _T( "Portable")) == 0) ||
@@ -1363,4 +1365,180 @@ void CInputDlg::OnPaint()
 		m_LabelText = CUtils::readParamFile("tagDialog");
 		UpdateData(FALSE);
 	}
+}
+
+BOOL COCSInventoryApp::HasChanged(CDeviceProperties *pPC, LPCTSTR lpstrExecutionFolder)
+{
+	CString			csBuffer;
+	CXMLInteract	myXmlDB;
+	COCSInventoryState myState;
+	ULONG			ulChecksum = 0;
+
+	AddLog( _T( "Checking last inventory state...\n"));
+	// Read last inventory state from XML file
+	csBuffer.Format( _T( "%s%s"), lpstrExecutionFolder, OCS_LAST_STATE_FILE);
+	myXmlDB.ReadLastInventoryState( csBuffer, myState);
+	// Checking if hardware changes
+	csBuffer = pPC->GetHash();
+	if (csBuffer.CompareNoCase( myState.GetHardware()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_HARDWARE;
+		myState.SetHardware( csBuffer);
+		AddLog( _T( "\tHardware inventory state changed.\n"));
+	}
+	// Checking if bios changes
+	csBuffer = pPC->m_BIOS.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetBios()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_BIOS;
+		myState.SetBios( csBuffer);
+		AddLog( _T( "\tBios inventory state changed.\n"));
+	}
+	// Checking if memories changes
+	csBuffer = pPC->m_MemoryList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetMemories()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_MEMORIES;
+		myState.SetMemories( csBuffer);
+		AddLog( _T( "\tMemory slots inventory state changed.\n"));
+	}
+	// Checking if slots changes
+	csBuffer = pPC->m_SlotList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetSlots()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_SLOTS;
+		myState.SetSlots( csBuffer);
+		AddLog( _T( "\tSystem slots inventory state changed.\n"));
+	}
+	// Checking if registry changes
+	csBuffer = pPC->m_RegistryList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetRegistry()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_REGISTRY;
+		myState.SetRegistry( csBuffer);
+		AddLog( _T( "\tRegistry inventory state changed.\n"));
+	}
+	// Checking if controllers changes
+	csBuffer = pPC->m_SystemControllerList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetControllers()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_CONTROLLERS;
+		myState.SetControllers( csBuffer);
+		AddLog( _T( "\tSystem controllers inventory state changed.\n"));
+	}
+	// Checking if monitors changes
+	csBuffer = pPC->m_MonitorList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetMonitors()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_MONITORS;
+		myState.SetMonitors( csBuffer);
+		AddLog( _T( "\tMonitors inventory state changed.\n"));
+	}
+	// Checking if ports changes
+	csBuffer = pPC->m_PortList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetPorts()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_PORTS;
+		myState.SetPorts( csBuffer);
+		AddLog( _T( "\tSystem ports inventory state changed.\n"));
+	}
+	// Checking if storages changes
+	csBuffer = pPC->m_StorageList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetStorages()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_STORAGES;
+		myState.SetStorages( csBuffer);
+		AddLog( _T( "\tStorage peripherals inventory state changed.\n"));
+	}
+	// Checking if drives changes
+	csBuffer = pPC->m_DriveList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetDrives()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_DRIVES;
+		myState.SetDrives( csBuffer);
+		AddLog( _T( "\tLogical drives inventory state changed.\n"));
+	}
+	// Checking if inputs changes
+	csBuffer = pPC->m_InputList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetInputs()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_INPUTS;
+		myState.SetInputs( csBuffer);
+		AddLog( _T( "\tInput peripherals inventory state changed.\n"));
+	}
+	// Checking if modems changes
+	csBuffer = pPC->m_ModemList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetModems()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_MODEMS;
+		myState.SetModems( csBuffer);
+		AddLog( _T( "\tModems inventory state changed.\n"));
+	}
+	// Checking if networks changes
+	csBuffer = pPC->m_NetworkList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetNetworks()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_NETWORKS;
+		myState.SetNetworks( csBuffer);
+		AddLog( _T( "\tNetwork adapters inventory state changed.\n"));
+	}
+	// Checking if printers changes
+	csBuffer = pPC->m_PrinterList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetPrinters()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_PRINTERS;
+		myState.SetPrinters( csBuffer);
+		AddLog( _T( "\tPrinters inventory state changed.\n"));
+	}
+	// Checking if sounds changes
+	csBuffer = pPC->m_SoundList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetSounds()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_SOUNDS;
+		myState.SetSounds( csBuffer);
+		AddLog( _T( "\tSound adapters inventory state changed.\n"));
+	}
+	// Checking if videos changes
+	csBuffer = pPC->m_VideoList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetVideos()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_VIDEOS;
+		myState.SetVideos( csBuffer);
+		AddLog( _T( "\tVideo adapters inventory state changed.\n"));
+	}
+	// Checking if softwares changes
+	csBuffer = pPC->m_SoftwareList.GetHash();
+	if (csBuffer.CompareNoCase( myState.GetSoftwares()) != 0)
+	{
+		// Changed
+		ulChecksum += OCS_CHECKSUM_SOFTWARES;
+		myState.SetSoftwares( csBuffer);
+		AddLog( _T( "\tSoftware inventory state changed.\n"));
+	}
+	pPC->SetChecksum( ulChecksum);
+	// if change, write new inventory state
+	if (ulChecksum)
+	{
+		csBuffer.Format( _T( "%s%s"), lpstrExecutionFolder, OCS_LAST_STATE_FILE);
+		myXmlDB.WriteLastInventoryState( csBuffer, myState);
+	}
+	else
+		AddLog( _T( "\tNo changes since last inventory.\n"));
+	return TRUE;
 }

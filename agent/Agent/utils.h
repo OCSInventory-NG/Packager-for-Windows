@@ -1,8 +1,8 @@
+// Document modified at : Wednesday, March 29, 2006 4:37:33 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
 //====================================================================================
 // Open Computer and Software Inventory
 // Copyleft PIERRE LEMMET 2005
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.

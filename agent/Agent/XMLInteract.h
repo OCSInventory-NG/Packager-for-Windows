@@ -1,10 +1,9 @@
-// Document modified at : Sunday, January 04, 2004 6:55:42 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Friday, March 31, 2006 2:36:07 PM , by user : didier , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Pirerre LEMMET 2005
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -99,6 +98,8 @@ public: // Methods
 	BOOL parseMemorySlots( CDeviceProperties &pPC );
 	BOOL parseSystemSlots( CDeviceProperties &pPC );
 	BOOL launchBiosInfo( CDeviceProperties &pPC );
+	BOOL ReadLastInventoryState( LPCTSTR lpstrFilename, COCSInventoryState &myState);
+	BOOL WriteLastInventoryState( LPCTSTR lpstrFilename, COCSInventoryState &myState);
 
 protected: // Methods
 

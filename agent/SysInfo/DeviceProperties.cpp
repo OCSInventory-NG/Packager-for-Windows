@@ -1,12 +1,15 @@
-// Document modified at : Wednesday, March 29, 2006 1:24:45 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Friday, March 31, 2006 3:44:35 PM , by user : didier , from computer : SNOOPY-XP-PRO
+
 //====================================================================================
 // Open Computer and Software Inventory
 // Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
+
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
 // Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 //====================================================================================
+
 // DeviceProperties.cpp: implementation of the CDeviceProperties class.
 //
 //////////////////////////////////////////////////////////////////////
@@ -15,6 +18,7 @@
 #include "sysinfo.h"
 #include "../agent/utils.h"
 #include "OcsCrypto.h"
+
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -73,6 +77,7 @@ void CDeviceProperties::Clear()
 	m_SystemControllerList.RemoveAll();
 	m_VideoList.RemoveAll();
 	m_uType = NEW_DEVICE;
+	m_ulChecksum = 0;			// No changes detected
 }
 
 void CDeviceProperties::GenerateUID()
@@ -184,6 +189,11 @@ void CDeviceProperties::SetDeviceType( UINT uType)
 	m_uType = uType;
 }
 
+void CDeviceProperties::SetChecksum( ULONG ulChecksum)
+{
+	m_ulChecksum = ulChecksum;
+}
+
 LPCTSTR CDeviceProperties::GetDeviceID()
 {
 	return m_csDeviceID;
@@ -281,6 +291,11 @@ LPCTSTR CDeviceProperties::GetWindowsProductID()
 UINT CDeviceProperties::GetDeviceType()
 {
 	return m_uType;
+}
+
+ULONG CDeviceProperties::GetChecksum()
+{
+	return m_ulChecksum;
 }
 
 BOOL CDeviceProperties::RetrieveHardwareAndOS(SysInfo * myPC, LPCSTR cmdL)
@@ -394,6 +409,7 @@ BOOL CDeviceProperties::FormatXML(CMarkup* pX)
 		pX->AddElemNV("WINCOMPANY",m_csWinRegCompany);
 		pX->AddElemNV("WINOWNER",m_csWinRegOwner);
 		pX->AddElemNV("WINPRODID",m_csWinRegProductID);
+		pX->AddElemNV("CHECKSUM",m_ulChecksum);
 	pX->OutOfElem();
 	return TRUE;
 }
@@ -401,6 +417,7 @@ LPCTSTR CDeviceProperties::GetHash()
 {
 	COcsCrypto	myHash;
 	static CString		csToHash;
+
 	if (!myHash.HashInit())
 		return NULL;
 	csToHash.Format( _T( "%s%s%s%s%s%s%u%lu%s%s%s"), m_csDomain, m_csOSName,

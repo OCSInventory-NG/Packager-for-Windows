@@ -28,8 +28,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_DEFAULT
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,1,3
- PRODUCTVERSION 4,0,1,3
+ FILEVERSION 4,0,1,5
+ PRODUCTVERSION 4,0,1,5
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -46,15 +46,15 @@ BEGIN
         BEGIN
             VALUE "Comments", "Inventory Tool under GNU General Public License\0"
             VALUE "CompanyName", "http://ocsinventory.sourceforge.net\0"
-            VALUE "FileDescription", "Open Computers and Softwares Inventory Agent\0"
-            VALUE "FileVersion", "4, 0, 1, 3\0"
+            VALUE "FileDescription", "Open Computers and Software Inventory Agent\0"
+            VALUE "FileVersion", "4, 0, 1, 5\0"
             VALUE "InternalName", "OCSInventory\0"
             VALUE "LegalCopyright", "Open Source Software under GNU General Public License\0"
             VALUE "LegalTrademarks", "http://ocsinventory.sourceforge.net\0"
             VALUE "OriginalFilename", "OCSInventory.exe\0"
             VALUE "PrivateBuild", " \0"
-            VALUE "ProductName", "Open Computers and Softwares Inventory\0"
-            VALUE "ProductVersion", "4, 0, 1, 3\0"
+            VALUE "ProductName", "Open Computers and Software Inventory\0"
+            VALUE "ProductVersion", "4, 0, 1, 5\0"
             VALUE "SpecialBuild", "\0"
         END
     END
@@ -169,15 +169,17 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 // Dialog
 //
 
-IDD_CU DIALOG DISCARDABLE  0, 0, 136, 60
+IDD_CU DIALOG DISCARDABLE  0, 0, 283, 90
 STYLE DS_SYSMODAL | DS_MODALFRAME | DS_SETFOREGROUND | DS_CENTERMOUSE | 
     WS_POPUP | WS_VISIBLE | WS_CAPTION
-CAPTION "Tag"
+CAPTION "OCS Inventory NG Tag"
 FONT 8, "MS Sans Serif"
 BEGIN
-    EDITTEXT        IDC_VAL,7,22,122,14,ES_AUTOHSCROLL
-    DEFPUSHBUTTON   "OK",IDOK,42,39,50,14
-    LTEXT           "",IDC_LABEL_TEXT,7,2,122,19
+    EDITTEXT        IDC_VAL,7,50,269,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,116,69,50,14
+    LTEXT           "",IDC_LABEL_TEXT,7,27,269,19
+    ICON            IDR_MAINFRAME,IDC_STATIC,7,5,20,20
+    LTEXT           "OCS Inventory NG",IDC_STATIC,36,9,82,12
 END
 
 
@@ -192,9 +194,9 @@ BEGIN
     IDD_CU, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 129
+        RIGHTMARGIN, 276
         TOPMARGIN, 2
-        BOTTOMMARGIN, 53
+        BOTTOMMARGIN, 83
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -1,4 +1,4 @@
-// Document modified at : Wednesday, March 29, 2006 1:04:14 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Friday, March 31, 2006 1:47:03 PM , by user : didier , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
@@ -57,8 +57,6 @@ public: // Methods
 	LPCTSTR GetBiosDate();
 	// Format informations in a XML string
 	BOOL FormatXML( CMarkup* pX );
-	// Read informations in a XML string
-	BOOL ParseFromXML(CString &xml);
 	// Get hash code of data, to determine if changed since last inventory
 	LPCTSTR GetHash();
 
@@ -66,6 +64,8 @@ public: // Methods
 	// Set attributes values
 	//////////////////////////////////
 
+	// Read informations in a XML string
+	BOOL ParseFromXML(CString &xml);
 	// Set the device unique ID
 	void SetDeviceID( LPCTSTR lpstrDeviceID);
 	// Set the device NetBIOS name

@@ -111,6 +111,10 @@ SOURCE=.\OCSInventoryCommon.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\OCSInventoryState.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\StdAfx.cpp
 # End Source File
 # Begin Source File
@@ -132,6 +136,10 @@ SOURCE=..\defines.h
 # Begin Source File
 
 SOURCE=.\OCSInventory.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\OCSInventoryState.h
 # End Source File
 # Begin Source File
 

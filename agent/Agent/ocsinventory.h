@@ -1,10 +1,9 @@
-// Document modified at : Sunday, December 07, 2003 11:55:26 AM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Friday, March 31, 2006 12:51:40 PM , by user : didier , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -82,6 +81,8 @@ protected: // Methods
 	BOOL GetBiosFilename( CString &csCommandLine, LPCTSTR lpstrExecutionFolder, CDeviceProperties &pPC, CString &csFilename);
 	// Connection to database (either with OcsDB or CSV)
 	BOOL ConnectDB( LPCTSTR lpstrExecutionFolder);
+	// Determine if inventory information have changed since last inventory
+	BOOL HasChanged( CDeviceProperties *pPC, LPCTSTR lpstrExecutionFolder);
 
 protected: // Attributes
 	CDeviceProperties m_ThePC;			// Device properties

@@ -1,4 +1,4 @@
-// Document modified at : Wednesday, March 29, 2006 1:17:32 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Friday, March 31, 2006 12:45:33 PM , by user : didier , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
@@ -108,6 +108,8 @@ public:
 	BOOL FormatXML( CMarkup* pX );
 	// Get hash code of data, to determine if changed since last inventory
 	LPCTSTR GetHash();
+	// Get current checksum
+	ULONG GetChecksum();
 
 	//////////////////////////////////
 	// Set attributes values
@@ -148,6 +150,8 @@ public:
 	BOOL RetrieveHardwareAndOS(SysInfo * myPC, LPCSTR cmdL);
 	// Generate a unique device ID
 	void GenerateUID();
+	// Set checksum
+	void SetChecksum( ULONG ulchecksum);
 
 	//////////////////////////////////
 	// Public Attributes
@@ -213,6 +217,7 @@ protected: // Attributes
 	CString	m_csWinRegCompany;	// Windows registered company
 	CString	m_csWinRegOwner;	// Windows registered owner
 	CString m_csWinRegProductID;// Windows product ID
+	ULONG	m_ulChecksum;		// Checksum for detecting changes
 };
 #endif // !defined(AFX_DEVICEPROPERTIES_H__02015421_D9B0_11D4_8F75_00600889DFA5__INCLUDED_)
 

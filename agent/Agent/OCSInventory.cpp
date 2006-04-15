@@ -1,10 +1,9 @@
-// Document modified at : Sunday, January 04, 2004 8:05:06 PM , by user : Didier LIROULET , from computer : SNOOPY-XP-PRO
+// Document modified at : Friday, March 31, 2006 1:38:31 PM , by user : didier , from computer : SNOOPY-XP-PRO
 
 //====================================================================================
 // Open Computer and Software Inventory
-// Copyleft Didier LIROULET 2003
+// Copyleft Didier LIROULET 2006
 // Web: http://ocsinventory.sourceforge.net
-// E-mail: ocsinventory@tiscali.fr
 
 // This code is open source and may be copied and modified as long as the source
 // code is always made freely available.
@@ -18,6 +17,7 @@
 #include "Resource.h"		// main symbols
 
 #include "SysInfo.h"
+#include "OCSInventoryState.h"
 #include "StoreInteract.h"
 #include "XMLInteract.h"
 #include "OCSInventory.h"
