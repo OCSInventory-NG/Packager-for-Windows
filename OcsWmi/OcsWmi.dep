@@ -1,0 +1,23 @@
+# Microsoft Developer Studio Generated Dependency File, included by OcsWmi.mak
+
+.\OcsWmi.cpp : \
+	".\OcsWmi.h"\
+	"c:\program files\microsoft sdk\include\wbemcli.h"\
+	
+
+.\StdAfx.cpp : \
+	".\StdAfx.h"\
+	"c:\program files\microsoft sdk\include\basetsd.h"\
+	"c:\program files\microsoft sdk\include\guiddef.h"\
+	"c:\program files\microsoft sdk\include\propidl.h"\
+	"c:\program files\microsoft sdk\include\reason.h"\
+	"c:\program files\microsoft sdk\include\shldisp.h"\
+	"c:\program files\microsoft sdk\include\shobjidl.h"\
+	"c:\program files\microsoft sdk\include\shtypes.h"\
+	"c:\program files\microsoft sdk\include\stralign.h"\
+	"c:\program files\microsoft sdk\include\tvout.h"\
+	
+
+.\OcsWmi.rc : \
+	".\res\OcsWmi.rc2"\
+	

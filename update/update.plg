@@ -1,0 +1,48 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: update - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x40c /fo"Release/update.res" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\update\update.rc"" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP7E6.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/update.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\ocs\agent\update\update.cpp"
+"C:\ocs\agent\update\updateDlg.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP7E6.tmp" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP7E7.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/update.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\ocs\agent\update\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP7E7.tmp" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP7E8.tmp" with contents
+[
+zip.lib zlib.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/update.pdb" /machine:I386 /nodefaultlib:"libc" /out:"..\_Release\update.exe" /libpath:"..\include\Zip\Release" /libpath:"..\include\zlib" 
+.\Release\StdAfx.obj
+.\Release\update.obj
+.\Release\updateDlg.obj
+.\Release\update.res
+]
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP7E8.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+update.cpp
+updateDlg.cpp
+Generating Code...
+Linking...
+
+
+
+<h3>Results</h3>
+update.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

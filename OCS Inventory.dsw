@@ -1,0 +1,155 @@
+Microsoft Developer Studio Workspace File, Format Version 6.00
+# WARNING: DO NOT EDIT OR DELETE THIS WORKSPACE FILE!
+
+###############################################################################
+
+Project: "OCSInventory Agent"=.\Agent\OCSInventory.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name SysInfo
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "OcsWmi"=.\OcsWmi\OcsWmi.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "SysInfo"=.\SysInfo\SysInfo.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name OcsWmi
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "TestSrv"=.\service\OcsService.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name TestSrvMsg
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "TestSrvMsg"=.\service\TestSrvMsg\TestSrvMsg.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "TestSysInfo"=.\TestSysInfo\TestSysInfo.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name OcsWmi
+    End Project Dependency
+    Begin Project Dependency
+    Project_Dep_Name SysInfo
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "Zip"=.\include\zip\Zip.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "download"=.\download\download.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+    Begin Project Dependency
+    Project_Dep_Name Zip
+    End Project Dependency
+}}}
+
+###############################################################################
+
+Project: "mo_dev"=.\instxp\mo_dev.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "update"=.\update\update.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Global:
+
+Package=<5>
+{{{
+}}}
+
+Package=<3>
+{{{
+}}}
+
+###############################################################################
+
