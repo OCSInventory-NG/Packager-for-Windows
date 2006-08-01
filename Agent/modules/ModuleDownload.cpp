@@ -174,6 +174,8 @@ int CModuleDownload::response(CMarkup* pXml, CString* pRawResponse) {
 }
 
 int CModuleDownload::end() {
+	//TODO: remove
+	//return 0;
 	if( m_csDownloadOn == "0" ) {
 		AddLog("DOWNLOAD: Download is off\n");
 		return 0;
@@ -276,7 +278,7 @@ SSL_CTX * COptDownloadPackage::setup_client_ctx(void)
 int COptDownloadPackage::sendGetRequest(SSL *ssl)
 {
     CString getBuf;
-	getBuf.Format("GET /%s/info HTTP/1.0\n\n", m_csId );
+	getBuf.Format("GET /%s/%s/info HTTP/1.0\n\n", m_csInfoLoc, m_csId );
 	
 	int err = SSL_write(ssl, getBuf.GetBuffer(0), getBuf.GetLength());
     if (err <= 0)
@@ -391,7 +393,7 @@ int COptDownloadPackage::getInfoFile()
     BIO     *conn;
     SSL     *ssl;
     SSL_CTX *ctx;
-
+	
 	if( init_OpenSSL(  ) ) {
 		AddLog("ERROR: DOWNLOAD: Can't init openssl\n");
 		return 1;
@@ -400,9 +402,37 @@ int COptDownloadPackage::getInfoFile()
  
     ctx = setup_client_ctx(  );
 
-	CString server;
-	server.Format("%s:%i", m_csInfoLoc, SSL_PORT);
-    conn = BIO_new_connect( server.GetBuffer(0) );
+	// Get server name+port and ressource info file location
+	CString srvName, infoUrl;
+	char * resToken;
+
+	resToken = strtok(m_csInfoLoc.GetBuffer(0), "/");
+
+	if( resToken == NULL){
+		// There is only a server name
+		srvName = m_csInfoLoc;
+	}
+	// There is an url
+	else{
+		srvName = resToken;
+		resToken = strtok(NULL, "/");
+		// Extract URL
+		while( resToken != NULL ){
+			infoUrl += (CString("/") + resToken);
+			resToken = strtok(NULL, "/");;
+		}
+		setInfoLoc(infoUrl);
+	}
+	    
+	// SSL connection
+	if( srvName.Find(":", 0) < 0){
+		srvName += ":";
+		srvName += SSL_PORT;
+	}
+
+	AddLog("DOWNLOAD: Info file for package %s is located at : %s%s\n", m_csId, srvName, m_csInfoLoc);
+
+	conn = BIO_new_connect( srvName.GetBuffer(0) );
     if (!conn)
         AddLog("ERROR: DOWNLOAD: creating connection BIO\n");
  
@@ -411,17 +441,20 @@ int COptDownloadPackage::getInfoFile()
  
     ssl = SSL_new(ctx);
     SSL_set_bio(ssl, conn, conn);
-    if (SSL_connect(ssl) <= 0)
-        AddLog("ERROR: DOWNLOAD: connecting SSL object\n");
 
-    AddLog("DOWNLOAD: SSL Connection opened...OK (pack %s)\n", m_csId);
-    if (sendGetRequest(ssl)) {
-        SSL_shutdown(ssl);
-		readResponse(ssl);
+    if (SSL_connect(ssl) <= 0) {
+        AddLog("ERROR: DOWNLOAD: connecting SSL object\n");
 	}
-    else
-        SSL_clear(ssl);
-    AddLog("DOWNLOAD: SSL Connection closed...OK (pack %s)\n", m_csId);
+	else{
+		AddLog("DOWNLOAD: SSL Connection opened...OK (pack %s)\n", m_csId);
+		if (sendGetRequest(ssl)) {
+	        SSL_shutdown(ssl);
+			readResponse(ssl);
+		}
+		else
+	        SSL_clear(ssl);
+	    AddLog("DOWNLOAD: SSL Connection closed...OK (pack %s)\n", m_csId);
+	}
  
     SSL_free(ssl);
     SSL_CTX_free(ctx);

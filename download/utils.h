@@ -11,7 +11,7 @@ CString getFilePath( LPCSTR file, LPCSTR id) ;
 CString getFileContent( LPCSTR file, LPCSTR id ) ;
 void createRestorePoint( CString nme ) ;
 void cleanPackage( CString id );
-CString simple_digest (char *alg, CString fName, UINT *olen) ;
+int simple_digest (char *alg, CString fName, UINT *olen, UCHAR **) ;
 CString print_hex (unsigned char *bs, unsigned int n);
 /* A helper function for base64 encoding */
 CString base64_encode (unsigned char *buf, unsigned int len);

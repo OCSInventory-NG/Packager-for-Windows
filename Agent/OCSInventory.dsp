@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib  Ws2_32.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /out:"..\_Release\OCSInventory.exe" /libpath:"C:\Program Files\SDK\Fev2003\Lib" /libpath:"..\include\zlib" /libpath:"..\include\openssl\lib\VC"
+# ADD LINK32 wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib Ws2_32.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /out:"..\_Release\OCSInventory.exe" /libpath:"C:\Program Files\SDK\Fev2003\Lib" /libpath:"..\include\zlib" /libpath:"..\include\openssl\lib\VC"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "OCSInventory Agent - Win32 Debug"
@@ -81,7 +81,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib zlib.lib Ws2_32.lib /nologo /subsystem:windows /pdb:"Debug/de.pdb" /debug /machine:I386 /nodefaultlib:"libc.lib" /out:"..\_Debug\OCSInventory.exe" /pdbtype:sept /libpath:"C:\Program Files\vieux_sdk\Lib" /libpath:"..\include\zlib" /libpath:"..\include\openssl\lib\VC" /nodefaultlib:"libc.lib"/out:"..\Debug\OCSInventory.exe"
+# ADD LINK32 wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib zlib.lib Ws2_32.lib wininet.lib /nologo /subsystem:windows /pdb:"Debug/de.pdb" /debug /machine:I386 /nodefaultlib:"libc.lib" /out:"..\_Debug\OCSInventory.exe" /pdbtype:sept /libpath:"C:\Program Files\vieux_sdk\Lib" /libpath:"..\include\zlib" /libpath:"..\include\openssl\lib\VC" /nodefaultlib:"libc.lib"/out:"..\Debug\OCSInventory.exe"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 

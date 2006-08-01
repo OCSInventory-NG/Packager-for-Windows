@@ -7,7 +7,7 @@
 </h3>
 <h3>Command Lines</h3>
 Creating command line "rc.exe /l 0x409 /fo"Release/OCSInventory.res" /i "C:\Program Files\SDK2003R2\Lib" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\Agent\OCSInventory.rc"" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP12D.tmp" with contents
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2DE.tmp" with contents
 [
 /nologo /MD /W3 /WX /GX /O2 /I "..\OcsDB" /I "..\SysInfo" /I "..\OcsWmi" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_OCS_AGENT" /D "_AFXDLL" /FR"Release/" /Fp"Release/OCSInventory.pch" /YX"StdAfx.h" /Fo"Release/" /Fd"Release/" /FD /c 
 "C:\ocs\agent\Agent\modules\ModuleDownload.cpp"
@@ -19,8 +19,8 @@ Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP12D.tmp" with 
 "C:\ocs\agent\Agent\StoreInteract.cpp"
 "C:\ocs\agent\Agent\XMLInteract.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP12D.tmp" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP12E.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2DE.tmp" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2DF.tmp" with contents
 [
 wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib Ws2_32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/OCSInventory.pdb" /machine:I386 /nodefaultlib:"libc.lib" /out:"..\_Release\OCSInventory.exe" /libpath:"C:\Program Files\SDK\Fev2003\Lib" /libpath:"..\include\zlib" /libpath:"..\include\openssl\lib\VC" 
 .\Release\commonDownload.obj
@@ -38,7 +38,7 @@ wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib Ws2_32.lib /nologo /subsyste
 .\Release\OCSInventory.res
 \ocs\agent\SysInfo\Release\SysInfo.lib
 ]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP12E.tmp"
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2DF.tmp"
 <h3>Output Window</h3>
 Compiling resources...
 Compiling...
@@ -61,7 +61,7 @@ OCSInventory.exe - 0 error(s), 0 warning(s)
 </h3>
 <h3>Command Lines</h3>
 Creating command line "rc.exe /l 0x409 /fo"Debug/OCSInventory.res" /d "_DEBUG" /d "_AFXDLL" "C:\ocs\agent\Agent\OCSInventory.rc"" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP130.tmp" with contents
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2E1.tmp" with contents
 [
 /nologo /MDd /W3 /WX /Gm /GX /ZI /Od /I "..\OcsDB" /I "..\SysInfo" /I "..\OcsWmi" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_OCS_AGENT" /D "_AFXDLL" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
 "C:\ocs\agent\Agent\modules\ModuleDownload.cpp"
@@ -73,8 +73,8 @@ Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP130.tmp" with 
 "C:\ocs\agent\Agent\StoreInteract.cpp"
 "C:\ocs\agent\Agent\XMLInteract.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP130.tmp" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP131.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2E1.tmp" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2E2.tmp" with contents
 [
 wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib zlib.lib Ws2_32.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/de.pdb" /debug /machine:I386 /nodefaultlib:"libc.lib" /out:"..\_Debug\OCSInventory.exe" /pdbtype:sept /libpath:"C:\Program Files\vieux_sdk\Lib" /libpath:"..\include\zlib" /libpath:"..\include\openssl\lib\VC" /nodefaultlib:"libc.lib"/out:"..\Debug\OCSInventory.exe" 
 .\Debug\commonDownload.obj
@@ -92,7 +92,7 @@ wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib zlib.lib Ws2_32.lib /nologo 
 .\Debug\OCSInventory.res
 \ocs\agent\SysInfo\Debug\SysInfo.lib
 ]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP131.tmp"
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2E2.tmp"
 <h3>Output Window</h3>
 Compiling resources...
 Compiling...
@@ -108,7 +108,7 @@ StoreInteract.cpp
 XMLInteract.cpp
 Generating Code...
 Linking...
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP132.tmp" with contents
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2E3.tmp" with contents
 [
 /nologo /o"Debug/OCSInventory.bsc" 
 .\Debug\commonDownload.sbr
@@ -123,7 +123,7 @@ Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP132.tmp" with 
 .\Debug\StdAfx.sbr
 .\Debug\StoreInteract.sbr
 .\Debug\XMLInteract.sbr]
-Creating command line "bscmake.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP132.tmp"
+Creating command line "bscmake.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2E3.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 
@@ -135,6 +135,19 @@ OCSInventory.exe - 0 error(s), 0 warning(s)
 --------------------Configuration: OcsWmi - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x40c /fo"Release/OcsWmi.res" /i "C:\Program Files\SDK2003R2\Lib" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\OcsWmi\OcsWmi.rc"" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2E4.tmp" with contents
+[
+wbemuuid.lib /nologo /dll /incremental:no /pdb:"Release/OcsWmi.pdb" /machine:I386 /out:"..\_Release\OcsWmi.dll" /implib:"Release/OcsWmi.lib" /libpath:"C:\Program Files\SDK\Fev2003\lib" 
+.\Release\OcsWmi.obj
+.\Release\StdAfx.obj
+.\Release\OcsWmi.res
+]
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2E4.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Linking...
+   Creating library Release/OcsWmi.lib and object Release/OcsWmi.exp
 
 
 
@@ -144,6 +157,18 @@ OcsWmi.dll - 0 error(s), 0 warning(s)
 --------------------Configuration: OcsWmi - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x40c /fo"Debug/OcsWmi.res" /d "_DEBUG" /d "_AFXDLL" "C:\ocs\agent\OcsWmi\OcsWmi.rc"" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2E8.tmp" with contents
+[
+wbemuuid.lib /nologo /dll /incremental:yes /pdb:"Debug/OcsWmi.pdb" /debug /machine:I386 /out:"..\_Debug\OcsWmi.dll" /implib:"Debug/OcsWmi.lib" /pdbtype:sept /libpath:"C:\Program Files\vieux_sdk\Lib" 
+.\Debug\OcsWmi.obj
+.\Debug\StdAfx.obj
+.\Debug\OcsWmi.res
+]
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2E8.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Linking...
 
 
 
@@ -153,7 +178,8 @@ OcsWmi.dll - 0 error(s), 0 warning(s)
 --------------------Configuration: SysInfo - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP133.tmp" with contents
+Creating command line "rc.exe /l 0x40c /fo"Release/SysInfo.res" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\SysInfo\SysInfo.rc"" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2E9.tmp" with contents
 [
 /nologo /MD /W3 /GX /O2 /I "../includes" /I "../OcsWmi" /I "C:\Program Files\SDK2003R2\Lib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SYSINFO_EXPORTS" /D "_WINDLL" /D "_AFXDLL" /FR"Release/" /Fp"Release/SysInfo.pch" /YX"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
 "C:\ocs\agent\SysInfo\AccountInfo.cpp"
@@ -165,8 +191,8 @@ Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP133.tmp" with 
 "C:\ocs\agent\SysInfo\WindowsSocket.cpp"
 "C:\ocs\agent\SysInfo\Wmi.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP133.tmp" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP134.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2E9.tmp" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2EA.tmp" with contents
 [
 wbemuuid.lib ws2_32.lib libeay32.lib setupapi.lib /nologo /dll /incremental:no /pdb:"Release/SysInfo.pdb" /machine:I386 /out:"..\_Release\SysInfo.dll" /implib:"Release/SysInfo.lib" /libpath:"C:\Program Files\SDK\Fev2003\Lib" /libpath:"..\include\Zip\Release" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" 
 .\Release\AccessLog.obj
@@ -229,8 +255,9 @@ wbemuuid.lib ws2_32.lib libeay32.lib setupapi.lib /nologo /dll /incremental:no /
 .\Release\SysInfo.res
 \ocs\agent\OcsWmi\Release\OcsWmi.lib
 ]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP134.tmp"
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2EA.tmp"
 <h3>Output Window</h3>
+Compiling resources...
 Compiling...
 AccountInfo.cpp
 DeviceProperties.cpp
@@ -251,7 +278,8 @@ SysInfo.dll - 0 error(s), 0 warning(s)
 --------------------Configuration: SysInfo - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP138.tmp" with contents
+Creating command line "rc.exe /l 0x40c /fo"Debug/SysInfo.res" /d "_DEBUG" /d "_AFXDLL" "C:\ocs\agent\SysInfo\SysInfo.rc"" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2EE.tmp" with contents
 [
 /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../includes" /I "../OcsWmi" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SYSINFO_EXPORTS" /D "_WINDLL" /D "_AFXDLL" /Fp"Debug/SysInfo.pch" /YX"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
 "C:\ocs\agent\SysInfo\AccountInfo.cpp"
@@ -263,8 +291,8 @@ Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP138.tmp" with 
 "C:\ocs\agent\SysInfo\WindowsSocket.cpp"
 "C:\ocs\agent\SysInfo\Wmi.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP138.tmp" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP139.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2EE.tmp" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2EF.tmp" with contents
 [
 wbemuuid.lib ws2_32.lib libeay32.lib setupapi.lib /nologo /dll /incremental:yes /pdb:"Debug/SysInfo.pdb" /debug /machine:I386 /out:"..\_Debug\SysInfo.dll" /implib:"Debug/SysInfo.lib" /pdbtype:sept /libpath:"C:\Program Files\vieux_sdk\Lib" /libpath:"..\include\Zip\Release" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" 
 .\Debug\AccessLog.obj
@@ -327,8 +355,9 @@ wbemuuid.lib ws2_32.lib libeay32.lib setupapi.lib /nologo /dll /incremental:yes 
 .\Debug\SysInfo.res
 \ocs\agent\OcsWmi\Debug\OcsWmi.lib
 ]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP139.tmp"
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2EF.tmp"
 <h3>Output Window</h3>
+Compiling resources...
 Compiling...
 AccountInfo.cpp
 DeviceProperties.cpp
@@ -357,31 +386,11 @@ OcsService.exe - 0 error(s), 0 warning(s)
 --------------------Configuration: TestSrv - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP13A.tmp" with contents
-[
-libeay32.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/OcsService.pdb" /debug /machine:I386 /out:"../_Debug/OcsService.exe" /libpath:"..\include\openssl\LIB\VC" 
-.\Debug\App.obj
-.\Debug\ntserv.obj
-.\Debug\ntservCmdLineInfo.obj
-.\Debug\ntservEventLog.obj
-.\Debug\ntservEventLogRecord.obj
-.\Debug\ntservEventLogSource.obj
-.\Debug\ntservScmService.obj
-.\Debug\ntservServiceControlManager.obj
-.\Debug\StdAfx.obj
-.\Debug\OcsService.res
-.\TestSrvMsg\Debug\TestSrv.lib
-]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP13A.tmp"
-<h3>Output Window</h3>
-Linking...
-LINK : fatal error LNK1168: cannot open ../_Debug/OcsService.exe for writing
-Error executing link.exe.
 
 
 
 <h3>Results</h3>
-OcsService.exe - 1 error(s), 0 warning(s)
+OcsService.exe - 0 error(s), 0 warning(s)
 <h3>
 --------------------Configuration: TestSrvMsg - Win32 Release--------------------
 </h3>
@@ -401,6 +410,69 @@ OcsService.dll - 0 error(s), 0 warning(s)
 <h3>Results</h3>
 TestSrv.dll - 0 error(s), 0 warning(s)
 <h3>
+--------------------Configuration: TestSysInfo - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F0.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /I "../SysInfo" /I "../OcsWmi" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fp"Release/TestSysInfo.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\ocs\agent\TestSysInfo\TestSysInfoDlg.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F0.tmp" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F1.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:no /pdb:"Release/TestSysInfo.pdb" /machine:I386 /out:"..\_Release\TestSysInfo.exe" 
+.\Release\StdAfx.obj
+.\Release\TestSysInfo.obj
+.\Release\TestSysInfoDlg.obj
+.\Release\TestSysInfo.res
+\ocs\agent\OcsWmi\Release\OcsWmi.lib
+\ocs\agent\SysInfo\Release\SysInfo.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F1.tmp"
+<h3>Output Window</h3>
+Compiling...
+TestSysInfoDlg.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+TestSysInfo.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: TestSysInfo - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F3.tmp" with contents
+[
+/nologo /MDd /W3 /Gm /GX /ZI /Od /I "../SysInfo" /I "../OcsWmi" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/TestSysInfo.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\ocs\agent\TestSysInfo\TestSysInfoDlg.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F3.tmp" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F4.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:yes /pdb:"Debug/TestSysInfo.pdb" /debug /machine:I386 /out:"..\_Debug\TestSysInfo.exe" /pdbtype:sept 
+.\Debug\StdAfx.obj
+.\Debug\TestSysInfo.obj
+.\Debug\TestSysInfoDlg.obj
+.\Debug\TestSysInfo.res
+\ocs\agent\OcsWmi\Debug\OcsWmi.lib
+\ocs\agent\SysInfo\Debug\SysInfo.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F4.tmp"
+<h3>Output Window</h3>
+Compiling...
+TestSysInfoDlg.cpp
+Linking...
+Creating command line "bscmake.exe /nologo /o"Debug/TestSysInfo.bsc"  .\Debug\StdAfx.sbr .\Debug\TestSysInfo.sbr .\Debug\TestSysInfoDlg.sbr"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+TestSysInfo.exe - 0 error(s), 0 warning(s)
+<h3>
 --------------------Configuration: Zip - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
@@ -419,16 +491,26 @@ Zip.lib - 0 error(s), 0 warning(s)
 <h3>Results</h3>
 Zip.lib - 0 error(s), 0 warning(s)
 <h3>
+--------------------Configuration: Zip - Win32 Static Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+Zip.lib - 0 error(s), 0 warning(s)
+<h3>
 --------------------Configuration: download - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP13B.tmp" with contents
+Creating command line "rc.exe /l 0x40c /fo"Release/download.res" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\download\download.rc"" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F5.tmp" with contents
 [
 /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/download.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
 "C:\ocs\agent\download\download.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP13B.tmp" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP13C.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F5.tmp" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F6.tmp" with contents
 [
 libeay32.lib ssleay32.lib zip.lib zlib.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/download.pdb" /machine:I386 /nodefaultlib:"libc" /out:"..\_Release\download.exe " /libpath:"..\include\Zip\Release" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" /libpath:"C:\Program Files\SDK\Fev2003\Lib" 
 .\Release\commonDownload.obj
@@ -442,8 +524,9 @@ libeay32.lib ssleay32.lib zip.lib zlib.lib /nologo /subsystem:windows /increment
 .\Release\download.res
 \ocs\agent\include\zip\Release\Zip.lib
 ]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP13C.tmp"
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F6.tmp"
 <h3>Output Window</h3>
+Compiling resources...
 Compiling...
 download.cpp
 Linking...
@@ -457,13 +540,14 @@ download.exe - 0 error(s), 1 warning(s)
 --------------------Configuration: download - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP13E.tmp" with contents
+Creating command line "rc.exe /l 0x40c /fo"Debug/download.res" /d "_DEBUG" /d "_AFXDLL" "C:\ocs\agent\download\download.rc"" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F8.tmp" with contents
 [
-/nologo /MDd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/download.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+/nologo /MDd /W4 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/download.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
 "C:\ocs\agent\download\download.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP13E.tmp" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP13F.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F8.tmp" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F9.tmp" with contents
 [
 libeay32.lib ssleay32.lib zlib.lib srclient.lib zip.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/download.pdb" /debug /machine:I386 /out:"..\_Debug\download.exe" /pdbtype:sept /libpath:"C:\Program Files\vieux_sdk\Lib" /libpath:"..\include\Zip\Debug" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" 
 .\Debug\commonDownload.obj
@@ -477,10 +561,16 @@ libeay32.lib ssleay32.lib zlib.lib srclient.lib zip.lib /nologo /subsystem:windo
 .\Debug\download.res
 \ocs\agent\include\zip\Debug\Zip.lib
 ]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP13F.tmp"
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP2F9.tmp"
 <h3>Output Window</h3>
+Compiling resources...
 Compiling...
 download.cpp
+c:\ocs\agent\include\_common\net_utils.h(60) : warning C4706: assignment within conditional expression
+c:\ocs\agent\include\_common\net_utils.h(64) : warning C4706: assignment within conditional expression
+c:\ocs\agent\include\_common\net_utils.h(158) : warning C4701: local variable 'pF' may be used without having been initialized
+C:\ocs\agent\download\download.cpp(450) : warning C4706: assignment within conditional expression
+C:\ocs\agent\download\download.cpp(603) : warning C4706: assignment within conditional expression
 Linking...
 Creating command line "bscmake.exe /nologo /o"Debug/download.bsc"  .\Debug\StdAfx.sbr .\Debug\commonDownload.sbr .\Debug\download.sbr .\Debug\downloadDlg.sbr .\Debug\FileOperations.sbr .\Debug\flate.sbr .\Debug\Markup.sbr .\Debug\utils.sbr"
 Creating browse info file...
@@ -489,7 +579,7 @@ Creating browse info file...
 
 
 <h3>Results</h3>
-download.exe - 0 error(s), 0 warning(s)
+download.exe - 0 error(s), 5 warning(s)
 <h3>
 --------------------Configuration: mo_dev - Win32 Release--------------------
 </h3>

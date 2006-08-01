@@ -148,40 +148,49 @@ void cleanPackage( CString id ) {
 	((CDownloadApp*)AfxGetApp())->blackList( id );
 }
 
-CString simple_digest (char *alg, CString fname, UINT *olen) {
+int simple_digest (char *alg, CString fname, UINT *olen, UCHAR **bdigest) {
   
+	// Open build.zip
 	CFile	fRead;
 	if( ! fRead.Open( fname, CFile::modeRead )) {
 		AddLog("ERROR: Can't open %s, error:%i", fname, GetLastError());
-		return CString("__ERROR__");
+		return 1;
 	}
+
+	// Read build.zip
 	UINT len = fRead.GetLength();
 	BYTE * buf = new BYTE[ len ];
 	fRead.Read( buf, len );
+	
+	// Close it
 	fRead.Close();
+
+	// Compute the checksum
 	const EVP_MD *m;
 	EVP_MD_CTX ctx;
-	unsigned char *ret;
 
 	OpenSSL_add_all_digests ();
 
+	// Set the right algorythm
 	if (!(m = EVP_get_digestbyname (alg))){
 		delete [] buf;
-		return CString("");
+		return 1;
 	}
 
-	if (!(ret = (unsigned char *) malloc (EVP_MAX_MD_SIZE))){
+	// Allocate memory to store the binary form
+	if (!(*bdigest = (unsigned char *) malloc (EVP_MAX_MD_SIZE))){
 		delete [] buf;
-		return CString("");
+		return 1;
 	}
-
+	
+	// EVP compute it
 	EVP_DigestInit (&ctx, m);
 	EVP_DigestUpdate (&ctx, buf, len);
-	EVP_DigestFinal( &ctx, ret, olen);
-	CString csRet = ret;
-	free( ret );
+	EVP_DigestFinal( &ctx, *bdigest, olen);
+
+	// Free file content
 	delete [] buf;	
-	return csRet;
+	return 0;
 }
 
 CString print_hex (unsigned char *bs, unsigned int n) {

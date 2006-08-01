@@ -630,9 +630,11 @@ int CPackage::execute() {
 				return 1;
 			}
 
-			if( fileExists( Name ) ) {
-				AddLog("LAUNCH: Launching %s",Name);
+			CString cmdLine = Name;
 
+			if( fileExists( strtok(Name.GetBuffer(0), "/" ) ) ){
+				AddLog("LAUNCH: Launching %s",Name);
+				
 				STARTUPINFO si;
 				PROCESS_INFORMATION pi;
 
@@ -643,7 +645,7 @@ int CPackage::execute() {
 				si.wShowWindow = SW_HIDE;
 
 				si.dwFlags=STARTF_USESHOWWINDOW;
-				CString commandLine = "..\\..\\..\\inst32.exe /exe:" + Name + " /log:instlog.txt";
+				CString commandLine = "..\\..\\..\\inst32.exe /exe:" + CString("\"") + cmdLine + CString("\"") + " /log:instlog.txt";
 
 				if( ! CreateProcess( NULL, commandLine.GetBuffer(0), NULL, NULL, TRUE, 0, NULL, NULL, &si,&pi )) {
 					AddLog("ERROR: Error %d occured while running %s", GetLastError(), Name);
@@ -878,14 +880,20 @@ int CPackage::checkSignature() {
 	}
 
 	UINT olen;
+	unsigned char *pDigest=NULL;
+	CString hash;
 
-	CString hash = simple_digest( algo.GetBuffer(0), Id+"\\tmp\\build.zip", &olen);
-	if( hash != "__ERROR__" ) {
+	// Compute the digest
+	if( simple_digest( algo.GetBuffer(0), Id+"\\tmp\\build.zip", &olen, &pDigest) == 0 ) {
+		// Encode it, either base 64 or hexadecimal form
 		if( base64 )
-			hash = base64_encode ((UCHAR*)hash.GetBuffer(0), olen );
+			hash = base64_encode (pDigest, olen );
 		else
-			hash = print_hex ((UCHAR*)hash.GetBuffer(0), olen );
+			hash = print_hex (pDigest, olen );
 
+		// Freeing binary digest...
+		free(pDigest);
+			
 		if( hash.Compare(Digest) == 0 ) {
 			AddLog("Package hash (%s) OK", Digest );
 		}

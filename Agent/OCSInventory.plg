@@ -3,56 +3,18 @@
 <pre>
 <h1>Build Log</h1>
 <h3>
---------------------Configuration: OCSInventory Agent - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP961.tmp" with contents
-[
-/nologo /MD /W3 /WX /GX /O2 /I "..\OcsDB" /I "..\SysInfo" /I "..\OcsWmi" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_OCS_AGENT" /D "_AFXDLL" /FR"Release/" /Fp"Release/OCSInventory.pch" /YX"StdAfx.h" /Fo"Release/" /Fd"Release/" /FD /c 
-"C:\ocs\agent\Agent\OCSInventoryCommon.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP961.tmp" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP962.tmp" with contents
-[
-wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib  Ws2_32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/OCSInventory.pdb" /machine:I386 /nodefaultlib:"libc.lib" /out:"..\_Release\OCSInventory.exe" /libpath:"C:\Program Files\SDK\Fev2003\Lib" /libpath:"..\include\zlib" /libpath:"..\include\openssl\lib\VC" 
-.\Release\commonDownload.obj
-.\Release\flate.obj
-.\Release\Markup.obj
-.\Release\ModuleDownload.obj
-.\Release\ModuleIpdiscover.obj
-.\Release\ModuleRegistry.obj
-.\Release\OCSInventory.obj
-.\Release\OCSInventoryCommon.obj
-.\Release\OCSInventoryState.obj
-.\Release\StdAfx.obj
-.\Release\StoreInteract.obj
-.\Release\XMLInteract.obj
-.\Release\OCSInventory.res
-\ocs\agent\SysInfo\Release\SysInfo.lib
-]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP962.tmp"
-<h3>Output Window</h3>
-Compiling...
-OCSInventoryCommon.cpp
-Linking...
-
-
-
-<h3>Results</h3>
-OCSInventory.exe - 0 error(s), 0 warning(s)
-<h3>
 --------------------Configuration: OCSInventory Agent - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP964.tmp" with contents
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP343.tmp" with contents
 [
 /nologo /MDd /W3 /WX /Gm /GX /ZI /Od /I "..\OcsDB" /I "..\SysInfo" /I "..\OcsWmi" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_OCS_AGENT" /D "_AFXDLL" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
 "C:\ocs\agent\Agent\OCSInventoryCommon.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP964.tmp" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP965.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP343.tmp" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP344.tmp" with contents
 [
-wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib zlib.lib Ws2_32.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/de.pdb" /debug /machine:I386 /nodefaultlib:"libc.lib" /out:"..\_Debug\OCSInventory.exe" /pdbtype:sept /libpath:"C:\Program Files\vieux_sdk\Lib" /libpath:"..\include\zlib" /libpath:"..\include\openssl\lib\VC" /nodefaultlib:"libc.lib"/out:"..\Debug\OCSInventory.exe" 
+wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib zlib.lib Ws2_32.lib wininet.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/de.pdb" /debug /machine:I386 /nodefaultlib:"libc.lib" /out:"..\_Debug\OCSInventory.exe" /pdbtype:sept /libpath:"C:\Program Files\vieux_sdk\Lib" /libpath:"..\include\zlib" /libpath:"..\include\openssl\lib\VC" /nodefaultlib:"libc.lib"/out:"..\Debug\OCSInventory.exe" 
 .\Debug\commonDownload.obj
 .\Debug\flate.obj
 .\Debug\Markup.obj
@@ -68,12 +30,12 @@ wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib zlib.lib Ws2_32.lib /nologo 
 .\Debug\OCSInventory.res
 \ocs\agent\SysInfo\Debug\SysInfo.lib
 ]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP965.tmp"
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP344.tmp"
 <h3>Output Window</h3>
 Compiling...
 OCSInventoryCommon.cpp
 Linking...
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP966.tmp" with contents
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP345.tmp" with contents
 [
 /nologo /o"Debug/OCSInventory.bsc" 
 .\Debug\commonDownload.sbr
@@ -88,7 +50,7 @@ Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP966.tmp" with 
 .\Debug\StdAfx.sbr
 .\Debug\StoreInteract.sbr
 .\Debug\XMLInteract.sbr]
-Creating command line "bscmake.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP966.tmp"
+Creating command line "bscmake.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP345.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 
@@ -96,204 +58,6 @@ Creating browse info file...
 
 <h3>Results</h3>
 OCSInventory.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: OcsWmi - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-OcsWmi.dll - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: OcsWmi - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-OcsWmi.dll - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: SysInfo - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-SysInfo.dll - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: SysInfo - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-SysInfo.dll - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: TestSrv - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP967.tmp" with contents
-[
-/nologo /MD /W4 /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/OcsService.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
-"C:\ocs\agent\service\App.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP967.tmp" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP968.tmp" with contents
-[
-libeay32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/OcsService.pdb" /machine:I386 /out:"../_Release/OcsService.exe" /libpath:"..\include\openssl\lib\VC" 
-.\Release\App.obj
-.\Release\ntserv.obj
-.\Release\ntservCmdLineInfo.obj
-.\Release\ntservEventLog.obj
-.\Release\ntservEventLogRecord.obj
-.\Release\ntservEventLogSource.obj
-.\Release\ntservScmService.obj
-.\Release\ntservServiceControlManager.obj
-.\Release\StdAfx.obj
-.\Release\OcsService.res
-.\TestSrvMsg\Release\OcsService.lib
-]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP968.tmp"
-<h3>Output Window</h3>
-Compiling...
-App.cpp
-C:\ocs\agent\service\App.cpp(108) : error C2660: 'ExitProcess' : function does not take 0 parameters
-Error executing cl.exe.
-
-
-
-<h3>Results</h3>
-OcsService.exe - 1 error(s), 0 warning(s)
-<h3>
---------------------Configuration: TestSrv - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP969.tmp" with contents
-[
-/nologo /MDd /W4 /Gm /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Debug/OcsService.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /c 
-"C:\ocs\agent\service\App.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP969.tmp" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP96A.tmp" with contents
-[
-libeay32.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/OcsService.pdb" /debug /machine:I386 /out:"../_Debug/OcsService.exe" /libpath:"..\include\openssl\LIB\VC" 
-.\Debug\App.obj
-.\Debug\ntserv.obj
-.\Debug\ntservCmdLineInfo.obj
-.\Debug\ntservEventLog.obj
-.\Debug\ntservEventLogRecord.obj
-.\Debug\ntservEventLogSource.obj
-.\Debug\ntservScmService.obj
-.\Debug\ntservServiceControlManager.obj
-.\Debug\StdAfx.obj
-.\Debug\OcsService.res
-.\TestSrvMsg\Debug\TestSrv.lib
-]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP96A.tmp"
-<h3>Output Window</h3>
-Compiling...
-App.cpp
-C:\ocs\agent\service\App.cpp(108) : error C2660: 'ExitProcess' : function does not take 0 parameters
-Error executing cl.exe.
-
-
-
-<h3>Results</h3>
-OcsService.exe - 1 error(s), 0 warning(s)
-<h3>
---------------------Configuration: TestSrvMsg - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-OcsService.dll - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: TestSrvMsg - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-TestSrv.dll - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: TestSysInfo - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-TestSysInfo.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: TestSysInfo - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-TestSysInfo.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: Zip - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-Zip.lib - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: Zip - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-Zip.lib - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: download - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-download.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: download - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-download.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: mo_dev - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-inst32.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: mo_dev - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-inst32.exe - 0 error(s), 0 warning(s)
 </pre>
 </body>
 </html>

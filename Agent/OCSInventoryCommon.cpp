@@ -370,6 +370,14 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort));
 			AddLog( _T( "HTTP SERVER: Connecting to server %s port %i..."), csServer, iPort);
 			try {				
 				pConnect = sess.GetHttpConnection(csServer, iPort);
+				
+				void *lpBuffer = malloc(255);
+				DWORD size=255;
+				BOOL OK = InternetQueryOption(sess, INTERNET_OPTION_CONNECT_TIMEOUT, lpBuffer, &size);
+				if(!OK){
+					TRACE("ERREUR%i\n", GetLastError());
+				}
+				TRACE("timeout:%i\n", (int*)(lpBuffer) );
 				AddLog( _T( "OK.\n"));
 				myMarkup.SetDoc(XML_HEADERS);
 				myMarkup.AddElem("REQUEST");

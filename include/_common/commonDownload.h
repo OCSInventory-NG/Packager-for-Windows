@@ -24,7 +24,7 @@
 #define ERR_ABORTED				"ERR_ABORTED"
 #define ERR_EXECUTE_PACK		"ERR_EXECUTE_PACK"
 #define	VERIFY_DEPTH			10
-#define	SSL_PORT				443
+#define	SSL_PORT				"443"
 
 //#include "stdafx.h"
 #include <openssl/bio.h>
