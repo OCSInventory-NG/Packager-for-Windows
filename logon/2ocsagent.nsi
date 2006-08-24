@@ -1,5 +1,5 @@
 ################################################################################
-##OCSInventory Version NG Beta
+##OCSInventory Version 1.0 RC3
 ##Copyleft Emmanuel GUILLORY 2005
 ##Web : http://ocsinventory.sourceforge.net
 ##
@@ -7,11 +7,20 @@
 ##code is always made freely available.
 ##Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 ################################################################################
+
+;                             ###############
+;                             #  CHANGELOG  #
+;                             ###############
+;4026
+;added /lnk  ---------------------------------------------> fait
+;4004-4014
+; added /local
+;Normal roadmapped improvments
 !include "MUI.nsh"
 !insertmacro MUI_LANGUAGE "english"
-!define Compile_version "4.0.1.0"
+!define Compile_version "4.0.2.6"
 BRANDINGTEXT "OCS Inventory NG ${Compile_version}"
-Icon "OcsAgent.ico"
+Icon "Aocs2.ico"
 ShowInstDetails hide
 Name "OcsAgent"
 OutFile "OcsAgent.exe"
@@ -38,12 +47,16 @@ not_running:
    InitPluginsDir
    File /oname=$PLUGINSDIR\OcsWmi.dll "OcsWmi.dll"
    File /oname=$PLUGINSDIR\OcsLogon.exe "OcsLogon.exe"
-   File /oname=$PLUGINSDIR\update.exe "update.exe"
+   File /oname=$PLUGINSDIR\download.exe "download.exe"
    File /oname=$PLUGINSDIR\BIOSINFO.EXE "BIOSINFO.EXE"
    File /oname=$PLUGINSDIR\OCSInventory.exe "OCSInventory.exe"
    File /oname=$PLUGINSDIR\SysInfo.dll "SysInfo.dll"
    File /oname=$PLUGINSDIR\OcsLogon.exe "OcsLogon.exe"
    File /oname=$PLUGINSDIR\MFC42.DLL "MFC42.DLL"
+   File /oname=$PLUGINSDIR\zlib.dll "zlib.dll"
+   File /oname=$PLUGINSDIR\ssleay32.dll "ssleay32.dll"
+   File /oname=$PLUGINSDIR\PSAPI.DLL "PSAPI.DLL"
+   File /oname=$PLUGINSDIR\libeay32.dll "libeay32.dll"
    call test-folder
    call install
    Push "$CMDLINE"
@@ -58,65 +71,99 @@ local_ok:
   Push "/"
   Call StrStr
   Pop $1
-  exec "$R7\ocs-ng\OcsLogon.exe $1"
+  exec "$R7\OcsLogon.exe $1"
 local_ko:
    
    
 FunctionEnd
   
 Function install
- copyfiles "$PLUGINSDIR\BIOSINFO.EXE"     "$R7\ocs-ng\BIOSINFO.EXE"
- copyfiles "$PLUGINSDIR\update.exe"       "$R7\ocs-ng\update.exe"
- copyfiles "$PLUGINSDIR\OCSInventory.exe" "$R7\ocs-ng\OCSInventory.exe"
- copyfiles "$PLUGINSDIR\OcsWmi.dll"       "$R7\ocs-ng\OcsWmi.dll"
- copyfiles "$PLUGINSDIR\SysInfo.dll"      "$R7\ocs-ng\SysInfo.dll"
- copyfiles "$PLUGINSDIR\OcsLogon.exe"     "$R7\ocs-ng\OcsLogon.exe"
- copyfiles "$PLUGINSDIR\MFC42.DLL"        "$R7\ocs-ng\MFC42.DLL"
+ copyfiles "$PLUGINSDIR\*.exe"     "$R7\"
+ copyfiles "$PLUGINSDIR\*.dll"       "$R7\"
+ ;copyfiles "$PLUGINSDIR\OCSInventory.exe" "$R7\OCSInventory.exe"
+ ;copyfiles "$PLUGINSDIR\OcsWmi.dll"       "$R7\OcsWmi.dll"
+ ;copyfiles "$PLUGINSDIR\SysInfo.dll"      "$R7\SysInfo.dll"
+ ;copyfiles "$PLUGINSDIR\OcsLogon.exe"     "$R7\OcsLogon.exe"
+ ;copyfiles "$PLUGINSDIR\MFC42.DLL"        "$R7\MFC42.DLL"
  ; preserve Old files
- ;IfFileExists "$R7\ocs-ng\OCSInventory.conf" no_change_deviceID
- ;copyfiles "$R7\ocs-ng\OCSInventory.conf" "$exedir\OCSInventory.conf"
+ ;IfFileExists "$R7\OCSInventory.conf" no_change_deviceID
+ ;copyfiles "$R7\OCSInventory.conf" "$exedir\OCSInventory.conf"
  ;no_change_deviceID:
 FunctionEnd
+
+Function lnk
+  SetShellVarContext all
+  CreateShortCut "$SMSTARTUP\OCS.lnk" "$R7\OcsLogon.exe" \
+  "" '' 0 SW_SHOWNORMAL ALT|CONTROL|i "Lancement de OCS"
+Functionend
+
 
 Function test-folder
  ; *****************************
  ;  giving the good directory  *
  ; *****************************
-  strcpy $R7 $WINDIR 2
-  createdirectory "$R7\ocs-ng"
-  FileOpen $1 "$R7\ocs-ng\file.dat" w
+ strcpy $R7 $WINDIR 2
+ strcpy $R7 "$R7\ocs-ng"
+ ; testing /folder: option
+  Push "$CMDLINE"
+  Push " /folder:"
+  Call StrStr
+  Pop $R9
+  Strlen $0 $R9
+  intcmp $0 9 folder_use 0 folder_use
+  goto folder_end
+folder_use:
+
+ strcpy $R7 $R9 "" 9
+; repérer la séquence {blanc slash}
+  Push "$R7"
+  Push " /"
+  Call StrStr
+  Pop $R9
+  Strlen $2 $R7
+  Strlen $1 $R9
+  intop $3 $2 - $1
+  strcpy $R7 $R7 $3 0
+; messagebox mb_ok "folder: $R7"
+  createdirectory "$R7"
+  goto suite
+folder_end:
+  ; end testing /folder option
+  createdirectory "$R7"
+  FileOpen $1 "$R7\file.dat" w
   FileWrite $1 "OCS_NG"
   Fileclose $1
-  FileOpen $0 "$R7\ocs-ng\file.dat" r
+  FileOpen $0 "$R7\file.dat" r
   FileRead $0 $1
   ; Tested the entered vallue
   FileClose $0
   strcmp $1 "OCS_NG"  PASPB    PB
 PASPB:  ; Writing OK so $R7 = c:\ocs-ng
-  SetFileAttributes "$R7\ocs-ng\file.dat" NORMAL
-  delete "$R7\ocs-ng\file.dat"
+  SetFileAttributes "$R7\file.dat" NORMAL
+  delete "$R7\file.dat"
   goto suite
 PB: ; Can not Write so giving $R7 the user temp value
   strcpy $R7 "$TEMP"
   ;messagebox mb_ok $R7
-  createdirectory "$R7\ocs-ng"
-  FileOpen $1 "$R7\ocs-ng\file.dat" w
+  createdirectory "$R7"
+  FileOpen $1 "$R7\file.dat" w
   FileWrite $1 "OCS_NG"
   Fileclose $1
-  FileOpen $0 "$R7\ocs-ng\file.dat" r
+  FileOpen $0 "$R7\file.dat" r
   FileRead $0 $1
   ; Tested the entered vallue
   ; messagebox mb_ok 3--$1
-  FileClose $0
+  FileClose  $0
   strcmp $1 "OCS_NG"  PASPBt PBt
 PASPBt:  ; Can Write so temp user
   ;messagebox mb_ok "$1  ok sur temp"
-  delete "$R7\ocs-ng\file.dat"
+  delete "$R7\file.dat"
   goto suite
-PBt: ; Cannot Write anywhere so exit
+PBt: ; Can not Write so exit
   abort
 suite:
 FunctionEnd
+
 Function StrStr
   Exch $R1 ; st=haystack,old$R1, $R1=needle
   Exch    ; st=old$R1,haystack
@@ -149,4 +196,14 @@ FunctionEnd
 Section
    hidewindow
    setautoclose true
+   Push "$CMDLINE"
+   Push " /lnk"
+   Call StrStr
+   Pop $R9
+   Strlen $0 $R9
+   intcmp $0 4 lnk_ok 0 lnk_ok
+   goto lnk_ko
+lnk_ok:
+ call lnk
+lnk_ko:
 SectionEnd

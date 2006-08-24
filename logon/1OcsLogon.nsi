@@ -1,19 +1,32 @@
 ################################################################################
-##OCSInventory Version NG RC1
-##Copyleft Emmanuel GUILLORY 2005
+##OCSInventory Version NG RC3
+##Copyleft Emmanuel GUILLORY 2006
 ##Web : http://ocsinventory.sourceforge.net
 ##
 ##This code is open source and may be copied and modified as long as the source
 ##code is always made freely available.
 ##Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 ################################################################################
-
+;
+;                             ###############
+;                             #  CHANGELOG  #
+;                             ###############
+;4027 /folder issue patched
+;4026
+;added /folder: ---------------------------------------------> fait
+;/RegRun option eventually ---------------------------------->
+;added /
+;replaced "NSISdl::download" by "NSISdl::download_quiet" ----> fait
+;4004-4014
+;Normal roadmapped improvments
+;
+;###############################################################################
 !include "MUI.nsh"
 ;!include "WinMessages.nsh"
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng"
 !define TimeOut "600000"
-!define Compile_version "4.0.1.0"
+!define Compile_version "4.0.2.7"
  var version
  var OcsLogon_v ; to complete the debug option
  var http_port_number ;it means what it says
@@ -22,6 +35,7 @@
 # /pnum:[POTR NUMBER] = http port number (only for the deploy)
 # /local = Local .ocs export
 # /deploy:[VERSION NUMBER] force to deploy at least this version
+# /tag:[Value or !systemvarable] force tag taking defined value
 
 BRANDINGTEXT "OCS Inventory NG ${Compile_version}"
 Icon "ocs.ico"
@@ -49,7 +63,7 @@ Function Write_Log
  ClearErrors
  ;messagebox mb_ok $OcsLogon_v
  strcmp $OcsLogon_v "" done 0
- FileOpen $0 "$R7\ocs-ng\OcsLogon.log" a
+ FileOpen $0 "$R7\OcsLogon.log" a
  FileSeek $0 END END
  IfErrors done
  FileWrite $0 "$OcsLogon_v$\r$\n"
@@ -74,8 +88,8 @@ not_running:
 ;   writeregstr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "OCS Inventory NG" "$cmdline"
 ; lbl_winnt:
   call test-folder
-  SetOutPath "$R7\ocs-ng"
-  delete "$R7\ocs-ng\OcsLogon.log"
+  SetOutPath "$R7"
+  delete "$R7\OcsLogon.log"
   StrCpy $R8 ${OCSserver}
   ; test exe Name
   ; if exeName <> OcsLogon.exe then OCSserver variable = exeName
@@ -88,6 +102,10 @@ not_running:
   strcmp "OcsLogon" $R0 no_server_change 0
   StrCpy $R8 $R0
 no_server_change:
+  strcmp "ocslocal" $R0  0 no_add_local_option
+  StrCpy $cmdline '$cmdline /local'
+no_add_local_option:
+
  ;****************************************
  ; Force deploying version number option ;*
  ;****************************************
@@ -200,7 +218,7 @@ port_end:
   goto verbose_server_end
 verbose_server:
   call Write_Log
-  strcpy $OcsLogon_v "Install folder : $R7\Ocs-ng"
+  strcpy $OcsLogon_v "Install folder : $R7"
   call Write_Log
   strcpy $OcsLogon_v "OCSserver is set to:  $R8"
   call Write_Log
@@ -234,7 +252,7 @@ proxy_end:
 ;*************************
 ;  BUG WITH /LOCAL not the right place for the 2 folowing lines
 ;  call test-install
-;  SetOutPath "$R7\ocs-ng"
+;  SetOutPath "$R7"
 ; ***********************
   Push "$CMDLINE"
   Push "/"
@@ -248,10 +266,10 @@ proxy_end:
   ;messagebox mb_ok $0
   intcmp $0 6 0 no_verbose_start 0
   call Write_Log
-  strcpy $OcsLogon_v "Launching : $R7\ocs-ng\OCSInventory.exe $1 /server:$R8"
+  strcpy $OcsLogon_v "Launching : $R7\OCSInventory.exe $1 /server:$R8"
   call Write_Log
 no_verbose_start:
-  Exec "$R7\ocs-ng\OCSInventory.exe $1 /server:$R8"
+  Exec "$R7\OCSInventory.exe $1 /server:$R8"
 local_ok:
   Push "$CMDLINE"
   Push " /debug"
@@ -299,7 +317,7 @@ FunctionEnd
 Function donwnload
   pop $1
   pop $2
-  NSISdl::download /TIMEOUT=600000 "$2" "$1.new"
+  NSISdl::download_quiet /TIMEOUT=600000 "$2" "$1.new"
   pop $0
   strcmp $0 "success" 0 snorm
   delete "$1"
@@ -311,7 +329,7 @@ FunctionEnd
 Function donwnloadnp
   pop $1
   pop $2
-  NSISdl::download /TIMEOUT=600000 /NOIEPROXY "$2" "$1.new"
+  NSISdl::download_quiet /TIMEOUT=600000 /NOIEPROXY "$2" "$1.new"
   pop $0
   strcmp $0 "success" 0 snormnp
   delete "$1"
@@ -332,16 +350,16 @@ Function install
   strcpy $OcsLogon_v "Ocs Inventory NG ($version) was not previously installed.$\r$\nStart deploying OCS"
   call Write_Log
 no_verbose_start_install:
-  SetOutPath "$R7\ocs-ng"
-  ;SetFileAttributes "$R7\ocs-ng\ver" NORMAL
-  SetFileAttributes "$R7\ocs-ng\BIOSINFO.EXE" NORMAL
-  SetFileAttributes "$R7\ocs-ng\update.exe" NORMAL
-  SetFileAttributes "$R7\ocs-ng\OCSInventory.exe" NORMAL
-  SetFileAttributes "$R7\ocs-ng\OcsWmi.dll" NORMAL
-  SetFileAttributes "$R7\ocs-ng\SysInfo.dll" NORMAL
-  SetFileAttributes "$R7\ocs-ng\OCSInventory.exe" NORMAL
-  SetFileAttributes "$R7\ocs-ng\OcsLogon.exe" NORMAL
-  SetFileAttributes "$R7\ocs-ng\MFC42.DLL" NORMAL
+  SetOutPath "$R7"
+  ;SetFileAttributes "$R7\ver" NORMAL
+  SetFileAttributes "$R7\BIOSINFO.EXE" NORMAL
+ ; SetFileAttributes "$R7\update.exe" NORMAL
+  SetFileAttributes "$R7\OCSInventory.exe" NORMAL
+  SetFileAttributes "$R7\OcsWmi.dll" NORMAL
+  SetFileAttributes "$R7\SysInfo.dll" NORMAL
+  SetFileAttributes "$R7\OCSInventory.exe" NORMAL
+  SetFileAttributes "$R7\OcsLogon.exe" NORMAL
+  SetFileAttributes "$R7\MFC42.DLL" NORMAL
   ;strcpy $OcsLogon_v "$OcsLogon_v$\r$\nOCS server         : $R8$http_port_number"
 
 
@@ -352,18 +370,18 @@ Push "$CMDLINE"
   Strlen $0 $R9
   intcmp $0 3 0 download_withProxy 0
   push "http://$R8$http_port_number/ocsinventory/deploy/ocsagent.exe"
-  push "$R7\ocs-ng\ocsagent.exe"
+  push "$R7\ocsagent.exe"
   call donwnloadnp
   push "http://$R8$http_port_number/ocsinventory/deploy/label"
-  push "$R7\ocs-ng\label"
+  push "$R7\label"
   call donwnloadnp
   goto download_end
 download_withProxy:
   push "http://$R8$http_port_number/ocsinventory/deploy/ocsagent.exe"
-  push "$R7\ocs-ng\ocsagent.exe"
+  push "$R7\ocsagent.exe"
   call donwnload
   push "http://$R8$http_port_number/ocsinventory/deploy/label"
-  push "$R7\ocs-ng\label"
+  push "$R7\label"
   call donwnload
   
 download_end:
@@ -391,7 +409,7 @@ no_verbose_install:
   SetShellVarContext current
   ; SetShellVarContext all
   ; createdirectory "$SMPROGRAMS\ocs-ng"
-  ; CreateShortCut "$R7\OCS-NG\OCS-NG local.lnk" "$R7\ocs-ng\OcsLogon.exe" \
+  ; CreateShortCut "$R7 local.lnk" "$R7\OcsLogon.exe" \
   "/local" '' 0 SW_SHOWNORMAL ALT|CONTROL|i "Lancement de OCS-NG en local."
 FunctionEnd
 
@@ -399,28 +417,54 @@ Function test-folder
  ; *****************************
  ;  giving the good directory  *
  ; *****************************
-  strcpy $R7 $WINDIR 2
-  createdirectory "$R7\ocs-ng"
-  FileOpen $1 "$R7\ocs-ng\file.dat" w
+ strcpy $R7 $WINDIR 2
+ strcpy $R7 "$R7\ocs-ng"
+ ; testing /folder: option
+  Push "$CMDLINE"
+  Push " /folder:"
+  Call StrStr
+  Pop $R9
+  Strlen $0 $R9
+  intcmp $0 9 folder_use 0 folder_use
+  goto folder_end
+folder_use:
+
+ strcpy $R7 $R9 "" 9
+; repérer la séquence {blanc slash}
+  Push "$R7"
+  Push " /"
+  Call StrStr
+  Pop $R9
+  Strlen $2 $R7
+  Strlen $1 $R9
+  intop $3 $2 - $1
+  strcpy $R7 $R7 $3 0
+  ;messagebox mb_ok "install dans le dossier :$R7"
+  createdirectory "$R7"
+  goto suite
+folder_end:
+  ; end testing /folder option
+  createdirectory "$R7"
+  FileOpen $1 "$R7\file.dat" w
   FileWrite $1 "OCS_NG"
   Fileclose $1
-  FileOpen $0 "$R7\ocs-ng\file.dat" r
+  FileOpen $0 "$R7\file.dat" r
   FileRead $0 $1
   ; Tested the entered vallue
   FileClose $0
   strcmp $1 "OCS_NG"  PASPB    PB
 PASPB:  ; Writing OK so $R7 = c:\ocs-ng
-  SetFileAttributes "$R7\ocs-ng\file.dat" NORMAL
-  delete "$R7\ocs-ng\file.dat"
+  SetFileAttributes "$R7\file.dat" NORMAL
+  delete "$R7\file.dat"
   goto suite
 PB: ; Can not Write so giving $R7 the user temp value
   strcpy $R7 "$TEMP"
   ;messagebox mb_ok $R7
-  createdirectory "$R7\ocs-ng"
-  FileOpen $1 "$R7\ocs-ng\file.dat" w
+  createdirectory "$R7"
+  FileOpen $1 "$R7\file.dat" w
   FileWrite $1 "OCS_NG"
   Fileclose $1
-  FileOpen $0 "$R7\ocs-ng\file.dat" r
+  FileOpen $0 "$R7\file.dat" r
   FileRead $0 $1
   ; Tested the entered vallue
   ; messagebox mb_ok 3--$1
@@ -428,53 +472,54 @@ PB: ; Can not Write so giving $R7 the user temp value
   strcmp $1 "OCS_NG"  PASPBt PBt
 PASPBt:  ; Can Write so temp user
   ;messagebox mb_ok "$1  ok sur temp"
-  delete "$R7\ocs-ng\file.dat"
+  delete "$R7\file.dat"
   goto suite
 PBt: ; Can not Write so exit and try to alert server
  ; messagebox mb_ok "$R8"
-  NSISdl::download "http://$R8$http_port_number/ocsinventory/deploy/nodeploy" "$R7\ocs-ng\nodeploy"
+  NSISdl::download_quiet /TIMEOUT=600000 /NOIEPROXY "http://$R8$http_port_number/ocsinventory/deploy/nodeploy" "$R7\nodeploy"
   abort
 suite:
+
 FunctionEnd
 
 Function test-install
  ; set attributes.... Because sometimes, somebody...
-;SetFileAttributes "$R7\ocs-ng\ver" NORMAL
-  SetFileAttributes "$R7\ocs-ng\BIOSINFO.EXE" NORMAL
-  SetFileAttributes "$R7\ocs-ng\update.exe" NORMAL
-  SetFileAttributes "$R7\ocs-ng\OCSInventory.exe" NORMAL
-  SetFileAttributes "$R7\ocs-ng\OcsWmi.dll" NORMAL
-  SetFileAttributes "$R7\ocs-ng\SysInfo.dll" NORMAL
-  SetFileAttributes "$R7\ocs-ng\OCSInventory.exe" NORMAL
-  SetFileAttributes "$R7\ocs-ng\OcsLogon.exe" NORMAL
-  SetFileAttributes "$R7\ocs-ng\MFC42.DLL" NORMAL
+;SetFileAttributes "$R7\ver" NORMAL
+  SetFileAttributes "$R7\BIOSINFO.EXE" NORMAL
+;  SetFileAttributes "$R7\update.exe" NORMAL
+  SetFileAttributes "$R7\OCSInventory.exe" NORMAL
+  SetFileAttributes "$R7\OcsWmi.dll" NORMAL
+  SetFileAttributes "$R7\SysInfo.dll" NORMAL
+  SetFileAttributes "$R7\OCSInventory.exe" NORMAL
+  SetFileAttributes "$R7\OcsLogon.exe" NORMAL
+  SetFileAttributes "$R7\MFC42.DLL" NORMAL
   ; Tested all files.
   ; if one is missing then dowload all
-  ;strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTested file: $R7\ocs-ng\ver"
-  ;IfFileExists "$R7\ocs-ng\ver" 0 set_install
+  ;strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTested file: $R7\ver"
+  ;IfFileExists "$R7\ver" 0 set_install
 ;
 ;Crypto::HashData "MD5" "todo"
 ;pop $0
 
 ; messagebox MB_ok $0
-  strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\ocs-ng\BIOSINFO.EXE"
-  IfFileExists "$R7\ocs-ng\BIOSINFO.EXE" 0 set_install
-  strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\ocs-ng\update.exe"
-  IfFileExists "$R7\ocs-ng\update.exe" 0 set_install
-  strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\ocs-ng\OCSInventory.exe"
-  IfFileExists "$R7\ocs-ng\OCSInventory.exe" 0 set_install
-  strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\ocs-ng\OcsWmi.dll"
-  IfFileExists "$R7\ocs-ng\OcsWmi.dll" 0 set_install
-  strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\ocs-ng\SysInfo.dll"
-  IfFileExists "$R7\ocs-ng\SysInfo.dll" 0 set_install
-  ;strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\ocs-ng\OCSInventory.conf"
-  ;IfFileExists "$R7\ocs-ng\OCSInventory.conf" 0 set_install
-  ;strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\ocs-ng\OcsLogon.exe"
-  ;IfFileExists "$R7\ocs-ng\OcsLogon.exe" 0 set_install
-  strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\ocs-ng\MFC42.DLL"
-  IfFileExists "$R7\ocs-ng\MFC42.DLL" 0 set_install
+  strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\BIOSINFO.EXE"
+  IfFileExists "$R7\BIOSINFO.EXE" 0 set_install
+ ; strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\update.exe"
+ ; IfFileExists "$R7\update.exe" 0 set_install
+  strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\OCSInventory.exe"
+  IfFileExists "$R7\OCSInventory.exe" 0 set_install
+  strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\OcsWmi.dll"
+  IfFileExists "$R7\OcsWmi.dll" 0 set_install
+  strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\SysInfo.dll"
+  IfFileExists "$R7\SysInfo.dll" 0 set_install
+  ;strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\OCSInventory.conf"
+  ;IfFileExists "$R7\OCSInventory.conf" 0 set_install
+  ;strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\OcsLogon.exe"
+  ;IfFileExists "$R7\OcsLogon.exe" 0 set_install
+  strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting: $R7\MFC42.DLL"
+  IfFileExists "$R7\MFC42.DLL" 0 set_install
   ; veriying potenial corrupted dll
-  GetDllVersion "$R7\ocs-ng\MFC42.DLL" $R0 $R1
+  GetDllVersion "$R7\MFC42.DLL" $R0 $R1
   IntOp $R2 $R0 / 0x00010000
   IntOp $R3 $R0 & 0x0000FFFF
   IntOp $R4 $R1 / 0x00010000
@@ -482,7 +527,7 @@ Function test-install
   StrCpy $0 "$R2$R3$R4$R5"
   strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting MFC42.DLL version ($0)"
   strcmp "$R0$R1" "" set_install 0
-  GetDllVersion "$R7\ocs-ng\OCSInventory.exe" $R0 $R1
+  GetDllVersion "$R7\OCSInventory.exe" $R0 $R1
   IntOp $R2 $R0 / 0x00010000
   IntOp $R3 $R0 & 0x0000FFFF
   IntOp $R4 $R1 / 0x00010000
@@ -492,40 +537,51 @@ Function test-install
   intcmp  $0 $version no_install  set_install  no_install
  ; strcmp "$R0$R1" "" set_install 0
  ; strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTested SysInfo.dll"
- ; GetDllVersion "$R7\ocs-ng\SysInfo.dll" $R0 $R1
+ ; GetDllVersion "$R7\SysInfo.dll" $R0 $R1
  ; strcmp "$R0$R1" "" set_install no_install
 set_install:
   call install
-  GetDllVersion "$R7\ocs-ng\ocsagent.exe" $R0 $R1
+  GetDllVersion "$R7\ocsagent.exe" $R0 $R1
   IntOp $R2 $R0 / 0x00010000
   IntOp $R3 $R0 & 0x0000FFFF
   IntOp $R4 $R1 / 0x00010000
   IntOp $R5 $R1 & 0x0000FFFF
   StrCpy $0 "$R2$R3$R4$R5"
   strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nTesting ocsagent.exe version:$0"
-  ; Crypto::HashFile "MD5" "$R7\ocs-ng\ocsagent.exe"
+  ; Crypto::HashFile "MD5" "$R7\ocsagent.exe"
   ; pop $0
   ; strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nocsagent.exe HSAH MD5 is: $0"
   ; strcpy $OcsLogon_v  "$OcsLogon_v$\r$\nExpected HASH MD5 is     : ${DeployOCS_hash} for the (${Compile_version}) version"
-  Execwait "$R7\ocs-ng\ocsagent.exe"
+
+
+
+
+  Push "$CMDLINE"
+  Push "/"
+  Call StrStr
+  Pop $1
   Push "$CMDLINE"
   Push " /debug"
   Call StrStr
   Pop $R9
   Strlen $0 $R9
-  intcmp $0 6 verbose_startinstall 0 verbose_startinstall
-  goto no_verbose_startinstall
-verbose_startinstall:
-  call write_log
-no_verbose_startinstall:
+  ;messagebox mb_ok $0
+  intcmp $0 6 0 no_verbose_deploy 0
+  call Write_Log
+  strcpy $OcsLogon_v "Launching : $R7\ocsagent.exe $1"
+  Execwait "$R7\ocsagent.exe $1"
+  goto no_install
+  call Write_Log
+no_verbose_deploy:
+    Execwait "$R7\ocsagent.exe $1"
 no_install:
   ClearErrors
   ; verifying severname in OCSInventory.conf
   ; must be 'ocsinventory-ng' if OcsLogon is not renamed
   ; or get the new server name
- ; Readinistr $0 "$R7\ocs-ng\OCSInventory.conf" "OCS Inventory Agent" "Server"
+ ; Readinistr $0 "$R7\OCSInventory.conf" "OCS Inventory Agent" "Server"
   ;strcmp $0 $R8 no_change_conf_file 0
-  ;writeinistr "$R7\ocs-ng\OCSInventory.conf" "OCS Inventory Agent" "Server" $R8
+  ;writeinistr "$R7\OCSInventory.conf" "OCS Inventory Agent" "Server" $R8
 ;no_change_conf_file:
 FunctionEnd
 
@@ -571,7 +627,6 @@ ValidatecustomOCSFloc_err:
    abort
 ValidatecustomOCSFloc_ok:
    delete "$R0\file.dat"
-   Readinistr $4 "$R7\ocs-ng\OCSInventory.conf" "OCS Inventory Agent" "DeviceID"
    ;*************************
    ;* For local option only *
    ;*************************
@@ -581,18 +636,14 @@ ValidatecustomOCSFloc_ok:
    Strlen $0 $R0
    intcmp $0 3 0 0 +2
    StrCpy $R0 $R0 2
-   SetOutPath "$R7\ocs-ng"
-   delete "$R7\ocs-ng\*.ocs"
+   SetOutPath "$R7"
+   delete "$R7\*.ocs"
   Push "$CMDLINE"
   Push "/"
   Call StrStr
   Pop $1
-  Execwait "$R7\ocs-ng\OCSInventory.exe $1"
+  Execwait "$R7\OCSInventory.exe $1"
    ClearErrors
-   ; Readinistr $4 "$R7\ocs-ng\OCSInventory.conf" "OCS Inventory Agent" "DeviceID"
-   ; ${GetFileExt}  "$R7\ocs-ng\*.ocs" $filename
-   ; messagebox mb_ok $filename
-
    CopyFiles "*.ocs" "$R0\"
    IfErrors bad_copy good_copy
    ;IfFileExists "$R0\$4.ocs" good_copy bad_copy
