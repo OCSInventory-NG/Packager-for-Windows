@@ -17,6 +17,7 @@
 #define		OCS_INSTALL				"MISCELLANEOUS"
 #define		RAND_FILE				"rand"
 #define		PROLOG_FREQ_UNIT		3600 //sec
+#define 	WRITE_INI_LATENCY		10000 //msec
 
 class CMyService : public CNTService
 {
