@@ -336,6 +336,8 @@ LPCTSTR CEdid::GetManufacturerName(LPCTSTR lpstrID)
 		return _T(  "EIZO");
 	else if (_tcsicmp( lpstrID, _T( "FCM")) == 0)
 		return _T(  "Funai Electric Company of Taiwan");
+	else if (_tcsicmp( lpstrID, _T( "FUS")) == 0)
+		return _T(  "Fujitsu Siemens");
 	else if (_tcsicmp( lpstrID, _T( "GSM")) == 0)
 		return _T(  "LG Electronics Inc. (GoldStar Technology, Inc.)");
 	else if (_tcsicmp( lpstrID, _T( "GWY")) == 0)
