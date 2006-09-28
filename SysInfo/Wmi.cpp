@@ -183,8 +183,10 @@ BOOL CWmi::GetBiosInfo(CBios *pMyBios)
 
 			}
 			m_dllWMI.CloseEnumClassObject();
-			AddLog( _T( "OK (%s %s)\n"), csManufacturer, csModel);
+			AddLog( _T( "OK (Manufacturer %s Model %s)\n"), csManufacturer, csModel);
 		}
+		else
+			AddLog( _T( "Failed because no Win32_ComputerSystem object !\n"));
 	}
 	catch (CException *pEx)
 	{
@@ -207,8 +209,10 @@ BOOL CWmi::GetBiosInfo(CBios *pMyBios)
 				csChassisType = m_dllWMI.GetClassObjectStringValue( _T( "ChassisTypes"));			
 			}
 			m_dllWMI.CloseEnumClassObject();
-			AddLog( _T( "OK (%s %s %s %s)\n"), csManufacturer, csModel, csSN, csChassisType);
+			AddLog( _T( "OK (Manufacturer %s Model %s S/N %s Chassis Type %s)\n"), csManufacturer, csModel, csSN, csChassisType);
 		}
+		else
+			AddLog( _T( "Failed because no Win32_SystemEnclosure object !\n"));
 	}
 	catch (CException *pEx)
 	{
@@ -231,13 +235,15 @@ BOOL CWmi::GetBiosInfo(CBios *pMyBios)
 					if (csModel.IsEmpty())
 						// Get Model from mother board only if not available
 						csModel = m_dllWMI.GetClassObjectStringValue( _T( "Product"));
-					if (csSN.IsEmpty())
+					if (!pMyBios->IsSystemSerialNumberValid( csSN))
 						// Get S/N from mother board only if not available
 						csSN = m_dllWMI.GetClassObjectStringValue( _T( "SerialNumber"));				
 				}
 				m_dllWMI.CloseEnumClassObject();
-				AddLog( _T( "OK (%s %s %s)\n"), csManufacturer, csModel, csSN);
+				AddLog( _T( "OK (Manufacturer %s Model %s S/N %s)\n"), csManufacturer, csModel, csSN);
 			}
+			else
+				AddLog( _T( "Failed because no Win32_BaseBoard object !\n"));
 		}
 		catch (CException *pEx)
 		{
@@ -277,7 +283,7 @@ BOOL CWmi::GetBiosInfo(CBios *pMyBios)
 		}
 		if (uIndex > 0)
 		{
-			AddLog( _T( "OK (%s %s %s)\n"), csManufacturer, csModel, csSN);
+			AddLog( _T( "OK (BIOS Manufacturer %s Model %s S/N %s)\n"), csManufacturer, csModel, csSN);
 			bResult = TRUE;
 		}
 		else
@@ -287,7 +293,8 @@ BOOL CWmi::GetBiosInfo(CBios *pMyBios)
 		}
 
 		pMyBios->SetBiosManufacturer( csManufacturer);
-		pMyBios->SetSystemSerialNumber( csSN);
+		if (!pMyBios->IsSystemSerialNumberValid())
+			pMyBios->SetSystemSerialNumber( csSN);
 		pMyBios->SetBiosDate( csRdate);
 		pMyBios->SetBiosVersion( csBiosVer);
 	}
