@@ -11,13 +11,12 @@
 #define		SERVICE_NME				"service"
 #define		SERVICE_EXT				"ini"
 #define		DEFAULT_PROLOG_FREQ		10
-#define		WRITE_TTOWAIT_EACH		1
+#define		WRITE_TTOWAIT_EACH		60
 #define		RUN_OCS					"ocsinventory.exe /debug"
 #define		OCS_SERVICE				"OCS_SERVICE"
 #define		OCS_INSTALL				"MISCELLANEOUS"
 #define		RAND_FILE				"rand"
 #define		PROLOG_FREQ_UNIT		3600 //sec
-#define 	WRITE_INI_LATENCY		10000 //msec
 
 class CMyService : public CNTService
 {

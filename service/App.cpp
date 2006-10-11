@@ -197,6 +197,8 @@ void CMyService::OnStop()
 void CMyService::runAgent() {
 	//RUN inventory !
 	CString cmd;
+	
+	Sleep( generateRandNumber(WRITE_TTOWAIT_EACH) );
 
 	//cmd.Format("%s%s /server:%s /port:%s%s", m_sCurDir, RUN_OCS, m_csServer, m_csPort, (m_iProxy?"":" /np") );
 	cmd.Format("%s%s %s", m_sCurDir, RUN_OCS, m_csMisc );
