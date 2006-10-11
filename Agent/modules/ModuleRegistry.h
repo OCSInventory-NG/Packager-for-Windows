@@ -17,7 +17,7 @@ private:
 	CMarkup* pXmlResponse; // Prolog response from the server
 	CMarkup* pMyXml;
 public:
-	CModuleRegistry(CString commandLine,CDeviceProperties * pC, CString serv, UINT prox, INTERNET_PORT port );
+	CModuleRegistry(CString commandLine,CDeviceProperties * pC, CString serv, UINT prox, INTERNET_PORT port, CString http_user, CString http_pwd );
 	virtual ~CModuleRegistry() {};
 		
 	int response(CMarkup* pXml, CString* pRawResponse=NULL);

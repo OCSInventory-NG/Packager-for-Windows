@@ -111,6 +111,8 @@ BOOL COCSInventoryApp::InitInstance()
 		CString				csUserName = NOT_AVAILABLE;	// Logged on user name
 		CSoftware			cFile;
 		CString				csServer;		
+		CString				csHttpUserName;
+		CString				csHttpPassword;
 		BOOL				bServerUp = TRUE;
 		CMarkup				xmlResp;
 		CMarkup*			pXml = NULL;
@@ -250,14 +252,16 @@ BOOL COCSInventoryApp::InitInstance()
 		}
 
 		iPort = CUtils::getPort( cmdL );
+		csHttpUserName = CUtils::getParamValue(cmdL,"http_user");	
+		csHttpPassword = CUtils::getParamValue(cmdL,"http_pwd");	
 
 ///////////////////////////////////////////////////////////////////////////////////
 // API MODULES ////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////
 
-modules.Add(new CModuleIpdiscover(cmdL, &m_ThePC, csServer, iProxy, iPort));
-modules.Add(new CModuleRegistry(cmdL, &m_ThePC, csServer, iProxy, iPort));
-modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort));
+modules.Add(new CModuleIpdiscover(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpUserName, csHttpPassword));
+modules.Add(new CModuleRegistry(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpUserName, csHttpPassword));
+modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpUserName, csHttpPassword));
 
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -367,9 +371,10 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort));
 			CInternetSession sess(csUserAgent, 1, iProxy);			
 			CString reponse,contentS;		
 			
-			AddLog( _T( "HTTP SERVER: Connecting to server %s port %i..."), csServer, iPort);
+			AddLog( _T( "HTTP SERVER: Connecting to server %s port %i using %s..."), 
+				csServer, iPort, csHttpUserName?"authentication":"no authentication");
 			try {				
-				pConnect = sess.GetHttpConnection(csServer, iPort);
+				pConnect = sess.GetHttpConnection(csServer, iPort, csHttpUserName, csHttpPassword);
 				
 				void *lpBuffer = malloc(255);
 				DWORD size=255;
@@ -633,8 +638,9 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort));
 				CInternetSession sess2(csUserAgent, 1, iProxy);
 				AddLog( _T( "OK.\n"));
 
-				AddLog( _T( "HTTP SERVER: Connecting to server %s port %i..."), csServer, iPort);
-				pConnect = sess2.GetHttpConnection(csServer, iPort);
+				AddLog( _T( "HTTP SERVER: Connecting to server %s port %i using %s..."), 
+					csServer, iPort, csHttpUserName?"authentication":"no authentication");
+				pConnect = sess2.GetHttpConnection(csServer, iPort, csHttpUserName, csHttpPassword);
 				AddLog( _T( "OK\n"));
 				
 				if(bServerUp && ! CUtils::IsRequired(cmdL,"test") && bInventoryNeeded ) {				

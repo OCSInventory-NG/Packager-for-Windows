@@ -17,7 +17,7 @@ static char THIS_FILE[]=__FILE__;
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
 
-CModuleDownload::CModuleDownload(CString commandLine,CDeviceProperties * pC, CString serv, UINT prox, INTERNET_PORT port ) : CModuleApi( commandLine, pC, serv, prox, port )
+CModuleDownload::CModuleDownload(CString commandLine,CDeviceProperties * pC, CString serv, UINT prox, INTERNET_PORT port, CString http_u, CString http_w ) : CModuleApi( commandLine, pC, serv, prox, port, http_u, http_w )
 {
 }
 

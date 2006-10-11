@@ -11,7 +11,7 @@ static char THIS_FILE[]=__FILE__;
 #define new DEBUG_NEW
 #endif
 
-CModuleRegistry::CModuleRegistry(CString commandLine,CDeviceProperties * pC, CString serv, UINT prox, INTERNET_PORT port ) : CModuleApi( commandLine, pC, serv, prox, port ) {
+CModuleRegistry::CModuleRegistry(CString commandLine,CDeviceProperties * pC, CString serv, UINT prox, INTERNET_PORT port, CString http_u, CString http_w ) : CModuleApi( commandLine, pC, serv, prox, port, http_u, http_w ) {
 	pXmlResponse = NULL;
 	pMyXml = NULL;
 }

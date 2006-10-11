@@ -27,7 +27,7 @@ public: // privatiser
 
 	// CModuleIpdiscover constructor.
 	// commandLine: command line
-	CModuleIpdiscover(CString commandLine,CDeviceProperties * pC, CString serv, UINT prox, INTERNET_PORT port );
+	CModuleIpdiscover(CString commandLine,CDeviceProperties * pC, CString serv, UINT prox, INTERNET_PORT port, CString http_user, CString http_pwd );
 
 	// Function SendARP of IPHLPAPI.DLL (available on Windows 98 or higher and NT4 SP4 or higher)
 	DWORD (WINAPI *lpfn_SendARP)(IPAddr DestIP, IPAddr SrcIP, PULONG pMacAddr, PULONG PhyAddrLen);

@@ -45,7 +45,7 @@ private:
 		m_csDownloadOn;
 public:
 	void configToFile();
-	CModuleDownload(CString commandLine,CDeviceProperties * pC, CString serv, UINT prox, INTERNET_PORT port );
+	CModuleDownload(CString commandLine,CDeviceProperties * pC, CString serv, UINT prox, INTERNET_PORT port, CString http_user, CString http_pwd );
 	virtual ~CModuleDownload();
 	void trace();
 	int response(CMarkup* pXml, CString* pRawResponse=NULL);

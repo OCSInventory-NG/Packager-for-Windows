@@ -6,13 +6,13 @@
 --------------------Configuration: OCSInventory Agent - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP343.tmp" with contents
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP1B02.tmp" with contents
 [
 /nologo /MDd /W3 /WX /Gm /GX /ZI /Od /I "..\OcsDB" /I "..\SysInfo" /I "..\OcsWmi" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_OCS_AGENT" /D "_AFXDLL" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\ocs\agent\Agent\OCSInventoryCommon.cpp"
+"C:\ocs\agent\Agent\modules\ModuleRegistry.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP343.tmp" 
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP344.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP1B02.tmp" 
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP1B03.tmp" with contents
 [
 wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib zlib.lib Ws2_32.lib wininet.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/de.pdb" /debug /machine:I386 /nodefaultlib:"libc.lib" /out:"..\_Debug\OCSInventory.exe" /pdbtype:sept /libpath:"C:\Program Files\vieux_sdk\Lib" /libpath:"..\include\zlib" /libpath:"..\include\openssl\lib\VC" /nodefaultlib:"libc.lib"/out:"..\Debug\OCSInventory.exe" 
 .\Debug\commonDownload.obj
@@ -30,12 +30,12 @@ wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib zlib.lib Ws2_32.lib wininet.
 .\Debug\OCSInventory.res
 \ocs\agent\SysInfo\Debug\SysInfo.lib
 ]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP344.tmp"
+Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP1B03.tmp"
 <h3>Output Window</h3>
 Compiling...
-OCSInventoryCommon.cpp
+ModuleRegistry.cpp
 Linking...
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP345.tmp" with contents
+Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP1B04.tmp" with contents
 [
 /nologo /o"Debug/OCSInventory.bsc" 
 .\Debug\commonDownload.sbr
@@ -50,7 +50,7 @@ Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP345.tmp" with 
 .\Debug\StdAfx.sbr
 .\Debug\StoreInteract.sbr
 .\Debug\XMLInteract.sbr]
-Creating command line "bscmake.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP345.tmp"
+Creating command line "bscmake.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP1B04.tmp"
 Creating browse info file...
 <h3>Output Window</h3>
 

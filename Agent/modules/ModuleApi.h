@@ -19,11 +19,21 @@ public:
 	UINT proxy;
 	CString server;
 	INTERNET_PORT port;
+	CString http_u;
+	CString http_w;
 
 	// CModuleApi constructor.
 	// commandLine: command line
-	CModuleApi(CString commandLine, CDeviceProperties * pD, CString serv, UINT prox, INTERNET_PORT prt) 
-	{ cmdL = commandLine; pC = pD; server = serv; proxy = prox; port = prt;}
+	CModuleApi(CString commandLine, CDeviceProperties * pD, CString serv, UINT prox, INTERNET_PORT prt, CString http_user, CString http_pwd) 
+	{ 
+		cmdL = commandLine; 
+		pC = pD; 
+		server = serv; 
+		proxy = prox; 
+		port = prt; 
+		http_u = http_user; 
+		http_w = http_pwd; 
+	}
 
 	// CModuleApi destructor.
 	virtual ~CModuleApi() {}
