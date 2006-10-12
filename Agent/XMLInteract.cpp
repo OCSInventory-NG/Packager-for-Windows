@@ -555,24 +555,42 @@ BOOL CXMLInteract::GetBiosInfoXml(CDeviceProperties &pPC)
 		ZeroMemory( &pi, sizeof(pi) );
 		si.dwFlags=STARTF_USESHOWWINDOW;
 		si.wShowWindow=SW_HIDE;
-		CreateProcess(NULL,cmd.GetBuffer(0),NULL, NULL, FALSE, 0, NULL, NULL, &si,&pi );		
-		WaitForSingleObject( pi.hProcess, 10000 );
-		CStdioFile f;
-
-		if(f.Open("bios.tmp",CFile::modeRead,&e))
+		if (CreateProcess(NULL,cmd.GetBuffer(0),NULL, NULL, FALSE, 0, NULL, NULL, &si,&pi ))
 		{
-			CString csTmp;
-			
-			while(f.ReadString(csTmp))
-				m_csBiosInfoBuffer+=csTmp;
+			// Process created
+			if (WaitForSingleObject( pi.hProcess, 10000 ) == WAIT_TIMEOUT)
+			{
+				// Process did not ended correctly, kill it
+				AddLog( _T( "BIOSINFO: ERROR: Process did not ended after 10s, trying to kill it..."));
+				if (!TerminateProcess( pi.hProcess, 0))
+					AddLog( "Unable to kill process !\n");
+				else
+					AddLog( "OK\n");
+			}
+			CStdioFile f;
 
-			f.Close();
-			CFile::Remove("bios.tmp");
+			if(f.Open( _T( "bios.tmp"),CFile::modeRead,&e))
+			{
+				CString csTmp;
+				
+				while(f.ReadString(csTmp))
+					m_csBiosInfoBuffer+=csTmp;
+
+				f.Close();
+				CFile::Remove( _T( "bios.tmp"));
+			}
+			else
+			{
+				AddLog( _T( "BIOSINFO: ERROR: Biosinfo did not generate file !\n"));
+				m_csBiosInfoBuffer= _T( "na");
+				return FALSE;
+			}
 		}
 		else
 		{
-			AddLog("BIOSINFO: ERROR: Biosinfo did not generate file !\n");
-			m_csBiosInfoBuffer="na";
+			// Unable to create process
+			AddLog( _T( "BIOSINFO: ERROR: Unable to launch BiosInfo.exe tool !\n"));
+			m_csBiosInfoBuffer= _T( "na");
 			return FALSE;
 		}
 	}
