@@ -1,10 +1,10 @@
-# Microsoft Developer Studio Project File - Name="TestSrv" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="OcsService" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
-CFG=TestSrv - Win32 Debug Missing Platform SDK
+CFG=OcsService - Win32 Debug Missing Platform SDK
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,18 +13,18 @@ CFG=TestSrv - Win32 Debug Missing Platform SDK
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "OcsService.mak" CFG="TestSrv - Win32 Debug Missing Platform SDK"
+!MESSAGE NMAKE /f "OcsService.mak" CFG="OcsService - Win32 Debug Missing Platform SDK"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "TestSrv - Win32 Release" (based on "Win32 (x86) Application")
-!MESSAGE "TestSrv - Win32 Debug" (based on "Win32 (x86) Application")
-!MESSAGE "TestSrv - Win32 Unicode Release" (based on "Win32 (x86) Application")
-!MESSAGE "TestSrv - Win32 Unicode Debug" (based on "Win32 (x86) Application")
-!MESSAGE "TestSrv - Win32 Unicode Debug Missing Platform SDK" (based on "Win32 (x86) Application")
-!MESSAGE "TestSrv - Win32 Debug Missing Platform SDK" (based on "Win32 (x86) Application")
-!MESSAGE "TestSrv - Win32 Release Missing Platform SDK" (based on "Win32 (x86) Application")
-!MESSAGE "TestSrv - Win32 Unicode Release Missing Platform SDK" (based on "Win32 (x86) Application")
+!MESSAGE "OcsService - Win32 Release" (based on "Win32 (x86) Application")
+!MESSAGE "OcsService - Win32 Debug" (based on "Win32 (x86) Application")
+!MESSAGE "OcsService - Win32 Unicode Release" (based on "Win32 (x86) Application")
+!MESSAGE "OcsService - Win32 Unicode Debug" (based on "Win32 (x86) Application")
+!MESSAGE "OcsService - Win32 Unicode Debug Missing Platform SDK" (based on "Win32 (x86) Application")
+!MESSAGE "OcsService - Win32 Debug Missing Platform SDK" (based on "Win32 (x86) Application")
+!MESSAGE "OcsService - Win32 Release Missing Platform SDK" (based on "Win32 (x86) Application")
+!MESSAGE "OcsService - Win32 Unicode Release Missing Platform SDK" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -35,7 +35,7 @@ CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "TestSrv - Win32 Release"
+!IF  "$(CFG)" == "OcsService - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -61,7 +61,7 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
 # ADD LINK32 libeay32.lib /nologo /subsystem:windows /machine:I386 /out:"../_Release/OcsService.exe" /libpath:"..\include\openssl\lib\VC"
 
-!ELSEIF  "$(CFG)" == "TestSrv - Win32 Debug"
+!ELSEIF  "$(CFG)" == "OcsService - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -75,7 +75,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /YX /FD /c
+# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x1809 /d "_DEBUG"
@@ -87,7 +87,7 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386
 # ADD LINK32 libeay32.lib /nologo /subsystem:windows /debug /machine:I386 /out:"../_Debug/OcsService.exe" /libpath:"..\include\openssl\LIB\VC"
 
-!ELSEIF  "$(CFG)" == "TestSrv - Win32 Unicode Release"
+!ELSEIF  "$(CFG)" == "OcsService - Win32 Unicode Release"
 
 # PROP BASE Use_MFC 2
 # PROP BASE Use_Debug_Libraries 0
@@ -111,9 +111,9 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386 /out:".\ReleaseU/TestSrv.exe"
+# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386 /out:".\ReleaseU/OcsService.exe"
 
-!ELSEIF  "$(CFG)" == "TestSrv - Win32 Unicode Debug"
+!ELSEIF  "$(CFG)" == "OcsService - Win32 Unicode Debug"
 
 # PROP BASE Use_MFC 2
 # PROP BASE Use_Debug_Libraries 1
@@ -137,9 +137,9 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386
-# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /out:".\DebugU/TestSrv.exe"
+# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /out:".\DebugU/OcsService.exe"
 
-!ELSEIF  "$(CFG)" == "TestSrv - Win32 Unicode Debug Missing Platform SDK"
+!ELSEIF  "$(CFG)" == "OcsService - Win32 Unicode Debug Missing Platform SDK"
 
 # PROP BASE Use_MFC 2
 # PROP BASE Use_Debug_Libraries 1
@@ -163,10 +163,10 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /out:".\DebugU/TestSrv.exe"
-# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /out:".\DebugU/TestSrv.exe"
+# ADD BASE LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /out:".\DebugU/OcsService.exe"
+# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /out:".\DebugU/OcsService.exe"
 
-!ELSEIF  "$(CFG)" == "TestSrv - Win32 Debug Missing Platform SDK"
+!ELSEIF  "$(CFG)" == "OcsService - Win32 Debug Missing Platform SDK"
 
 # PROP BASE Use_MFC 2
 # PROP BASE Use_Debug_Libraries 1
@@ -193,7 +193,7 @@ LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386
 # ADD LINK32 /nologo /subsystem:windows /debug /machine:I386
 
-!ELSEIF  "$(CFG)" == "TestSrv - Win32 Release Missing Platform SDK"
+!ELSEIF  "$(CFG)" == "OcsService - Win32 Release Missing Platform SDK"
 
 # PROP BASE Use_MFC 2
 # PROP BASE Use_Debug_Libraries 0
@@ -220,7 +220,7 @@ LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
 # ADD LINK32 /nologo /subsystem:windows /machine:I386
 
-!ELSEIF  "$(CFG)" == "TestSrv - Win32 Unicode Release Missing Platform SDK"
+!ELSEIF  "$(CFG)" == "OcsService - Win32 Unicode Release Missing Platform SDK"
 
 # PROP BASE Use_MFC 2
 # PROP BASE Use_Debug_Libraries 0
@@ -244,27 +244,31 @@ BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
-# ADD BASE LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386 /out:".\ReleaseU/TestSrv.exe"
-# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386 /out:".\ReleaseU/TestSrv.exe"
+# ADD BASE LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386 /out:".\ReleaseU/OcsService.exe"
+# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386 /out:".\ReleaseU/OcsService.exe"
 
 !ENDIF 
 
 # Begin Target
 
-# Name "TestSrv - Win32 Release"
-# Name "TestSrv - Win32 Debug"
-# Name "TestSrv - Win32 Unicode Release"
-# Name "TestSrv - Win32 Unicode Debug"
-# Name "TestSrv - Win32 Unicode Debug Missing Platform SDK"
-# Name "TestSrv - Win32 Debug Missing Platform SDK"
-# Name "TestSrv - Win32 Release Missing Platform SDK"
-# Name "TestSrv - Win32 Unicode Release Missing Platform SDK"
+# Name "OcsService - Win32 Release"
+# Name "OcsService - Win32 Debug"
+# Name "OcsService - Win32 Unicode Release"
+# Name "OcsService - Win32 Unicode Debug"
+# Name "OcsService - Win32 Unicode Debug Missing Platform SDK"
+# Name "OcsService - Win32 Debug Missing Platform SDK"
+# Name "OcsService - Win32 Release Missing Platform SDK"
+# Name "OcsService - Win32 Unicode Release Missing Platform SDK"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90;mc"
 # Begin Source File
 
 SOURCE=.\App.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\_common\base64.c
 # End Source File
 # Begin Source File
 
@@ -309,6 +313,10 @@ SOURCE=.\StdAfx.cpp
 # Begin Source File
 
 SOURCE=.\app.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\_common\base64.h
 # End Source File
 # Begin Source File
 
@@ -357,6 +365,10 @@ SOURCE=.\service_utils.h
 # Begin Source File
 
 SOURCE=.\stdafx.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\_common\utils.h
 # End Source File
 # End Group
 # Begin Source File
