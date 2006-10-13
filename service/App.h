@@ -17,10 +17,18 @@
 #define		OCS_INSTALL				"MISCELLANEOUS"
 #define		RAND_FILE				"rand"
 #define		PROLOG_FREQ_UNIT		3600 //sec
+#define		AUTH_USER				"auth_user" // Basic authentication on OCS Communication Server
+#define		AUTH_PWD				"auth_pwd"
+#define		PROXY_HOST				"proxy_host" // Use proxy to connect to OCS Communication Server
+#define		PROXY_PORT				"proxy_port"
+#define		PROXY_USER				"proxy_user"
+#define		PROXY_PWD				"proxy_pwd"
 
 class CMyService : public CNTService
 {
 private:
+	BOOL Decrypt( CString &csCrypted, CString &csClear);
+	BOOL Encrypt( CString &csClear, CString &csCrypted);
 	HANDLE		m_hMutexOneInstance;
 	BOOL		m_bkillMe;
 	CFile		m_fServiceIni;
@@ -34,6 +42,12 @@ private:
 	int			m_iProxy;
 	CString		m_csPort;
 	CString		m_csMisc;
+	CString		m_csAuthUser;
+	CString		m_csAuthPwd;
+	CString		m_csProxyHost;
+	CString		m_csProxyPort;
+	CString		m_csProxyUser;
+	CString		m_csProxyPwd;
 
 	void runAgent();	
 	int generateRandNumber(int max);
@@ -46,8 +60,10 @@ private:
 	BOOL openIni();
 	void closeIni();
 	void preInit();
+	CString getParamValue(LPCTSTR lpstrCommandLine, CString param);
 
 public:	
+	BOOL Install(CString& sErrorMsg, DWORD& dwError);
 	CMyService();
 	~CMyService();
 	virtual void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);

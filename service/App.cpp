@@ -4,13 +4,15 @@
 #include "app.h"
 #include "direct.h"
 #include <openssl/rand.h>
+#include <openssl/aes.h>
+#include <openssl/sha.h>
+#include "../include/_common/base64.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #undef THIS_FILE
 static char THIS_FILE[] = __FILE__;
 #endif
-
 
 //The one and only one application
 CApp theApp;
@@ -196,12 +198,23 @@ void CMyService::OnStop()
 
 void CMyService::runAgent() {
 	//RUN inventory !
-	CString cmd;
+	CString cmd,
+			csAuth;
 	
 	Sleep( generateRandNumber(WRITE_TTOWAIT_EACH) );
 
+	// Check if Basic authentication required
+	csAuth.Empty();
+	if (!m_csAuthUser.IsEmpty())
+	{
+		CString csUser, csPwd;
+
+		Decrypt( m_csAuthUser, csUser);
+		Decrypt( m_csAuthPwd, csPwd);
+		csAuth.Format( _T( " /auth_user:%s /auth_pwd:%s"), csUser, csPwd);
+	}
 	//cmd.Format("%s%s /server:%s /port:%s%s", m_sCurDir, RUN_OCS, m_csServer, m_csPort, (m_iProxy?"":" /np") );
-	cmd.Format("%s%s %s", m_sCurDir, RUN_OCS, m_csMisc );
+	cmd.Format("%s%s %s %s", m_sCurDir, RUN_OCS, m_csMisc, csAuth );
 	//AfxMessageBox("INVENTAIRE!");
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
@@ -281,6 +294,12 @@ void CMyService::readIniFile( CString section, int* storeVar, CString toRead, CS
 		readIniFile( OCS_SERVICE, & m_iProxy, "NOPROXY", "0" );
 		readIniFile( OCS_SERVICE, m_csPort, "port", "80" );
 		readIniFile( OCS_SERVICE, m_csMisc, "MISCELLANEOUS", "" );
+		readIniFile( OCS_SERVICE, m_csAuthUser, AUTH_USER, "" );
+		readIniFile( OCS_SERVICE, m_csAuthPwd, AUTH_PWD, "" );
+		readIniFile( OCS_SERVICE, m_csProxyHost, PROXY_HOST, "" );
+		readIniFile( OCS_SERVICE, m_csProxyPort, PROXY_PORT, "" );
+		readIniFile( OCS_SERVICE, m_csProxyUser, PROXY_USER, "" );
+		readIniFile( OCS_SERVICE, m_csProxyPwd, PROXY_PWD, "" );
 	}	
 }
 
@@ -355,4 +374,114 @@ BOOL CMyService::openIni() {
 void  CMyService::closeIni() {
 	if( m_fServiceIni.m_hFile != (UINT)m_fServiceIni.hFileNull )
 		m_fServiceIni.Close();
+}
+
+CString CMyService::getParamValue(LPCTSTR lpstrCommandLine, CString param) {
+	
+	CString	csCommand = lpstrCommandLine;
+	CString option;
+
+	option.Format("%s:",param);
+	
+	csCommand.MakeLower();
+	int iRngOpt = csCommand.Find( _T( option));
+	if( iRngOpt == -1 ) {
+			return "";
+	}
+	
+	int iFin = csCommand.Find(" ", iRngOpt) != -1 ? csCommand.Find( " ", iRngOpt) : csCommand.GetLength();
+	CString csName = csCommand.Mid( iRngOpt + option.GetLength() , iFin - iRngOpt - option.GetLength() );
+	return csName;
+}
+
+BOOL CMyService::Install(CString &sErrorMsg, DWORD &dwError)
+{
+	char direc[_MAX_PATH+1];
+	char retrn[4][_MAX_PATH+1];
+	char paths[2][_MAX_PATH+1];
+	CString csCrypt;
+	// First, isntall service
+	BOOL bReturn = CNTService::Install( sErrorMsg, dwError);
+
+	// Next, store encrypted user and passwd if needed
+	GetModuleFileName(NULL, direc, _MAX_PATH );
+	_splitpath( direc, retrn[0], retrn[1], retrn[2], retrn[3] );
+	_makepath( paths[0], retrn[0], retrn[1], NULL, NULL );
+	_makepath( paths[1], retrn[0], retrn[1], SERVICE_NME, SERVICE_EXT );
+	m_sCurDir = paths[0];
+	m_sServIni = paths[1];
+	m_csAuthUser = getParamValue( AfxGetApp()->m_lpCmdLine, AUTH_USER);
+	m_csAuthPwd = getParamValue( AfxGetApp()->m_lpCmdLine, AUTH_PWD);
+
+	if (!m_csAuthUser.IsEmpty())
+	{
+		// Encrypt Basic Authentication user and password
+		if (Encrypt( m_csAuthUser, csCrypt))
+			m_csAuthUser = csCrypt;
+		WritePrivateProfileString(OCS_SERVICE, AUTH_USER, csCrypt, m_sServIni);
+		if (Encrypt( m_csAuthPwd, csCrypt))
+			m_csAuthPwd = csCrypt;
+		WritePrivateProfileString(OCS_SERVICE, AUTH_PWD, csCrypt, m_sServIni);
+	}
+
+	return bReturn;
+}
+
+
+BOOL CMyService::Encrypt(CString &csClear, CString &csCrypted)
+{
+	unsigned char	plainKey[17];
+	unsigned char	aesKey[33];
+	AES_KEY			ekey;
+	char			szClear[17];
+	char			szCrypt[17];
+	CString			csTemp;
+	char			*szB64 = NULL;
+
+	_tcsncpy( szClear, csClear, 16);
+	memset( szCrypt, 0, 17);
+	memset( plainKey, 0, 17);
+	// Generate encrypt key
+	memcpy( plainKey, OCS_SERVICE, sizeof( OCS_SERVICE)); 
+	SHA256( (const unsigned char *)plainKey, 16, aesKey);
+	AES_set_encrypt_key((const unsigned char*) aesKey, 256, &ekey);
+	// Encrypt value
+	AES_encrypt((const unsigned char*)szClear, (unsigned char*)szCrypt, &ekey);
+	// Transform to encrypted value to base64
+	csCrypted.Empty();
+	size_t outlen = base64_encode_alloc( szCrypt, 16, &szB64);
+	if (szB64 == NULL && outlen == 0)
+		return FALSE;
+	if (szB64 == NULL)
+		return FALSE;
+	csCrypted = szB64;
+	free( szB64);
+	return TRUE;
+}
+
+BOOL CMyService::Decrypt(CString &csCrypted, CString &csClear)
+{
+	// Generate decrypt key
+	unsigned char	plainKey[17];
+	unsigned char	aesKey[33];
+	AES_KEY			dkey;
+	char			*szCrypt = NULL;
+	char			szClear[17];
+	unsigned int	outlen;
+
+	// Generate decrypt key
+	memset( szClear, 0, 17);
+	memset( plainKey, 0, 17);
+	memcpy( plainKey, OCS_SERVICE, sizeof( OCS_SERVICE)); 
+	SHA256( (const unsigned char *)plainKey, 16, aesKey);
+	AES_set_decrypt_key((const unsigned char*) aesKey, 256, &dkey);
+	// Convert base64 encrypted pwd to unsigned char
+	if (!base64_decode_alloc ( LPCTSTR( csCrypted), csCrypted.GetLength(), &szCrypt, &outlen))
+		return FALSE;
+	if (szCrypt == NULL)
+		return FALSE;
+	AES_decrypt((const unsigned char*)szCrypt, (unsigned char*)szClear, &dkey);
+	free( szCrypt);
+	csClear = szClear;
+	return TRUE;
 }
