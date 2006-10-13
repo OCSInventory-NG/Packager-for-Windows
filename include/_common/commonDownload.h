@@ -35,6 +35,6 @@
 
 int init_OpenSSL(void);
 void seed_prng(void);
-int fileExists(LPCSTR file, LPCSTR Id="", LPCSTR dir="");
+int fileExists(LPCSTR file, LPCSTR Id=NULL, LPCSTR dir=NULL);
 
 #endif // !DOWNLOAD_INCLUDE

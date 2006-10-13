@@ -252,8 +252,8 @@ BOOL COCSInventoryApp::InitInstance()
 		}
 
 		iPort = CUtils::getPort( cmdL );
-		csHttpUserName = CUtils::getParamValue(cmdL,"http_user");	
-		csHttpPassword = CUtils::getParamValue(cmdL,"http_pwd");	
+		csHttpUserName = CUtils::getParamValue(cmdL,"auth_user");	
+		csHttpPassword = CUtils::getParamValue(cmdL,"auth_pwd");	
 
 ///////////////////////////////////////////////////////////////////////////////////
 // API MODULES ////////////////////////////////////////////////////////////////////

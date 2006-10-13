@@ -153,7 +153,7 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 
 	while (!m_bWantStop) {
 		
-		if( m_iTToWait % WRITE_TTOWAIT_EACH == 0 ) 
+		if( m_iTToWait % (m_iWriteIniLatency?m_iWriteIniLatency:WRITE_TTOWAIT_EACH) == 0 ) 
 			writeIniFile(& m_iTToWait, TTO_WAIT );
 
 		if( m_iTToWait <= 0 ) {
@@ -176,7 +176,6 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 			status.Format("Service lauched OCS. New parameters: FREQ: %i, OLD_FREQ: %i, TTO_WAIT: %i", m_iPrologFreq, vOld, m_iTToWait);
 			m_EventLogSource.Report(EVENTLOG_INFORMATION_TYPE, MSG_INFO_OCS, status);
 		}
-
 		Sleep(1000);
 		m_iTToWait--;
 	}
@@ -201,7 +200,7 @@ void CMyService::runAgent() {
 	CString cmd,
 			csAuth;
 	
-	Sleep( generateRandNumber(WRITE_TTOWAIT_EACH) );
+	Sleep( generateRandNumber(m_iWriteIniLatency?m_iWriteIniLatency:WRITE_TTOWAIT_EACH) );
 
 	// Check if Basic authentication required
 	csAuth.Empty();
@@ -294,6 +293,7 @@ void CMyService::readIniFile( CString section, int* storeVar, CString toRead, CS
 		readIniFile( OCS_SERVICE, & m_iProxy, "NOPROXY", "0" );
 		readIniFile( OCS_SERVICE, m_csPort, "port", "80" );
 		readIniFile( OCS_SERVICE, m_csMisc, "MISCELLANEOUS", "" );
+		readIniFile( OCS_SERVICE, & m_iWriteIniLatency, "WRITE_INI_LATENCY", WRITE_TTOWAIT_EACH );
 		readIniFile( OCS_SERVICE, m_csAuthUser, AUTH_USER, "" );
 		readIniFile( OCS_SERVICE, m_csAuthPwd, AUTH_PWD, "" );
 		readIniFile( OCS_SERVICE, m_csProxyHost, PROXY_HOST, "" );

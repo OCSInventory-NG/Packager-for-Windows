@@ -160,39 +160,32 @@ BOOL CBios::ParseFromXML(CString &xml)
 	x.FindElem("OCSINVENTORY");
 	x.IntoElem();
 	x.FindElem("BIOS");
-	x.FindChildElem("SSN");
-	if (!IsSystemSerialNumberValid())
-		m_csSystemSerialNumber = x.GetChildData();
+	x.FindChildElem("SSN");		
+	m_csSystemSerialNumber = x.GetChildData();
 	x.ResetChildPos();
 
 	x.FindChildElem("SMODEL");
-	if (m_csSystemModel.IsEmpty())
-		m_csSystemModel = x.GetChildData();
+	m_csSystemModel = x.GetChildData();
 	x.ResetChildPos();
 
 	x.FindChildElem("BVERSION");
-	if (m_csBiosVersion.IsEmpty())
-		m_csBiosVersion = x.GetChildData();
+	m_csBiosVersion = x.GetChildData();
 	x.ResetChildPos();
 
 	x.FindChildElem("BDATE");
-	if (m_csBiosDate.IsEmpty())
-		m_csBiosDate = x.GetChildData();
+	m_csBiosDate = x.GetChildData();
 	x.ResetChildPos();
 
 	x.FindChildElem("SMANUFACTURER");
-	if (m_csSystemManufacturer.IsEmpty())
-		m_csSystemManufacturer = x.GetChildData();
+	m_csSystemManufacturer = x.GetChildData();
 	x.ResetChildPos();
 
 	x.FindChildElem("BMANUFACTURER");
-	if (m_csBiosManufacturer.IsEmpty())
-		m_csBiosManufacturer = x.GetChildData();
+	m_csBiosManufacturer = x.GetChildData();
 	x.ResetChildPos();
 
 	x.FindChildElem("TYPE");
-	if (m_csMachineType.IsEmpty())
-		m_csMachineType = x.GetChildData();
+	m_csMachineType = x.GetChildData();
 	x.ResetChildPos();
 
 	return TRUE;
@@ -247,14 +240,4 @@ LPCTSTR CBios::GetHash()
 					 m_csBiosDate);
 	myHash.HashUpdate( LPCTSTR( csToHash), csToHash.GetLength());
 	return myHash.HashFinal();
-}
-
-BOOL CBios::IsSystemSerialNumberValid(CString &csSN)
-{
-	return (csSN.GetLength() >= 4);
-}
-
-BOOL CBios::IsSystemSerialNumberValid()
-{
-	return IsSystemSerialNumberValid( m_csSystemSerialNumber);
 }

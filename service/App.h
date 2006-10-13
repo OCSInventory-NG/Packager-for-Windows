@@ -42,6 +42,7 @@ private:
 	int			m_iProxy;
 	CString		m_csPort;
 	CString		m_csMisc;
+	int			m_iWriteIniLatency;
 	CString		m_csAuthUser;
 	CString		m_csAuthPwd;
 	CString		m_csProxyHost;

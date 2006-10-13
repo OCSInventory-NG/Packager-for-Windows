@@ -13,6 +13,8 @@
 #include <Afxmt.h>
 #include <Ws2tcpip.h>
 
+#define NAME_RES_LATENCY 500 //ms
+
 class CModuleIpdiscover : public CModuleApi  
 {
 public: // privatiser

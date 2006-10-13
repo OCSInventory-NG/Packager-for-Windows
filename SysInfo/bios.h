@@ -59,9 +59,6 @@ public: // Methods
 	BOOL FormatXML( CMarkup* pX );
 	// Get hash code of data, to determine if changed since last inventory
 	LPCTSTR GetHash();
-	// Check if S/N length is greater or equal to 4 
-	BOOL IsSystemSerialNumberValid();
-	BOOL IsSystemSerialNumberValid( CString &csSN);
 
 	//////////////////////////////////
 	// Set attributes values

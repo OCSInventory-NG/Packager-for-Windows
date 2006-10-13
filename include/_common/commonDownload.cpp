@@ -29,9 +29,9 @@ int fileExists(LPCSTR file, LPCSTR Id, LPCSTR dir) {
 	int err;
 	CFile infFile;
 	CString fName;
-	if (Id == "")
+	if (Id == NULL)
 		fName = file;
-	else if( dir != "" )
+	else if( dir != NULL )
 		fName.Format("%s\\%s\\%s", dir, Id, file);
 	else
 		fName.Format("%s\\%s", Id, file);

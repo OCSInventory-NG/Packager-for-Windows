@@ -376,7 +376,6 @@
 #define WIN_APPS_FOLDER_VALUE					_T( "InstallLocation")
 #define WIN_APPS_COMMENTS_VALUE					_T( "Comments")
 #define WIN_APPS_UNINSTALL_VALUE				_T( "UninstallString")
-#define WIN_APPS_NOREMOVE_VALUE                 _T( "NoRemove")
 
 // Defines for retrieving installed apps from 9X/Me registry
 #define NT_APPS_KEY								_T( "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
@@ -386,7 +385,6 @@
 #define NT_APPS_FOLDER_VALUE					_T( "InstallLocation")
 #define NT_APPS_COMMENTS_VALUE					_T( "Comments")
 #define NT_APPS_UNINSTALL_VALUE					_T( "UninstallString")
-#define NT_APPS_NOREMOVE_VALUE                  _T( "NoRemove")
 
 // Defines for validating detected components under HKEY_DYN_DATA for 9X/Me
 #define WIN_CONFIG_MANAGER_KEY					_T( "Config Manager\\Enum")
@@ -5435,7 +5433,6 @@ BOOL CRegistry::GetRegistryApplications9X(CSoftwareList *pList, HKEY__* curHive)
 					hKeyObject;
 	CString			csSubKey;
 	TCHAR			szPublisher[256],
-	                szKeyName[256],
 					szName[256],
 					szVersion[256],
 					szFolder[256],
@@ -5443,7 +5440,6 @@ BOOL CRegistry::GetRegistryApplications9X(CSoftwareList *pList, HKEY__* curHive)
 					szUninstall[1000];
 	DWORD			dwLength,
 					dwType,
-					dwRemove = 0,
 					dwIndexEnum = 0;
 	LONG			lResult;
 	FILETIME		MyFileTime;
@@ -5458,12 +5454,12 @@ BOOL CRegistry::GetRegistryApplications9X(CSoftwareList *pList, HKEY__* curHive)
 	{
 		// Enum the devices subkeys to find installed apps
 		dwLength = 255;
-		while ((lResult = RegEnumKeyEx( hKeyEnum, dwIndexEnum, szKeyName, &dwLength, 0, NULL, 0, &MyFileTime)) == ERROR_SUCCESS)
+		while ((lResult = RegEnumKeyEx( hKeyEnum, dwIndexEnum, szName, &dwLength, 0, NULL, 0, &MyFileTime)) == ERROR_SUCCESS)
 		{
 			// For each object, Try to open the device key
-			szKeyName[dwLength] = 0;
+			szName[dwLength] = 0;
 			bHaveToStore = FALSE;
-			csSubKey.Format( _T( "%s\\%s"), WIN_APPS_KEY, szKeyName);
+			csSubKey.Format( _T( "%s\\%s"), WIN_APPS_KEY, szName);
 			if (RegOpenKeyEx( curHive, csSubKey, 0, KEY_READ, &hKeyObject) == ERROR_SUCCESS)
 			{
 				_tcscpy( szPublisher, NOT_AVAILABLE); 
@@ -5488,12 +5484,13 @@ BOOL CRegistry::GetRegistryApplications9X(CSoftwareList *pList, HKEY__* curHive)
 				if (RegQueryValueEx( hKeyObject, WIN_APPS_NAME_VALUE, 0, &dwType, (LPBYTE) szName, &dwLength) == ERROR_SUCCESS)
 				{
 					szName[dwLength]=0;
+					bHaveToStore = TRUE;
 				}
 				else
 				{
 					if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for %s\\%s\\%s !\n"),csCurHive,
 									   csSubKey, WIN_APPS_NAME_VALUE);
-					_tcscpy( szName, szKeyName);
+					_tcscpy( szName, NOT_AVAILABLE);
 				}
 				// Read the version
 				dwLength = 255;
@@ -5537,20 +5534,8 @@ BOOL CRegistry::GetRegistryApplications9X(CSoftwareList *pList, HKEY__* curHive)
 				{
 					if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for %s\\%s\\%s !\n"),csCurHive,
 									   csSubKey, WIN_APPS_UNINSTALL_VALUE);
+					bHaveToStore = FALSE;
 				}
-				else
-				   // There is uninstall string, so store result
-					bHaveToStore = TRUE;	
-                // Read NoRemove key, some uninstallable apps do not have UninstallString and so there is this key
-				dwLength = 2;
-				if (RegQueryValueEx( hKeyObject, WIN_APPS_NOREMOVE_VALUE, 0, &dwType, (LPBYTE) dwRemove, &dwLength) != ERROR_SUCCESS)
-				{
-					if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for %s\\%s\\%s !\n"),csCurHive,
-									   csSubKey, WIN_APPS_NOREMOVE_VALUE);
-				}
-				else
-				   // There is NoRemove key, so store result
-					bHaveToStore = TRUE;	
 				RegCloseKey( hKeyObject);
 				cApp.Clear();
 				cApp.Set( szPublisher, szName, szVersion, szFolder, szComments, NOT_AVAILABLE, 0, TRUE);
@@ -5588,7 +5573,6 @@ BOOL CRegistry::GetRegistryApplicationsNT(CSoftwareList *pList, HKEY__* curHive 
 					hKeyObject;
 	CString			csSubKey;
 	TCHAR			szPublisher[256],
-	                szKeyName[256],
 					szName[256],
 					szVersion[256],
 					szFolder[256],
@@ -5596,7 +5580,6 @@ BOOL CRegistry::GetRegistryApplicationsNT(CSoftwareList *pList, HKEY__* curHive 
 					szUninstall[1000];
 	DWORD			dwLength,
 					dwType,
-					dwRemove = 0,
 					dwIndexEnum = 0;
 	LONG			lResult;
 	FILETIME		MyFileTime;
@@ -5611,12 +5594,12 @@ BOOL CRegistry::GetRegistryApplicationsNT(CSoftwareList *pList, HKEY__* curHive 
 	{
 		// Enum the devices subkeys to find installed apps
 		dwLength = 255;
-		while ((lResult = RegEnumKeyEx( hKeyEnum, dwIndexEnum, szKeyName, &dwLength, 0, NULL, 0, &MyFileTime)) == ERROR_SUCCESS)
+		while ((lResult = RegEnumKeyEx( hKeyEnum, dwIndexEnum, szName, &dwLength, 0, NULL, 0, &MyFileTime)) == ERROR_SUCCESS)
 		{
 			// For each object, Try to open the device key
-			szKeyName[dwLength] = 0;
+			szName[dwLength] = 0;
 			bHaveToStore = FALSE;
-			csSubKey.Format( _T( "%s\\%s"), NT_APPS_KEY, szKeyName);
+			csSubKey.Format( _T( "%s\\%s"), NT_APPS_KEY, szName);
 			if (RegOpenKeyEx( curHive, csSubKey, 0, KEY_READ, &hKeyObject) == ERROR_SUCCESS)
 			{
 				_tcscpy( szPublisher, NOT_AVAILABLE); 
@@ -5641,13 +5624,13 @@ BOOL CRegistry::GetRegistryApplicationsNT(CSoftwareList *pList, HKEY__* curHive 
 				if (RegQueryValueEx( hKeyObject, NT_APPS_NAME_VALUE, 0, &dwType, (LPBYTE) szName, &dwLength) == ERROR_SUCCESS)
 				{
 					szName[dwLength]=0;
+					bHaveToStore = TRUE;
 				}
 				else
 				{
 					if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for %s\\%s\\%s !\n"),csCurHive,
 									   csSubKey, NT_APPS_NAME_VALUE);
-					// No DisplayName, use KeyName
-					_tcscpy( szName, szKeyName);
+					_tcscpy( szName, NOT_AVAILABLE);
 				}
 				// Read the version
 				dwLength = 255;
@@ -5691,20 +5674,8 @@ BOOL CRegistry::GetRegistryApplicationsNT(CSoftwareList *pList, HKEY__* curHive 
 				{
 					if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for %s\\%s\\%s !\n"),csCurHive,
 									   csSubKey, NT_APPS_UNINSTALL_VALUE);
+					bHaveToStore = FALSE;
 				}
-				else
-				   // There is uninstall string, so store result
-					bHaveToStore = TRUE;	
-                // Read NoRemove key, some uninstallable apps do not have UninstallString and so there is this key
-				dwLength = 2;
-				if (RegQueryValueEx( hKeyObject, NT_APPS_NOREMOVE_VALUE, 0, &dwType, (LPBYTE) dwRemove, &dwLength) != ERROR_SUCCESS)
-				{
-					if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for %s\\%s\\%s !\n"),csCurHive,
-									   csSubKey, NT_APPS_NOREMOVE_VALUE);
-				}
-				else
-				   // There is NoRemove key, so store result
-					bHaveToStore = TRUE;	
 				RegCloseKey( hKeyObject);
 				cApp.Clear();
 				cApp.Set( szPublisher, szName, szVersion, szFolder, szComments, NOT_AVAILABLE, 0, TRUE);

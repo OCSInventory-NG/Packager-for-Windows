@@ -77,6 +77,7 @@ UINT threadWork( LPVOID pParam ) {
 		if( getnameinfo((SOCKADDR *)&saIn, sizeof(sockaddr), szHostName, 256, szServInfo, 256, NI_NUMERICSERV) != 0) {
 		  AddLog("getnameinfo(): failed.\n");
 		  AddLog("Error #: %ld\n", WSAGetLastError());
+		  Sleep(NAME_RES_LATENCY);
 		}
 
 		pIpd->m_cs.Lock();
@@ -103,6 +104,7 @@ UINT threadWork( LPVOID pParam ) {
 		IpCur = inet_addr(csSent);
 		
 		AddLog( _T( "\tIPDISCOVER: Computer found: IP:%s MAC:%s NAME:%s\n"),csSent,szMac,szHostName);
+		Sleep(NAME_RES_LATENCY);
 		pIpd->m_cs.Unlock();		
 		delete [] szMac;
 	}
