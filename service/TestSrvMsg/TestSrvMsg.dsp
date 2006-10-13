@@ -1,26 +1,26 @@
-# Microsoft Developer Studio Project File - Name="TestSrvMsg" - Package Owner=<4>
+# Microsoft Developer Studio Project File - Name="OcsService" - Package Owner=<4>
 # Microsoft Developer Studio Generated Build File, Format Version 6.00
 # ** DO NOT EDIT **
 
 # TARGTYPE "Win32 (x86) Dynamic-Link Library" 0x0102
 
-CFG=TestSrvMsg - Win32 Release
+CFG=OcsServiceMsg - Win32 Release
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
-!MESSAGE NMAKE /f "TestSrvMsg.mak".
+!MESSAGE NMAKE /f "OcsServiceMsg.mak".
 !MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "TestSrvMsg.mak" CFG="TestSrvMsg - Win32 Release"
+!MESSAGE NMAKE /f "OcsServiceMsg.mak" CFG="OcsServiceMsg - Win32 Release"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
-!MESSAGE "TestSrvMsg - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "TestSrvMsg - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "TestSrvMsg - Win32 Unicode Debug" (based on "Win32 (x86) Dynamic-Link Library")
-!MESSAGE "TestSrvMsg - Win32 Unicode Release" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "OcsServiceMsg - Win32 Release" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "OcsServiceMsg - Win32 Debug" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "OcsServiceMsg - Win32 Unicode Debug" (based on "Win32 (x86) Dynamic-Link Library")
+!MESSAGE "OcsServiceMsg - Win32 Unicode Release" (based on "Win32 (x86) Dynamic-Link Library")
 !MESSAGE 
 
 # Begin Project
@@ -31,7 +31,7 @@ CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
 
-!IF  "$(CFG)" == "TestSrvMsg - Win32 Release"
+!IF  "$(CFG)" == "OcsServiceMsg - Win32 Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -58,7 +58,7 @@ LINK32=link.exe
 # ADD LINK32 kernel32.lib /nologo /subsystem:windows /dll /machine:I386 /out:"../_Release/OcsService.dll"
 # SUBTRACT LINK32 /pdb:none
 
-!ELSEIF  "$(CFG)" == "TestSrvMsg - Win32 Debug"
+!ELSEIF  "$(CFG)" == "OcsServiceMsg - Win32 Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -82,9 +82,9 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"../../_Debug/TestSrv.dll" /pdbtype:sept
+# ADD LINK32 kernel32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"../../_Debug/OcsService.dll" /pdbtype:sept
 
-!ELSEIF  "$(CFG)" == "TestSrvMsg - Win32 Unicode Debug"
+!ELSEIF  "$(CFG)" == "OcsServiceMsg - Win32 Unicode Debug"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 1
@@ -108,9 +108,9 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 kernel32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"..\DebugU/TestSrv.dll" /pdbtype:sept
+# ADD LINK32 kernel32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:"..\DebugU/OcsService.dll" /pdbtype:sept
 
-!ELSEIF  "$(CFG)" == "TestSrvMsg - Win32 Unicode Release"
+!ELSEIF  "$(CFG)" == "OcsServiceMsg - Win32 Unicode Release"
 
 # PROP BASE Use_MFC 0
 # PROP BASE Use_Debug_Libraries 0
@@ -134,16 +134,16 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 kernel32.lib /nologo /subsystem:windows /dll /machine:I386 /out:"..\ReleaseU\/TestSrv.dll"
+# ADD LINK32 kernel32.lib /nologo /subsystem:windows /dll /machine:I386 /out:"..\ReleaseU\/OcsService.dll"
 
 !ENDIF 
 
 # Begin Target
 
-# Name "TestSrvMsg - Win32 Release"
-# Name "TestSrvMsg - Win32 Debug"
-# Name "TestSrvMsg - Win32 Unicode Debug"
-# Name "TestSrvMsg - Win32 Unicode Release"
+# Name "OcsServiceMsg - Win32 Release"
+# Name "OcsServiceMsg - Win32 Debug"
+# Name "OcsServiceMsg - Win32 Unicode Debug"
+# Name "OcsServiceMsg - Win32 Unicode Release"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90;mc"
@@ -151,7 +151,7 @@ LINK32=link.exe
 
 SOURCE=.\ntserv_msg.mc
 
-!IF  "$(CFG)" == "TestSrvMsg - Win32 Release"
+!IF  "$(CFG)" == "OcsServiceMsg - Win32 Release"
 
 # Begin Custom Build - Compiling messages...
 InputDir=.
@@ -168,7 +168,7 @@ BuildCmds= \
    $(BuildCmds)
 # End Custom Build
 
-!ELSEIF  "$(CFG)" == "TestSrvMsg - Win32 Debug"
+!ELSEIF  "$(CFG)" == "OcsServiceMsg - Win32 Debug"
 
 # Begin Custom Build - Compiling messages...
 InputDir=.
@@ -185,7 +185,7 @@ BuildCmds= \
    $(BuildCmds)
 # End Custom Build
 
-!ELSEIF  "$(CFG)" == "TestSrvMsg - Win32 Unicode Debug"
+!ELSEIF  "$(CFG)" == "OcsServiceMsg - Win32 Unicode Debug"
 
 # Begin Custom Build - Compiling messages...
 InputDir=.
@@ -202,7 +202,7 @@ BuildCmds= \
    $(BuildCmds)
 # End Custom Build
 
-!ELSEIF  "$(CFG)" == "TestSrvMsg - Win32 Unicode Release"
+!ELSEIF  "$(CFG)" == "OcsServiceMsg - Win32 Unicode Release"
 
 # Begin Custom Build - Compiling messages...
 InputDir=.
