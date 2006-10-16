@@ -66,8 +66,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,2
- PRODUCTVERSION 1,0,0,2
+ FILEVERSION 4,0,2,7
+ PRODUCTVERSION 4,0,2,7
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -82,17 +82,17 @@ BEGIN
     BEGIN
         BLOCK "040c04b0"
         BEGIN
-            VALUE "Comments", "\0"
-            VALUE "CompanyName", "\0"
+            VALUE "Comments", "Inventory Tool under GNU General Public License\0"
+            VALUE "CompanyName", "http://ocsinventory.sourceforge.net\0"
             VALUE "FileDescription", "Application MFC download\0"
-            VALUE "FileVersion", "1, 0, 0, 2\0"
+            VALUE "FileVersion", "4, 0, 2, 7\0"
             VALUE "InternalName", "download\0"
-            VALUE "LegalCopyright", "Copyright (C) 2006\0"
-            VALUE "LegalTrademarks", "\0"
+            VALUE "LegalCopyright", "Open Source Software under GNU General Public License\0"
+            VALUE "LegalTrademarks", "http://ocsinventory.sourceforge.net\0"
             VALUE "OriginalFilename", "download.EXE\0"
             VALUE "PrivateBuild", "\0"
-            VALUE "ProductName", "Application download\0"
-            VALUE "ProductVersion", "1, 0, 0, 2\0"
+            VALUE "ProductName", "Open Computers and Software Inventory\0"
+            VALUE "ProductVersion", "4, 0, 2, 7\0"
             VALUE "SpecialBuild", "\0"
         END
     END
