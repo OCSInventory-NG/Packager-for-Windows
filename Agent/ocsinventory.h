@@ -91,6 +91,7 @@ protected: // Attributes
 	CStoreInteract  * m_pTheDB;			// Inventory storing object interaction
 	BOOL			m_bNeedUpdate;		// Agent need to be updated if true
 	CDeviceProperties m_ThePC;			// Device properties
+	COCSInventoryState m_State;			// Inventory state for detecting changes
 };
 
 class CInputDlg : public CDialog

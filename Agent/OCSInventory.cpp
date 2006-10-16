@@ -37,8 +37,7 @@ BOOL COCSInventoryApp::ConnectDB(LPCTSTR lpstrExecutionFolder)
 	AddLog( _T( "Creating CXMLInteract object..."));
 	m_pTheDB = new CXMLInteract();
 	m_pTheDB->SetCmdL(this->m_lpCmdLine);
-	AddLog( _T( "OK\nTrying to open database on folder <%s> with XML..."),
-   lpstrExecutionFolder);
+	AddLog( _T( "OK\nTrying to open database on folder <%s> with XML..."), lpstrExecutionFolder);
 	m_pTheDB->OpenDB( lpstrExecutionFolder);
 	AddLog( _T( "OK.\n"));
 	// Load settings from XML

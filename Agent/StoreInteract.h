@@ -102,6 +102,8 @@ public: // Methods
 	virtual BOOL RetrieveRegistryValues( CDeviceProperties &pPC);
 
 	void SetCmdL(LPCSTR cmdL); 
+	virtual BOOL ReadLastInventoryState( LPCTSTR lpstrFilename, COCSInventoryState &myState);
+	virtual BOOL WriteLastInventoryState( LPCTSTR lpstrFilename, COCSInventoryState &myState);
 
 public: // Enums
 	BOOL IsSearchDiskEnabled();

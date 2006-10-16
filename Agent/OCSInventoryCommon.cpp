@@ -130,6 +130,7 @@ BOOL COCSInventoryApp::InitInstance()
 		BOOL				bOldFlag = FALSE;
 		CObArray			modules;
 		int					modCount;
+		BOOL				bWriteState = FALSE;
 
 		cStartTime = CTime::GetCurrentTime();
 		CString cmdL = this->m_lpCmdLine;
@@ -371,16 +372,16 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 			CInternetSession sess(csUserAgent, 1, iProxy);			
 			CString reponse,contentS;		
 			
-			AddLog( _T( "HTTP SERVER: Connecting to server %s port %i using %s..."), 
+			AddLog( _T( "HTTP SERVER: Getting HTTP Connection to server %s port %i using %s..."), 
 				csServer, iPort, csHttpUserName?"authentication":"no authentication");
 			try {				
 				pConnect = sess.GetHttpConnection(csServer, iPort, csHttpUserName, csHttpPassword);
 				
 				void *lpBuffer = malloc(255);
 				DWORD size=255;
-				BOOL OK = InternetQueryOption(sess, INTERNET_OPTION_CONNECT_TIMEOUT, lpBuffer, &size);
-				if(!OK){
-					TRACE("ERREUR%i\n", GetLastError());
+				if (!InternetQueryOption(sess, INTERNET_OPTION_CONNECT_TIMEOUT, lpBuffer, &size))
+				{
+					TRACE("ERROR %i\n", GetLastError());
 				}
 				TRACE("timeout:%i\n", (int*)(lpBuffer) );
 				AddLog( _T( "OK.\n"));
@@ -416,10 +417,10 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 					xmlResp.FindElem("PROLOG_FREQ");
 					CString prologFreq = xmlResp.GetData();
 					LPCSTR pPro =  prologFreq.GetBuffer(0);
-					char direc[_MAX_PATH+1];
+					TCHAR direc[_MAX_PATH+1];
 					GetCurrentDirectory(_MAX_PATH,direc);
 					CString serIni;
-					serIni.Format("%s\\%s",direc,SERVICE_INI);
+					serIni.Format( _T( "%s\\%s"), direc, SERVICE_INI);
 					
 					int proVal;
 					if( proVal = atoi(pPro) ) {
@@ -459,7 +460,8 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 				TCHAR sz[1024];
 				pEx->GetErrorMessage(sz, 1024);
 				AddLog( _T( "HTTP SERVER: Network initialization block: %s\n"), sz);
-				pEx->Delete();			
+				pEx->Delete();
+				bServerUp=FALSE;
 			}
 			AddLog( _T( "HTTP SERVER: Closing HTTP connection\n"));
 			if(pConnect!=NULL)
@@ -548,6 +550,10 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 			m_pTheDB->RetrieveRegistryValues( m_ThePC);
 			// Load external BIOS infos from CSV if needed
 			LoadBIOS( cmdL, szExecutionFolder, m_ThePC);
+			// Read last inventory state from XML file
+			AddLog( _T( "Reading last inventory state file...\n"));
+			csMessage.Format( _T( "%s%s"), szExecutionFolder, OCS_LAST_STATE_FILE);
+			m_pTheDB->ReadLastInventoryState( csMessage, m_State);
 			// Check state to see if changed
 			HasChanged( &m_ThePC, szExecutionFolder);
 			
@@ -638,7 +644,7 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 				CInternetSession sess2(csUserAgent, 1, iProxy);
 				AddLog( _T( "OK.\n"));
 
-				AddLog( _T( "HTTP SERVER: Connecting to server %s port %i using %s..."), 
+				AddLog( _T( "HTTP SERVER: Getting HTTP Connection to server %s port %i using %s..."), 
 					csServer, iPort, csHttpUserName?"authentication":"no authentication");
 				pConnect = sess2.GetHttpConnection(csServer, iPort, csHttpUserName, csHttpPassword);
 				AddLog( _T( "OK\n"));
@@ -648,6 +654,7 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 					AddLog( _T( "HTTP SERVER: INV : SEND received, sending inventory..."));
 					xmlResp=CNetUtils::sendXml(pConnect,pXml);
 					AddLog( _T( "OK.\n"));
+					bWriteState = TRUE;
 					// Inventory sent, writing down new deviceid
 					if( bOldFlag )
 						CUtils::writeMacDeviceid( m_ThePC.GetDeviceID(), csActualMac, cmdL);
@@ -774,8 +781,8 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 				CUtils::trace("EXCEPTION",cmdL);
 				TCHAR sz[1024];
 				pEx->GetErrorMessage(sz, 1024);
-				AddLog("ERREUR HTTP: BASE: %s\n", sz);
-				pEx->Delete();			
+				AddLog("HTTP ERROR: BASE: %s\n", sz);
+				pEx->Delete();
 			}
 		}	
 		
@@ -784,6 +791,15 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 			((CModuleApi*)modules.GetAt(modCount))->end();
 		}
 		
+		// Write inventory state
+		AddLog( _T( "Writing last inventory state file...\n"));
+		csMessage.Format( _T( "%s%s"), szExecutionFolder, OCS_LAST_STATE_FILE);
+		if (bWriteState)
+			m_pTheDB->WriteLastInventoryState( csMessage, m_State);
+		else
+			AddLog( _T( "\tWriting last inventory state not required.\n"));
+
+		// Closing database (XML)
 		if(bInventoryNeeded ) {
 			CUtils::trace("CLOSING",cmdL);
 			m_pTheDB->CloseDB();
@@ -1184,175 +1200,167 @@ void CInputDlg::OnPaint()
 BOOL COCSInventoryApp::HasChanged(CDeviceProperties *pPC, LPCTSTR lpstrExecutionFolder)
 {
 	CString			csBuffer;
-	CXMLInteract	myXmlDB;
-	COCSInventoryState myState;
 	ULONG			ulChecksum = 0;
 
 	AddLog( _T( "Checking last inventory state...\n"));
-	// Read last inventory state from XML file
-	csBuffer.Format( _T( "%s%s"), lpstrExecutionFolder, OCS_LAST_STATE_FILE);
-	myXmlDB.ReadLastInventoryState( csBuffer, myState);
 	// Checking if hardware changes
 	csBuffer = pPC->GetHash();
-	if (csBuffer.CompareNoCase( myState.GetHardware()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetHardware()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_HARDWARE;
-		myState.SetHardware( csBuffer);
+		m_State.SetHardware( csBuffer);
 		AddLog( _T( "\tHardware inventory state changed.\n"));
 	}
 	// Checking if bios changes
 	csBuffer = pPC->m_BIOS.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetBios()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetBios()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_BIOS;
-		myState.SetBios( csBuffer);
+		m_State.SetBios( csBuffer);
 		AddLog( _T( "\tBios inventory state changed.\n"));
 	}
 	// Checking if memories changes
 	csBuffer = pPC->m_MemoryList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetMemories()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetMemories()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_MEMORIES;
-		myState.SetMemories( csBuffer);
+		m_State.SetMemories( csBuffer);
 		AddLog( _T( "\tMemory slots inventory state changed.\n"));
 	}
 	// Checking if slots changes
 	csBuffer = pPC->m_SlotList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetSlots()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetSlots()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_SLOTS;
-		myState.SetSlots( csBuffer);
+		m_State.SetSlots( csBuffer);
 		AddLog( _T( "\tSystem slots inventory state changed.\n"));
 	}
 	// Checking if registry changes
 	csBuffer = pPC->m_RegistryList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetRegistry()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetRegistry()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_REGISTRY;
-		myState.SetRegistry( csBuffer);
+		m_State.SetRegistry( csBuffer);
 		AddLog( _T( "\tRegistry inventory state changed.\n"));
 	}
 	// Checking if controllers changes
 	csBuffer = pPC->m_SystemControllerList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetControllers()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetControllers()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_CONTROLLERS;
-		myState.SetControllers( csBuffer);
+		m_State.SetControllers( csBuffer);
 		AddLog( _T( "\tSystem controllers inventory state changed.\n"));
 	}
 	// Checking if monitors changes
 	csBuffer = pPC->m_MonitorList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetMonitors()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetMonitors()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_MONITORS;
-		myState.SetMonitors( csBuffer);
+		m_State.SetMonitors( csBuffer);
 		AddLog( _T( "\tMonitors inventory state changed.\n"));
 	}
 	// Checking if ports changes
 	csBuffer = pPC->m_PortList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetPorts()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetPorts()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_PORTS;
-		myState.SetPorts( csBuffer);
+		m_State.SetPorts( csBuffer);
 		AddLog( _T( "\tSystem ports inventory state changed.\n"));
 	}
 	// Checking if storages changes
 	csBuffer = pPC->m_StorageList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetStorages()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetStorages()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_STORAGES;
-		myState.SetStorages( csBuffer);
+		m_State.SetStorages( csBuffer);
 		AddLog( _T( "\tStorage peripherals inventory state changed.\n"));
 	}
 	// Checking if drives changes
 	csBuffer = pPC->m_DriveList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetDrives()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetDrives()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_DRIVES;
-		myState.SetDrives( csBuffer);
+		m_State.SetDrives( csBuffer);
 		AddLog( _T( "\tLogical drives inventory state changed.\n"));
 	}
 	// Checking if inputs changes
 	csBuffer = pPC->m_InputList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetInputs()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetInputs()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_INPUTS;
-		myState.SetInputs( csBuffer);
+		m_State.SetInputs( csBuffer);
 		AddLog( _T( "\tInput peripherals inventory state changed.\n"));
 	}
 	// Checking if modems changes
 	csBuffer = pPC->m_ModemList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetModems()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetModems()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_MODEMS;
-		myState.SetModems( csBuffer);
+		m_State.SetModems( csBuffer);
 		AddLog( _T( "\tModems inventory state changed.\n"));
 	}
 	// Checking if networks changes
 	csBuffer = pPC->m_NetworkList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetNetworks()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetNetworks()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_NETWORKS;
-		myState.SetNetworks( csBuffer);
+		m_State.SetNetworks( csBuffer);
 		AddLog( _T( "\tNetwork adapters inventory state changed.\n"));
 	}
 	// Checking if printers changes
 	csBuffer = pPC->m_PrinterList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetPrinters()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetPrinters()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_PRINTERS;
-		myState.SetPrinters( csBuffer);
+		m_State.SetPrinters( csBuffer);
 		AddLog( _T( "\tPrinters inventory state changed.\n"));
 	}
 	// Checking if sounds changes
 	csBuffer = pPC->m_SoundList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetSounds()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetSounds()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_SOUNDS;
-		myState.SetSounds( csBuffer);
+		m_State.SetSounds( csBuffer);
 		AddLog( _T( "\tSound adapters inventory state changed.\n"));
 	}
 	// Checking if videos changes
 	csBuffer = pPC->m_VideoList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetVideos()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetVideos()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_VIDEOS;
-		myState.SetVideos( csBuffer);
+		m_State.SetVideos( csBuffer);
 		AddLog( _T( "\tVideo adapters inventory state changed.\n"));
 	}
 	// Checking if softwares changes
 	csBuffer = pPC->m_SoftwareList.GetHash();
-	if (csBuffer.CompareNoCase( myState.GetSoftwares()) != 0)
+	if (csBuffer.CompareNoCase( m_State.GetSoftwares()) != 0)
 	{
 		// Changed
 		ulChecksum += OCS_CHECKSUM_SOFTWARES;
-		myState.SetSoftwares( csBuffer);
+		m_State.SetSoftwares( csBuffer);
 		AddLog( _T( "\tSoftware inventory state changed.\n"));
 	}
 	pPC->SetChecksum( ulChecksum);
-	// if change, write new inventory state
+	// if change
 	if (ulChecksum)
-	{
-		csBuffer.Format( _T( "%s%s"), lpstrExecutionFolder, OCS_LAST_STATE_FILE);
-		myXmlDB.WriteLastInventoryState( csBuffer, myState);
-	}
+		AddLog( _T( "\tInventory changed since last run.\n"));
 	else
-		AddLog( _T( "\tNo changes since last inventory.\n"));
+		AddLog( _T( "\tNo change since last inventory.\n"));
 	return TRUE;
 }

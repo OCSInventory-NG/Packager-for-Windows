@@ -18,6 +18,7 @@
 
 #include "Resource.h"
 #include "SysInfo.h"
+#include "OCSInventoryState.h"
 #include "StoreInteract.h"
 
 //////////////////////////////////////////////////////////////////////
@@ -207,4 +208,14 @@ BOOL CStoreInteract::IsExcludeFolder( LPCTSTR lpstrFolder)
 BOOL CStoreInteract::IsSearchDiskEnabled()
 {
 	return m_bSearchFiles;
+}
+
+BOOL CStoreInteract::ReadLastInventoryState(LPCTSTR lpstrFilename, COCSInventoryState &myState)
+{
+	return FALSE;
+}
+
+BOOL CStoreInteract::WriteLastInventoryState(LPCTSTR lpstrFilename, COCSInventoryState &myState)
+{
+	return FALSE;
 }
