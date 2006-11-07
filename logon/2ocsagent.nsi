@@ -1,6 +1,6 @@
 ################################################################################
-##OCSInventory Version 1.0 RC3
-##Copyleft Emmanuel GUILLORY 2005
+##OCSInventory Version 1.0
+##Copyleft Emmanuel GUILLORY 2006
 ##Web : http://ocsinventory.sourceforge.net
 ##
 ##This code is open source and may be copied and modified as long as the source
@@ -11,19 +11,21 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;4027
+;
 ;4026
 ;added /lnk  ---------------------------------------------> fait
 ;4004-4014
 ; added /local
 ;Normal roadmapped improvments
-!include "MUI.nsh"
-!insertmacro MUI_LANGUAGE "english"
-!define Compile_version "4.0.2.6"
+;!include "MUI.nsh"
+;!insertmacro MUI_LANGUAGE "english"
+!define Compile_version "4.0.2.7"
 BRANDINGTEXT "OCS Inventory NG ${Compile_version}"
 Icon "Aocs2.ico"
 ShowInstDetails hide
 Name "OcsAgent"
-OutFile "OcsAgent.exe"
+OutFile "ocsagent.exe"
 ;--------------------------------
 ;Version Information
 
@@ -38,7 +40,7 @@ OutFile "OcsAgent.exe"
 
 Function .onInit
 ; Prevent Multiple Instances
-  System::Call 'kernel32::CreateMutexA(i 0, i 0, t "OcsAgent") i .r1 ?e'
+  System::Call 'kernel32::CreateMutexA(i 0, i 0, t "OcsAgentNG") i .r1 ?e'
   Pop $R0
   StrCmp $R0 0 not_running
 ;  MessageBox MB_OK|MB_ICONEXCLAMATION "The installer is already running."
@@ -124,28 +126,44 @@ folder_use:
   Strlen $1 $R9
   intop $3 $2 - $1
   strcpy $R7 $R7 $3 0
-; messagebox mb_ok "folder: $R7"
+  ;messagebox mb_ok "install dans le dossier :$R7"
   createdirectory "$R7"
   goto suite
 folder_end:
   ; end testing /folder option
   createdirectory "$R7"
-  FileOpen $1 "$R7\file.dat" w
+
+ FileOpen $1 "$R7\file.dat" w
   FileWrite $1 "OCS_NG"
   Fileclose $1
   FileOpen $0 "$R7\file.dat" r
   FileRead $0 $1
-  ; Tested the entered vallue
+ ; Tested the entered vallue
   FileClose $0
-  strcmp $1 "OCS_NG"  PASPB    PB
-PASPB:  ; Writing OK so $R7 = c:\ocs-ng
+  strcmp $1 "OCS_NG"  0    PB
+ ; Writing OK so $R7 = c:\ocs-ng
   SetFileAttributes "$R7\file.dat" NORMAL
   delete "$R7\file.dat"
-  goto suite
-PB: ; Can not Write so giving $R7 the user temp value
+;  goto suite
+;PB: ; Can not Write so giving $R7 the user temp value
+IfFileExists "$R7\ocsagent.exe" 0 et1
+delete "$R7\ocsagent.new"
+IfFileExists "$R7\ocsagent.new" PB 0
+rename "$R7\ocsagent.exe" "$R7\ocsagent.old"
+IfFileExists "$R7\ocsagent.old" 0 PB
+delete "$R7\ocsagent.old"
+et1:
+IfFileExists "$R7\ocsinventory.exe" 0 suite
+rename "$R7\ocsinventory.exe" "$R7\ocsinventory.old"
+IfFileExists "$R7\ocsinventory.old" 0 PB
+IfFileExists "$R7\ocsinventory.exe" PB 0
+rename "$R7\ocsinventory.old" "$R7\ocsinventory.exe"
+goto suite
+PB:
   strcpy $R7 "$TEMP"
   ;messagebox mb_ok $R7
-  createdirectory "$R7"
+  createdirectory "$R7\ocs-ng"
+  strcpy $R7 "$R7\ocs-ng"
   FileOpen $1 "$R7\file.dat" w
   FileWrite $1 "OCS_NG"
   Fileclose $1
@@ -159,9 +177,12 @@ PASPBt:  ; Can Write so temp user
   ;messagebox mb_ok "$1  ok sur temp"
   delete "$R7\file.dat"
   goto suite
-PBt: ; Can not Write so exit
+PBt: ; Can not Write so exit and try to alert server
+ ; messagebox mb_ok "$R8"
+  NSISdl::download_quiet /TIMEOUT=600000 /NOIEPROXY "http://$R8$http_port_number/ocsinventory/deploy/nodeploy" "$R7\nodeploy"
   abort
 suite:
+;messagebox mb_ok "$r7"
 FunctionEnd
 
 Function StrStr
