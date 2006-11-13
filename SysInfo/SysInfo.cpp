@@ -61,8 +61,14 @@ SysInfo::~SysInfo()
 
 UINT SysInfo::getOS( CString &csName, CString &csVersion, CString &csComment, CString &csDescription)
 {
+	UINT uReturn;
+
 	if (m_wmiInfo.IsWmiConnected())
-		return m_wmiInfo.GetOS( csName, csVersion, csComment, csDescription);
+		uReturn = m_wmiInfo.GetOS( csName, csVersion, csComment, csDescription);
+	// check if WMI successful
+	if (uReturn != UNKNOWN_DEVICE)
+		return uReturn;
+
 	AddLog( _T( "dtWinVer GetOS..."));
 
 	COSVersion::OS_VERSION_INFO osvi;

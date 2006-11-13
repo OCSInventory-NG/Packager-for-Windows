@@ -1242,13 +1242,13 @@ UINT CWmi::GetOS(CString &csName, CString &csVersion, CString &csComment, CStrin
 			return uType;
 		}
 		AddLog( _T( "Failed because no Win32_OperatingSystem object !\n"));
-		return WINDOWS_WORKSTATION;
+		return UNKNOWN_DEVICE;
 	}
 	catch (CException *pEx)
 	{
 		pEx->Delete();
 		AddLog( _T( "Failed because unknown exception !\n"));
-		return WINDOWS_WORKSTATION;
+		return UNKNOWN_DEVICE;
 	}
 }
 
