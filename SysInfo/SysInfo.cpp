@@ -643,6 +643,11 @@ BOOL SysInfo::getDomainOrWorkgroup(CString &csDomain)
 	return m_registryInfo.GetDomainOrWorkgroup( csDomain);
 }
 
+BOOL SysInfo::getUserDomain(CString &csUserDomain)
+{
+	return m_registryInfo.GetDomainOrWorkgroup( csUserDomain);
+}
+
 LPCTSTR SysInfo::getDeviceID()
 {
 	LPCTSTR lpstrDeviceID;

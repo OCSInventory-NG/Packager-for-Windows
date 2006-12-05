@@ -96,6 +96,8 @@ public:
 	LPCTSTR GetDescription();
 	// Return the NT domain name or workgroup
 	LPCTSTR GetDomainOrWorkgroup();
+	// return the NT user domain 
+	LPCTSTR GetUserDomain();
 	// Return the device type
 	UINT	GetDeviceType();
 	// Return Windows registered company
@@ -143,6 +145,8 @@ public:
 	void SetDescription( LPCTSTR lpstrDescription);
 	// Set the NT Domain name or workgroup
 	void SetDomainOrWorkgroup( LPCTSTR lpstrDomain);
+	// Set the NT User Domain
+	void SetUserDomain( LPCTSTR lpstrUserDomain);
 	// Set informations about Windows registration
 	void SetWindowsRegistration( LPCTSTR lpstrCompany, LPCTSTR lpstrOwner, LPCTSTR lpstrProductID);
 	// Set informations about Windows key
@@ -218,6 +222,7 @@ protected: // Attributes
 	CString	m_csDescription;	// Description extracted from OS
 	UINT	m_uType;			// Network device type
 	CString	m_csDomain;			// NT Domain name or workgroup
+	CString	m_csUserDomain		;// NT user Domain name 
 	CString	m_csWinRegCompany;	// Windows registered company
 	CString	m_csWinRegOwner;	// Windows registered owner
 	CString m_csWinRegProductID;// Windows product ID

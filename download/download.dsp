@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 libeay32.lib ssleay32.lib zip.lib zlib.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc" /out:"..\_Release\download.exe " /libpath:"..\include\Zip\Release" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" /libpath:"C:\Program Files\SDK\Fev2003\Lib"
+# ADD LINK32 libeay32.lib ssleay32.lib zip.lib zlib.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc" /out:"..\_Release\download.exe " /libpath:"..\include\Zip\Release" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" /libpath:"C:\Program Files\Microsoft Platform SDK\Lib"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "download - Win32 Debug"
@@ -80,8 +80,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 libeay32.lib ssleay32.lib zlib.lib srclient.lib zip.lib /nologo /subsystem:windows /debug /machine:I386 /out:"..\_Debug\download.exe" /pdbtype:sept /libpath:"C:\Program Files\vieux_sdk\Lib" /libpath:"..\include\Zip\Debug" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib"
-# SUBTRACT LINK32 /nodefaultlib
+# ADD LINK32 libeay32.lib ssleay32.lib zlib.lib srclient.lib zip.lib /nologo /subsystem:windows /debug /machine:I386 /out:"..\_Debug\download.exe" /pdbtype:sept /libpath:"C:\Program Files\Vieux Microsoft SDK\Lib" /libpath:"..\include\Zip\Debug" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib"
+# SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
 

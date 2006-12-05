@@ -40,6 +40,7 @@ void CDeviceProperties::Clear()
 	m_csDeviceID.Empty();		// Device unique ID
 	m_csDeviceName.Empty();		// Device netbios name
 	m_csDomain.Empty();			// Domain or workgroup
+	m_csUserDomain.Empty();			// Domain or workgroup
 	m_csOSName.Empty();			// OS Name of the device (ex "Windows NT")
 	m_csOSVersion.Empty();		// OS Version of the device (ex "4.0 Build 1381")
 	m_csOSComment.Empty();		// OS Comment of the device (ex "Service Pack 6")
@@ -174,6 +175,12 @@ void CDeviceProperties::SetDomainOrWorkgroup( LPCTSTR lpstrDomain)
 	StrForSQL( m_csDomain);
 }
 
+void CDeviceProperties::SetUserDomain( LPCTSTR lpstrUserDomain)
+{
+	m_csUserDomain = lpstrUserDomain;
+	StrForSQL( m_csUserDomain);
+}
+
 void CDeviceProperties::SetWindowsProductKey( LPCTSTR lpstrWindowsKey)
 {
 	m_csWinProductKey = lpstrWindowsKey;
@@ -279,6 +286,11 @@ LPCTSTR CDeviceProperties::GetDomainOrWorkgroup()
 	return m_csDomain;
 }
 
+LPCTSTR CDeviceProperties::GetUserDomain()
+{
+	return m_csUserDomain;
+}
+
 LPCTSTR CDeviceProperties::GetWindowsRegisteredCompany()
 {
 	return m_csWinRegCompany;
@@ -328,6 +340,11 @@ BOOL CDeviceProperties::RetrieveHardwareAndOS(SysInfo * myPC, LPCSTR cmdL)
 	// Get NT Domain or Workgroup
 	CUtils::trace("NT_DOMAIN",cmdL);
 	myPC->getDomainOrWorkgroup( m_csDomain);
+
+	// Get NT user Domain
+	CUtils::trace("NT_USER_DOMAIN",cmdL);
+	myPC->getUserDomain( m_csUserDomain);
+	
 
 	// Get BIOS informations
 	CUtils::trace("BIOS",cmdL);
@@ -407,6 +424,7 @@ BOOL CDeviceProperties::FormatXML(CMarkup* pX)
 	pX->IntoElem();
 		pX->AddElemNV("NAME",m_csDeviceName);
 		pX->AddElemNV("WORKGROUP",m_csDomain);
+		pX->AddElemNV("USERDOMAIN",m_csUserDomain);
 		pX->AddElemNV("OSNAME",m_csOSName);
 		pX->AddElemNV("OSVERSION",m_csOSVersion);
 		pX->AddElemNV("OSCOMMENTS",m_csOSComment);

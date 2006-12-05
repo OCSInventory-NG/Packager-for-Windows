@@ -87,6 +87,7 @@ public: // Methods
 	// OS information
 	UINT getOS( CString &csName, CString &csVersion, CString &csComment, CString &csDescription);
 	BOOL getDomainOrWorkgroup( CString &csDomain);
+	BOOL getUserDomain( CString &csUserDomain);
 
 	// Memory information
 	BOOL getMemory( ULONG *m_ulPhysicalMemory, ULONG *m_ulSwapSize);
