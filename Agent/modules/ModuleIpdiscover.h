@@ -24,7 +24,7 @@
 #include <Afxmt.h>
 #include <Ws2tcpip.h>
 
-#define NAME_RES_LATENCY 500 //ms
+#define IPDISCOVER_DEFAULT_LATENCY 100 //ms
 
 class CModuleIpdiscover : public CModuleApi  
 {
@@ -37,6 +37,9 @@ public: // privatiser
 	ULONG			 m_hostFound;
 	CCriticalSection m_cs;
 	UINT			 m_currentIp;
+	int m_ipdisc_lat;
+	int response(CMarkup* pXml, CString* pRawResponse=NULL);
+	int inventory(CMarkup* pXml, CDeviceProperties* pPc);	
 
 	// CModuleIpdiscover constructor.
 	// commandLine: command line
@@ -50,10 +53,7 @@ public: // privatiser
 	unsigned long (WINAPI *lpfn_inet_addr)(const char* cp);
 	char* FAR (WINAPI *lpfn_inet_ntoa)(struct in_addr in);
 
-public:
-	
-	int response(CMarkup* pXml, CString* pRawResponse=NULL);
-	int inventory(CMarkup* pXml, CDeviceProperties* pPc);	
+
 	//UINT threadWork( LPVOID pParam ) ;
 
 };

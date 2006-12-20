@@ -28,6 +28,7 @@ static char THIS_FILE[]=__FILE__;
 CModuleIpdiscover::CModuleIpdiscover(CString commandLine,CDeviceProperties * pC, CString serv, UINT prox, INTERNET_PORT port, CString http_u, CString http_w ) : CModuleApi( commandLine, pC, serv, prox, port, http_u, http_w )
 {
 	pXmlResponse = NULL;
+	m_ipdisc_lat = 0;
 }
 
 int CModuleIpdiscover::response(CMarkup* pXml, CString* pRawResponse)
@@ -88,7 +89,6 @@ UINT threadWork( LPVOID pParam ) {
 		if( getnameinfo((SOCKADDR *)&saIn, sizeof(sockaddr), szHostName, 256, szServInfo, 256, NI_NUMERICSERV) != 0) {
 		  AddLog("getnameinfo(): failed.\n");
 		  AddLog("Error #: %ld\n", WSAGetLastError());
-		  Sleep(NAME_RES_LATENCY);
 		}
 
 		pIpd->m_cs.Lock();
@@ -115,7 +115,6 @@ UINT threadWork( LPVOID pParam ) {
 		IpCur = inet_addr(csSent);
 		
 		AddLog( _T( "\tIPDISCOVER: Computer found: IP:%s MAC:%s NAME:%s\n"),csSent,szMac,szHostName);
-		Sleep(NAME_RES_LATENCY);
 		pIpd->m_cs.Unlock();		
 		delete [] szMac;
 	}
@@ -129,6 +128,7 @@ int CModuleIpdiscover::inventory(CMarkup* pXml, CDeviceProperties* pPc)
 		return 1;
 
 	pMyXml = pXml;
+
 	CString forcedIpdisc = CUtils::getParamValue(cmdL,"ipdisc");
 
 	//TODO verifier pXMl <>null, + mettre =null ds constructeur
@@ -159,10 +159,23 @@ int CModuleIpdiscover::inventory(CMarkup* pXml, CDeviceProperties* pPc)
 			else
 			{						
 				CMapStringToString* pM=NULL;	
-				CString		nbr,mask;
+				CString		nbr,mask,ipdisc_lat_server;
+				int ipdisc_lat_cmdl;
 
-				pM=CUtils::getOptionAttributes(*pXmlResponse,1,"IPDISCOVER", "");
+				pM=CUtils::getOptionAttributes(*pXmlResponse,1,"IPDISCOVER", "IPDISC_LAT", "");
 				pM->Lookup("VAL",nbr);
+				pM->Lookup("IPDISC_LAT",ipdisc_lat_server);
+
+				/* Allow to set the desired latency in command line (MISCELLANEOUS in services.ini)
+				It overloads the server settings */
+				
+				ipdisc_lat_cmdl = atoi( CUtils::getParamValue(cmdL,"ipdisc_lat").GetBuffer(NULL) );
+				
+				m_ipdisc_lat = ipdisc_lat_cmdl?ipdisc_lat_cmdl:atoi(ipdisc_lat_server);
+				
+				if( !m_ipdisc_lat )
+					m_ipdisc_lat = IPDISCOVER_DEFAULT_LATENCY;
+
 				if( forcedIpdisc.GetLength() == 0 )
 					AddLog( _T( "IPDISCOVER: function required by HTTP server...\n"));
 				else {
@@ -182,7 +195,7 @@ int CModuleIpdiscover::inventory(CMarkup* pXml, CDeviceProperties* pPc)
 				else {
 					pXml->AddElem("IPDISCOVER");
 					pXml->IntoElem();
-					AddLog( _T("IPDISCOVER: Scanning to detect IP enabled hosts for the given network number: %s\n"),nbr);
+					AddLog( _T("IPDISCOVER: Scanning to detect IP enabled hosts for the given network number: %s with %i ms between each request\n"),nbr,m_ipdisc_lat);
 					ULONG   ipMsk, maxIp;	
 					CString csSent, csIncrIp;
 					BOOL	baliseIp = FALSE;
@@ -231,7 +244,7 @@ int CModuleIpdiscover::inventory(CMarkup* pXml, CDeviceProperties* pPc)
 						pT->ResumeThread();
 						IpCur++;
 						if( !fastIp )
-							Sleep(8);
+							Sleep( m_ipdisc_lat );
 					}
 					while( IpCur < maxIp && IpCur <= NB_IP_MAX );
 						

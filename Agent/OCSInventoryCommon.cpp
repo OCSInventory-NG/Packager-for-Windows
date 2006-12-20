@@ -376,14 +376,6 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 				csServer, iPort, csHttpUserName?"authentication":"no authentication");
 			try {				
 				pConnect = sess.GetHttpConnection(csServer, iPort, csHttpUserName, csHttpPassword);
-				
-				void *lpBuffer = malloc(255);
-				DWORD size=255;
-				if (!InternetQueryOption(sess, INTERNET_OPTION_CONNECT_TIMEOUT, lpBuffer, &size))
-				{
-					TRACE("ERROR %i\n", GetLastError());
-				}
-				TRACE("timeout:%i\n", (int*)(lpBuffer) );
 				AddLog( _T( "OK.\n"));
 				myMarkup.SetDoc(XML_HEADERS);
 				myMarkup.AddElem("REQUEST");
@@ -518,6 +510,7 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 			cFile.Set( _T( "Microsoft Corporation"), m_ThePC.GetOSName(),
 					   m_ThePC.GetOSVersion(), NOT_AVAILABLE, m_ThePC.GetOSComment(), NOT_AVAILABLE, 0, TRUE);
 			m_ThePC.m_SoftwareList.AddTail( cFile);
+				
 			// Connect to database and load settings
 			CUtils::trace("DB_CONNECT",cmdL);
 			ConnectDB( szExecutionFolder);

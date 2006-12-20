@@ -275,9 +275,13 @@ SSL_CTX * COptDownloadPackage::setup_client_ctx(void)
 {
     SSL_CTX *ctx;
  
+	SSL_load_error_strings();
+
     ctx = SSL_CTX_new(SSLv23_method(  ));
-    if (SSL_CTX_load_verify_locations(ctx, m_csCertFile.GetBuffer(0), m_csCertPath.GetBuffer(0)) != 1)
-	   AddLog("ERROR: DOWNLOAD: loading CA file and/or directory\n");
+    if (SSL_CTX_load_verify_locations(ctx, m_csCertFile.GetBuffer(0), m_csCertPath.GetBuffer(0)) != 1){
+		AddLog("ERROR: DOWNLOAD: loading CA file and/or directory\n");
+		AddLog("ERROR:%s\n", ERR_error_string(ERR_get_error() ,NULL));
+	}
     if (SSL_CTX_set_default_verify_paths(ctx) != 1)
         AddLog("ERROR: DOWNLOAD: loading default CA file and/or directory\n");
     
@@ -292,8 +296,10 @@ int COptDownloadPackage::sendGetRequest(SSL *ssl)
 	getBuf.Format("GET /%s/%s/info HTTP/1.0\n\n", m_csInfoLoc, m_csId );
 	
 	int err = SSL_write(ssl, getBuf.GetBuffer(0), getBuf.GetLength());
-    if (err <= 0)
+    if (err <= 0){
+		AddLog("ERROR: DOWNLOAD: Cannot get info file. Error code: %i\n", err);
 		return 0;
+	}
 
     return 1;
 }
@@ -444,17 +450,21 @@ int COptDownloadPackage::getInfoFile()
 	AddLog("DOWNLOAD: Info file for package %s is located at : %s%s\n", m_csId, srvName, m_csInfoLoc);
 
 	conn = BIO_new_connect( srvName.GetBuffer(0) );
-    if (!conn)
+    if (!conn){
         AddLog("ERROR: DOWNLOAD: creating connection BIO\n");
+		AddLog("ERROR:%s\n", ERR_error_string(ERR_get_error() ,NULL));
+	}
  
-    if (BIO_do_connect(conn) <= 0)
+    if (BIO_do_connect(conn) <= 0){
         AddLog("ERROR: DOWNLOAD: connecting to remote machine\n");
+		AddLog("ERROR:%s\n", ERR_error_string(ERR_get_error() ,NULL));
+	}
  
     ssl = SSL_new(ctx);
     SSL_set_bio(ssl, conn, conn);
 
     if (SSL_connect(ssl) <= 0) {
-        AddLog("ERROR: DOWNLOAD: connecting SSL object\n");
+		AddLog("ERROR:%s\n", ERR_error_string(ERR_get_error() ,NULL));
 	}
 	else{
 		AddLog("DOWNLOAD: SSL Connection opened...OK (pack %s)\n", m_csId);
@@ -472,3 +482,50 @@ int COptDownloadPackage::getInfoFile()
     return 0;
 }
 
+
+int CModuleDownload::inventory(CMarkup *pXml, CDeviceProperties *pPc)
+{
+	//Add ocs packages to a dedicated section
+	CStdioFile	history;
+	CSoftware	cFile;
+
+	UINT		nMax			= 255;
+	short		errCnt			= 0;
+	LPTSTR		lpsz			= (LPTSTR)malloc(nMax); 
+	BOOL		historyOpened	= FALSE;
+
+	while( errCnt<3 ){
+		if(history.Open("download\\history", CFile::modeRead|CFile::modeNoTruncate)){
+			historyOpened = TRUE;
+			break;
+		}
+		AddLog("DOWNLOAD: WARNING: Cannot open history file...retrying...\n");
+		Sleep(2);
+		errCnt++;
+	}
+
+	pXml->AddElem("DOWNLOAD");
+	pXml->IntoElem();
+	pXml->AddElem("HISTORY");
+	pXml->IntoElem();
+
+	if( historyOpened ){
+		while( history.ReadString( lpsz, nMax ) ){
+			// Chomp the string
+			if( !strncmp( lpsz+(strlen(lpsz)-1), "\n", 1 ) )
+				lpsz[strlen(lpsz)-1]='\0';
+			
+			AddLog("DOWNLOAD: Adding package %s to report\n", lpsz);
+			pXml->AddElem("PACKAGE");
+			pXml->AddAttrib( "ID", lpsz );
+		}
+		pXml->OutOfElem();
+		pXml->OutOfElem();
+	}
+	else{
+		AddLog("DOWNLOAD: ERROR: Cannot open history file: %i\n", GetLastError());
+		return 1;
+	}
+	free(lpsz);
+	return 0;
+}

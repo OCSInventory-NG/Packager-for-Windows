@@ -55,6 +55,7 @@ private:
 		m_csDownloadTimeout,
 		m_csDownloadOn;
 public:
+	int inventory(CMarkup* ,CDeviceProperties* );
 	void configToFile();
 	CModuleDownload(CString commandLine,CDeviceProperties * pC, CString serv, UINT prox, INTERNET_PORT port, CString http_user, CString http_pwd );
 	virtual ~CModuleDownload();

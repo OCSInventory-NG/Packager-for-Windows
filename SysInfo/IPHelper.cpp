@@ -279,13 +279,15 @@ BOOL CIPHelper::GetNetworkAdapters(CNetworkAdapterList *pList)
 		}
 		while( pAddressList != NULL );
 
-		// Update network number
+		// Update network number if possible
 		in_addr ipa;
 		ULONG   ipAdr, ipMsk, nbRez;		
 			
-		ipAdr = ntohl(inet_addr ( csAddress ));
-		ipMsk = ntohl(inet_addr ( csNetMask ));
-		nbRez = ipAdr & ipMsk ;
+		if( inet_addr( csAddress ) != INADDR_NONE ){
+			ipAdr = ntohl(inet_addr ( csAddress ));
+			ipMsk = ntohl(inet_addr ( csNetMask ));
+			nbRez = ipAdr & ipMsk ;
+		}
 
 		ipa.S_un.S_addr = htonl(nbRez);
 		LPCSTR csRez = inet_ntoa(ipa);

@@ -98,6 +98,7 @@ public:
 	BOOL notifyCanAbort;
 	BOOL notifyCanDelay;
 	BOOL needDoneAction;
+	CString needDoneActionText;
 
 	CPackage(CDownloadApp * p) { pA = p;};
 	BOOL fromXml( CMarkup* pX ); 

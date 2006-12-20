@@ -46,10 +46,11 @@ VirtualFilter=dWC
 [DLG:IDD_CU]
 Type=1
 Class=CInputDlg
-ControlCount=5
-Control1=IDC_VAL,edit,1350631552
+ControlCount=6
+Control1=IDC_VAL,edit,1350631620
 Control2=IDOK,button,1342242817
-Control3=IDC_LABEL_TEXT,static,1342308352
+Control3=IDC_LABEL_TEXT,static,1342308864
 Control4=IDC_STATIC,static,1342177283
 Control5=IDC_STATIC,static,1342308352
+Control6=IDC_STATIC,button,1342177287
 

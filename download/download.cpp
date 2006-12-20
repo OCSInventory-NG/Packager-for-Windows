@@ -213,22 +213,16 @@ BOOL CDownloadApp::InitInstance()
 				continue;
 			}
 
-			if( fileExists("task", fName) == 0 ) {
-				CString taskPath;
+			if( (fileExists("task", fName) == 0) || (fileExists("task_done", fName) == 0) ) {
+				CString taskPath, taskDonePath;
 				taskPath.Format("%s\\task", fName);
-				
-				CFile task;
-				if( ! task.Open(taskPath, CFile::modeWrite|CFile::modeCreate)) {
-					AddLog("\tERROR: Can't create task file");
-					delete pPack;
-					continue;
-				}
-				task.Close();
+				taskDonePath.Format("%s\\task_done", fName);
 
-				CFile fileFrag;
-				if( ! fileFrag.Open( taskPath, CFile::modeCreate|CFile::modeWrite ) ) {
-					AddLog("\tERROR: Can't open %s", taskPath);
+				CFile task, task_done;
+				if( ! task.Open(taskPath, CFile::modeWrite|CFile::modeCreate)) {
+					AddLog("\tERROR: Can't create task file (%s)", taskPath);
 					delete pPack;
+					task.Close();
 					continue;
 				}
 				
@@ -236,10 +230,18 @@ BOOL CDownloadApp::InitInstance()
 					for( UINT fcount=1; fcount <= pPack->Frags; fcount++ ) {
 						CString fragName;
 						fragName.Format("%s-%i\n", fName, fcount);
-						fileFrag.Write( fragName, fragName.GetLength() );
+						task.Write( fragName, fragName.GetLength() );
 					}
 				}
-				fileFrag.Close();
+				task.Close();
+
+				if( ! task_done.Open(taskDonePath, CFile::modeCreate|CFile::modeWrite ) ){
+					AddLog("\tERROR: Can't create task_done file (%s)", taskDonePath);
+					task_done.Close();
+					continue;
+				}
+				task_done.Close();
+
 			}
 			packages.Add(pPack);
 			end = FALSE;
@@ -333,7 +335,9 @@ BOOL CPackage::fromXml( CMarkup* pX ) {
 		notifyCanAbort = BOOL ( atoi( pX->GetAttrib("NOTIFY_CAN_ABORT") ) );
 		notifyCanDelay = BOOL ( atoi( pX->GetAttrib("NOTIFY_CAN_DELAY") ) );
 	}
-	needDoneAction = BOOL ( atoi( pX->GetAttrib("NEED_DONE_ACTION") ) );
+	if( needDoneAction = BOOL ( atoi( pX->GetAttrib("NEED_DONE_ACTION") ) ) ){
+		needDoneActionText = pX->GetAttrib("NEED_DONE_ACTION_TEXT");
+	}
 
 	return TRUE;
 }
@@ -629,10 +633,23 @@ int CPackage::execute() {
 				AddLog("ERROR: Cannot find launcher...execute stage aborted");
 				return 1;
 			}
+			
+			// Checking if binary does exist
+			int iIndex = 0;
+			CString csExeName;
+			BOOL exeFound = FALSE;
 
-			CString cmdLine = Name;
+			//We take the last ".exe"
+			while( ( iIndex = Name.Find(".exe", 0) ) != -1){
+				csExeName = Name.Left( iIndex + sizeof(".exe") );
+				if( fileExists( csExeName.GetBuffer(NULL) ) ){
+					exeFound = TRUE;
+					break;
+				}
+			}
 
-			if( fileExists( strtok(Name.GetBuffer(0), "/" ) ) ){
+			if( exeFound ){
+
 				AddLog("LAUNCH: Launching %s",Name);
 				
 				STARTUPINFO si;
@@ -645,7 +662,7 @@ int CPackage::execute() {
 				si.wShowWindow = SW_HIDE;
 
 				si.dwFlags=STARTF_USESHOWWINDOW;
-				CString commandLine = "..\\..\\..\\inst32.exe /exe:" + CString("\"") + cmdLine + CString("\"") + " /log:instlog.txt";
+				CString commandLine = "..\\..\\..\\inst32.exe /exe:" + CString("\"") + Name + CString("\"") + " /log:instlog.txt";
 
 				if( ! CreateProcess( NULL, commandLine.GetBuffer(0), NULL, NULL, TRUE, 0, NULL, NULL, &si,&pi )) {
 					AddLog("ERROR: Error %d occured while running %s", GetLastError(), Name);
@@ -657,7 +674,7 @@ int CPackage::execute() {
 				}
 
 				if( needDoneAction ){
-					AfxMessageBox( LPCTSTR("Veuillez appuyer sur OK quand l'installation est terminée. Merci"), MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
+					AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
 				}
 				
 				DWORD exitCode;
@@ -673,13 +690,13 @@ int CPackage::execute() {
 					CNetUtils::downloadMessage( CODE_SUCCESS + CString("_") + code, Id, pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy);	
 					return 5;
 				}
-					
-
 			}
 			else {
-				AddLog("ERROR: File %s does not exist",Name);
-				return 1;
+					AddLog("ERROR: .exe not found. Check the program name");
+					return 1;
+			
 			}
+
 		}
 		else if( Act == "EXECUTE" ) {
 			if( !Command.GetLength() ) {

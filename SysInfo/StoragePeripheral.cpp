@@ -80,7 +80,8 @@ LPCTSTR CStoragePeripheral::GetSizeString()
 	static CString csBuffer;
 
 	if (m_u64Size > 0)
-		csBuffer.Format( _T( "%I64u MB"), m_u64Size);
+		//csBuffer.Format( _T( "%I64u MB"), m_u64Size);
+		csBuffer.Format( _T( "%I64u"), m_u64Size);
 	else
 		csBuffer.Empty();
 	return csBuffer;

@@ -3,92 +3,105 @@
 <pre>
 <h1>Build Log</h1>
 <h3>
---------------------Configuration: SysInfo - Win32 Debug--------------------
+--------------------Configuration: OcsWmi - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSPBC.tmp" with contents
+Creating command line "rc.exe /l 0x40c /fo"Release/OcsWmi.res" /i "C:\Program Files\SDK2003R2\Lib" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\win32_agent\OcsWmi\OcsWmi.rc"" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4B0.tmp" with contents
 [
-/nologo /MDd /W3 /WX /Gm /GX /ZI /Od /I "../includes" /I "../OcsWmi" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SYSINFO_EXPORTS" /D "_WINDLL" /D "_AFXDLL" /Fp"Debug/SysInfo.pch" /YX"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\ocs\agent\win32_agent\SysInfo\DeviceProperties.cpp"
+wbemuuid.lib /nologo /dll /incremental:no /pdb:"Release/OcsWmi.pdb" /machine:I386 /out:"..\_Release\OcsWmi.dll" /implib:"Release/OcsWmi.lib" /libpath:"C:\Program Files\Microsoft Platform SDK\Lib" 
+.\Release\OcsWmi.obj
+.\Release\StdAfx.obj
+.\Release\OcsWmi.res
 ]
-Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSPBC.tmp" 
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSPBD.tmp" with contents
-[
-wbemuuid.lib ws2_32.lib libeay32.lib setupapi.lib /nologo /dll /incremental:yes /pdb:"Debug/SysInfo.pdb" /debug /machine:I386 /out:"..\_Debug\SysInfo.dll" /implib:"Debug/SysInfo.lib" /pdbtype:sept /libpath:"..\include\Zip\Release" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" /libpath:"C:\Program Files\Vieux Microsoft SDK\Lib" 
-.\Debug\AccessLog.obj
-.\Debug\AccountInfo.obj
-.\Debug\BIOS.obj
-.\Debug\cpu_info.obj
-.\Debug\DebugLog.obj
-.\Debug\DeviceComments.obj
-.\Debug\DeviceCommentsList.obj
-.\Debug\DeviceInventory.obj
-.\Debug\DeviceInventoryList.obj
-.\Debug\DeviceProperties.obj
-.\Debug\DeviceRepairs.obj
-.\Debug\DeviceRepairsList.obj
-.\Debug\Dtwinver.obj
-.\Debug\EDID.obj
-.\Debug\FileVersion.obj
-.\Debug\InputDevice.obj
-.\Debug\InputDeviceList.obj
-.\Debug\IPHelper.obj
-.\Debug\LogicalDrive.obj
-.\Debug\LogicalDriveList.obj
-.\Debug\Markup.obj
-.\Debug\Memory.obj
-.\Debug\MemorySlot.obj
-.\Debug\MemorySlotList.obj
-.\Debug\Modem.obj
-.\Debug\ModemList.obj
-.\Debug\Monitor.obj
-.\Debug\MonitorList.obj
-.\Debug\NetworkAdapter.obj
-.\Debug\NetworkAdapterList.obj
-.\Debug\OcsCrypto.obj
-.\Debug\OcsProcess.obj
-.\Debug\Printer.obj
-.\Debug\PrinterList.obj
-.\Debug\Registry.obj
-.\Debug\RegistryValue.obj
-.\Debug\RegistryValueList.obj
-.\Debug\SNMP.obj
-.\Debug\SnmpAPI.obj
-.\Debug\Software.obj
-.\Debug\SoftwareList.obj
-.\Debug\SoundDevice.obj
-.\Debug\SoundDeviceList.obj
-.\Debug\StdAfx.obj
-.\Debug\StoragePeripheral.obj
-.\Debug\StoragePeripheralList.obj
-.\Debug\SysInfo.obj
-.\Debug\SystemController.obj
-.\Debug\SystemControllerList.obj
-.\Debug\SystemPort.obj
-.\Debug\SystemPortList.obj
-.\Debug\SystemSlot.obj
-.\Debug\SystemSlotList.obj
-.\Debug\VideoAdapter.obj
-.\Debug\VideoAdapterList.obj
-.\Debug\WindowsSocket.obj
-.\Debug\Wmi.obj
-.\Debug\SysInfo.res
-\ocs\agent\win32_agent\OcsWmi\Debug\OcsWmi.lib
-]
-Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSPBD.tmp"
+Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4B0.tmp"
 <h3>Output Window</h3>
-Compiling...
-DeviceProperties.cpp
+Compiling resources...
 Linking...
+   Creating library Release/OcsWmi.lib and object Release/OcsWmi.exp
 <h3>
---------------------Configuration: OCSInventory Agent - Win32 Debug--------------------
+--------------------Configuration: SysInfo - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-OCSInventory.exe - 0 error(s), 0 warning(s)
-</pre>
-</body>
-</html>
+Creating command line "rc.exe /l 0x40c /fo"Release/SysInfo.res" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\win32_agent\SysInfo\SysInfo.rc"" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4B4.tmp" with contents
+[
+/nologo /MD /W3 /WX /GX /O2 /I "../includes" /I "../OcsWmi" /I "C:\Program Files\SDK2003R2\Lib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SYSINFO_EXPORTS" /D "_WINDLL" /D "_AFXDLL" /FR"Release/" /Fp"Release/SysInfo.pch" /YX"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\ocs\agent\win32_agent\SysInfo\StoragePeripheral.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4B4.tmp" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4B5.tmp" with contents
+[
+wbemuuid.lib ws2_32.lib libeay32.lib setupapi.lib /nologo /dll /incremental:no /pdb:"Release/SysInfo.pdb" /machine:I386 /out:"..\_Release\SysInfo.dll" /implib:"Release/SysInfo.lib" /libpath:"C:\Program Files\Microsoft Platform SDK\Lib" /libpath:"..\include\Zip\Release" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" 
+.\Release\AccessLog.obj
+.\Release\AccountInfo.obj
+.\Release\BIOS.obj
+.\Release\cpu_info.obj
+.\Release\DebugLog.obj
+.\Release\DeviceComments.obj
+.\Release\DeviceCommentsList.obj
+.\Release\DeviceInventory.obj
+.\Release\DeviceInventoryList.obj
+.\Release\DeviceProperties.obj
+.\Release\DeviceRepairs.obj
+.\Release\DeviceRepairsList.obj
+.\Release\Dtwinver.obj
+.\Release\EDID.obj
+.\Release\FileVersion.obj
+.\Release\InputDevice.obj
+.\Release\InputDeviceList.obj
+.\Release\IPHelper.obj
+.\Release\LogicalDrive.obj
+.\Release\LogicalDriveList.obj
+.\Release\Markup.obj
+.\Release\Memory.obj
+.\Release\MemorySlot.obj
+.\Release\MemorySlotList.obj
+.\Release\Modem.obj
+.\Release\ModemList.obj
+.\Release\Monitor.obj
+.\Release\MonitorList.obj
+.\Release\NetworkAdapter.obj
+.\Release\NetworkAdapterList.obj
+.\Release\OcsCrypto.obj
+.\Release\OcsProcess.obj
+.\Release\Printer.obj
+.\Release\PrinterList.obj
+.\Release\Registry.obj
+.\Release\RegistryValue.obj
+.\Release\RegistryValueList.obj
+.\Release\SNMP.obj
+.\Release\SnmpAPI.obj
+.\Release\Software.obj
+.\Release\SoftwareList.obj
+.\Release\SoundDevice.obj
+.\Release\SoundDeviceList.obj
+.\Release\StdAfx.obj
+.\Release\StoragePeripheral.obj
+.\Release\StoragePeripheralList.obj
+.\Release\SysInfo.obj
+.\Release\SystemController.obj
+.\Release\SystemControllerList.obj
+.\Release\SystemPort.obj
+.\Release\SystemPortList.obj
+.\Release\SystemSlot.obj
+.\Release\SystemSlotList.obj
+.\Release\VideoAdapter.obj
+.\Release\VideoAdapterList.obj
+.\Release\WindowsSocket.obj
+.\Release\Wmi.obj
+.\Release\SysInfo.res
+\ocs\agent\win32_agent\OcsWmi\Release\OcsWmi.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4B5.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StoragePeripheral.cpp
+Linking...
+   Creating library Release/SysInfo.lib and object Release/SysInfo.exp
+<h3>
+--------------------Configuration: OCSInventory Agent - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\T
