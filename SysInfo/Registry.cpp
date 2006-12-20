@@ -6145,10 +6145,10 @@ BOOL CRegistry::GetLoggedOnUser(CString &csUser)
 	{
 	case VER_PLATFORM_WIN32_WINDOWS:
 		// Windows 9X/Me
-		return GetDomainOrWorkgroup9X( csUser);
+		return GetLoggedOnUser9X( csUser);
 	case VER_PLATFORM_WIN32_NT:
 		// Windows NT/2000/XP/2003
-		return GetDomainOrWorkgroupNT( csUser);
+		return GetLoggedOnUserNT( csUser);
 	default:
 		// Unknown
 		csUser = NOT_AVAILABLE;

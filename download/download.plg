@@ -3,234 +3,192 @@
 <pre>
 <h1>Build Log</h1>
 <h3>
+--------------------Configuration: OCSInventory Agent - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OCSInventory.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OCSInventory Agent - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OCSInventory.exe - 0 error(s), 0 warning(s)
+<h3>
 --------------------Configuration: OcsWmi - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating command line "rc.exe /l 0x40c /fo"Release/OcsWmi.res" /i "C:\Program Files\SDK2003R2\Lib" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\win32_agent\OcsWmi\OcsWmi.rc"" 
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4C1.tmp" with contents
-[
-/nologo /MD /W3 /WX /GX /O2 /I "C:\Program Files\SDK2003R2\Lib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "OCSWMI_EXPORTS" /D "_WINDLL" /D "_AFXDLL" /D "_WIN32_DCOM" /Fp"Release/OcsWmi.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
-"C:\ocs\agent\win32_agent\OcsWmi\OcsWmi.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4C1.tmp" 
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4C2.tmp" with contents
-[
-/nologo /MD /W3 /WX /GX /O2 /I "C:\Program Files\SDK2003R2\Lib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "OCSWMI_EXPORTS" /D "_WINDLL" /D "_AFXDLL" /D "_WIN32_DCOM" /Fp"Release/OcsWmi.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
-"C:\ocs\agent\win32_agent\OcsWmi\StdAfx.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4C2.tmp" 
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4C3.tmp" with contents
-[
-wbemuuid.lib /nologo /dll /incremental:no /pdb:"Release/OcsWmi.pdb" /machine:I386 /out:"..\_Release\OcsWmi.dll" /implib:"Release/OcsWmi.lib" /libpath:"C:\Program Files\Microsoft Platform SDK\Lib" 
-.\Release\OcsWmi.obj
-.\Release\StdAfx.obj
-.\Release\OcsWmi.res
-]
-Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4C3.tmp"
-<h3>Output Window</h3>
-Compiling resources...
-Compiling...
-StdAfx.cpp
-Compiling...
-OcsWmi.cpp
-Linking...
-   Creating library Release/OcsWmi.lib and object Release/OcsWmi.exp
+
+
+
+<h3>Results</h3>
+OcsWmi.dll - 0 error(s), 0 warning(s)
 <h3>
---------------------Configuration: SysInfo - Win32 Release--------------------
+--------------------Configuration: OcsWmi - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating command line "rc.exe /l 0x40c /fo"Release/SysInfo.res" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\win32_agent\SysInfo\SysInfo.rc"" 
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4C7.tmp" with contents
-[
-/nologo /MD /W3 /WX /GX /O2 /I "../includes" /I "../OcsWmi" /I "C:\Program Files\SDK2003R2\Lib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SYSINFO_EXPORTS" /D "_WINDLL" /D "_AFXDLL" /FR"Release/" /Fp"Release/SysInfo.pch" /YX"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
-"C:\ocs\agent\win32_agent\SysInfo\AccessLog.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\AccountInfo.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\BIOS.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\cpu_info.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\DebugLog.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\DeviceComments.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\DeviceCommentsList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\DeviceInventory.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\DeviceInventoryList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\DeviceProperties.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\DeviceRepairs.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\DeviceRepairsList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\Dtwinver.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\EDID.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\FileVersion.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\InputDevice.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\InputDeviceList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\IPHelper.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\LogicalDrive.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\LogicalDriveList.cpp"
-"C:\ocs\agent\win32_agent\include\xml\Markup.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\Memory.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\MemorySlot.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\MemorySlotList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\Modem.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\ModemList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\Monitor.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\MonitorList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\NetworkAdapter.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\NetworkAdapterList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\OcsCrypto.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\OcsProcess.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\Printer.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\PrinterList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\Registry.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\RegistryValue.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\RegistryValueList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\SNMP.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\SnmpAPI.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\Software.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\SoftwareList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\SoundDevice.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\SoundDeviceList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\StoragePeripheral.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\StoragePeripheralList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\SysInfo.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\SystemController.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\SystemControllerList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\SystemPort.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\SystemPortList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\SystemSlot.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\SystemSlotList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\VideoAdapter.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\VideoAdapterList.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\WindowsSocket.cpp"
-"C:\ocs\agent\win32_agent\SysInfo\Wmi.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4C7.tmp" 
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4C8.tmp" with contents
-[
-/nologo /MD /W3 /WX /GX /O2 /I "../includes" /I "../OcsWmi" /I "C:\Program Files\SDK2003R2\Lib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SYSINFO_EXPORTS" /D "_WINDLL" /D "_AFXDLL" /FR"Release/" /Fp"Release/SysInfo.pch" /Yc"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
-"C:\ocs\agent\win32_agent\SysInfo\StdAfx.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4C8.tmp" 
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4C9.tmp" with contents
-[
-wbemuuid.lib ws2_32.lib libeay32.lib setupapi.lib /nologo /dll /incremental:no /pdb:"Release/SysInfo.pdb" /machine:I386 /out:"..\_Release\SysInfo.dll" /implib:"Release/SysInfo.lib" /libpath:"C:\Program Files\Microsoft Platform SDK\Lib" /libpath:"..\include\Zip\Release" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" 
-.\Release\AccessLog.obj
-.\Release\AccountInfo.obj
-.\Release\BIOS.obj
-.\Release\cpu_info.obj
-.\Release\DebugLog.obj
-.\Release\DeviceComments.obj
-.\Release\DeviceCommentsList.obj
-.\Release\DeviceInventory.obj
-.\Release\DeviceInventoryList.obj
-.\Release\DeviceProperties.obj
-.\Release\DeviceRepairs.obj
-.\Release\DeviceRepairsList.obj
-.\Release\Dtwinver.obj
-.\Release\EDID.obj
-.\Release\FileVersion.obj
-.\Release\InputDevice.obj
-.\Release\InputDeviceList.obj
-.\Release\IPHelper.obj
-.\Release\LogicalDrive.obj
-.\Release\LogicalDriveList.obj
-.\Release\Markup.obj
-.\Release\Memory.obj
-.\Release\MemorySlot.obj
-.\Release\MemorySlotList.obj
-.\Release\Modem.obj
-.\Release\ModemList.obj
-.\Release\Monitor.obj
-.\Release\MonitorList.obj
-.\Release\NetworkAdapter.obj
-.\Release\NetworkAdapterList.obj
-.\Release\OcsCrypto.obj
-.\Release\OcsProcess.obj
-.\Release\Printer.obj
-.\Release\PrinterList.obj
-.\Release\Registry.obj
-.\Release\RegistryValue.obj
-.\Release\RegistryValueList.obj
-.\Release\SNMP.obj
-.\Release\SnmpAPI.obj
-.\Release\Software.obj
-.\Release\SoftwareList.obj
-.\Release\SoundDevice.obj
-.\Release\SoundDeviceList.obj
-.\Release\StdAfx.obj
-.\Release\StoragePeripheral.obj
-.\Release\StoragePeripheralList.obj
-.\Release\SysInfo.obj
-.\Release\SystemController.obj
-.\Release\SystemControllerList.obj
-.\Release\SystemPort.obj
-.\Release\SystemPortList.obj
-.\Release\SystemSlot.obj
-.\Release\SystemSlotList.obj
-.\Release\VideoAdapter.obj
-.\Release\VideoAdapterList.obj
-.\Release\WindowsSocket.obj
-.\Release\Wmi.obj
-.\Release\SysInfo.res
-\ocs\agent\win32_agent\OcsWmi\Release\OcsWmi.lib
-]
-Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4C9.tmp"
-<h3>Output Window</h3>
-Compiling resources...
-Compiling...
-StdAfx.cpp
-Compiling...
-AccessLog.cpp
-AccountInfo.cpp
-BIOS.cpp
-cpu_info.cpp
-DebugLog.cpp
-DeviceComments.cpp
-DeviceCommentsList.cpp
-DeviceInventory.cpp
-DeviceInventoryList.cpp
-DeviceProperties.cpp
-DeviceRepairs.cpp
-DeviceRepairsList.cpp
-Dtwinver.cpp
-EDID.cpp
-FileVersion.cpp
-InputDevice.cpp
-InputDeviceList.cpp
-IPHelper.cpp
-LogicalDrive.cpp
-LogicalDriveList.cpp
-Markup.cpp
-Note: MBCS build (not UTF-8)
-Memory.cpp
-MemorySlot.cpp
-MemorySlotList.cpp
-Modem.cpp
-ModemList.cpp
-Monitor.cpp
-MonitorList.cpp
-NetworkAdapter.cpp
-NetworkAdapterList.cpp
-OcsCrypto.cpp
-OcsProcess.cpp
-Printer.cpp
-PrinterList.cpp
-Registry.cpp
-RegistryValue.cpp
-RegistryValueList.cpp
-SNMP.cpp
-SnmpAPI.cpp
-Software.cpp
-SoftwareList.cpp
-SoundDevice.cpp
-SoundDeviceList.cpp
-StoragePeripheral.cpp
-StoragePeripheralList.cpp
-SysInfo.cpp
-SystemController.cpp
-SystemControllerList.cpp
-SystemPort.cpp
-SystemPortList.cpp
-SystemSlot.cpp
-SystemSlotList.cpp
-cl.exe terminated at user request.
 
+
+
+<h3>Results</h3>
+OcsWmi.dll - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsService - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP50D.tmp" with contents
+[
+/nologo /MD /W3 /WX /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/OcsService.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\ocs\agent\win32_agent\service\App.cpp"
+"C:\ocs\agent\win32_agent\service\ntserv.cpp"
+"C:\ocs\agent\win32_agent\service\ntservEventLogSource.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP50D.tmp" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP50E.tmp" with contents
+[
+libeay32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/OcsService.pdb" /machine:I386 /out:"../_Release/OcsService.exe" /libpath:"..\include\openssl\lib\VC" 
+.\Release\App.obj
+.\Release\base64.obj
+.\Release\ntserv.obj
+.\Release\ntservCmdLineInfo.obj
+.\Release\ntservEventLog.obj
+.\Release\ntservEventLogRecord.obj
+.\Release\ntservEventLogSource.obj
+.\Release\ntservScmService.obj
+.\Release\ntservServiceControlManager.obj
+.\Release\StdAfx.obj
+.\Release\OcsService.res
+]
+Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP50E.tmp"
+<h3>Output Window</h3>
+Compiling...
+App.cpp
+ntserv.cpp
+ntservEventLogSource.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+OcsService.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsService - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP510.tmp" with contents
+[
+/nologo /MDd /W4 /Gm /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/OcsService.pch" /YX /Fo"Debug/" /Fd"Debug/" /FD /c 
+"C:\ocs\agent\win32_agent\service\App.cpp"
+"C:\ocs\agent\win32_agent\service\ntserv.cpp"
+"C:\ocs\agent\win32_agent\service\ntservEventLogSource.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP510.tmp" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP511.tmp" with contents
+[
+libeay32.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/OcsService.pdb" /debug /machine:I386 /out:"../_Debug/OcsService.exe" /libpath:"..\include\openssl\LIB\VC" 
+.\Debug\App.obj
+.\Debug\base64.obj
+.\Debug\ntserv.obj
+.\Debug\ntservCmdLineInfo.obj
+.\Debug\ntservEventLog.obj
+.\Debug\ntservEventLogRecord.obj
+.\Debug\ntservEventLogSource.obj
+.\Debug\ntservScmService.obj
+.\Debug\ntservServiceControlManager.obj
+.\Debug\StdAfx.obj
+.\Debug\OcsService.res
+]
+Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP511.tmp"
+<h3>Output Window</h3>
+Compiling...
+App.cpp
+ntserv.cpp
+ntservEventLogSource.cpp
+Linking...
+LINK : LNK6004: ../_Debug/OcsService.exe not found or not built by the last incremental link; performing full link
+
+
+
+<h3>Results</h3>
+OcsService.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsServiceMsg - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsService.dll - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsServiceMsg - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsService.dll - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: Zip - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+Zip.lib - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: Zip - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+Zip.lib - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: download - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+download.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: download - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+download.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: mo_dev - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+inst32.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: mo_dev - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+inst32.exe - 0 error(s), 0 warning(s)
 </pre>
 </body>
 </html>

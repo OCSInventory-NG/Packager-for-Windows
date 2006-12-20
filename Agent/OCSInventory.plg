@@ -3,105 +3,131 @@
 <pre>
 <h1>Build Log</h1>
 <h3>
---------------------Configuration: OcsWmi - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-Creating command line "rc.exe /l 0x40c /fo"Release/OcsWmi.res" /i "C:\Program Files\SDK2003R2\Lib" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\win32_agent\OcsWmi\OcsWmi.rc"" 
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4B0.tmp" with contents
-[
-wbemuuid.lib /nologo /dll /incremental:no /pdb:"Release/OcsWmi.pdb" /machine:I386 /out:"..\_Release\OcsWmi.dll" /implib:"Release/OcsWmi.lib" /libpath:"C:\Program Files\Microsoft Platform SDK\Lib" 
-.\Release\OcsWmi.obj
-.\Release\StdAfx.obj
-.\Release\OcsWmi.res
-]
-Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4B0.tmp"
-<h3>Output Window</h3>
-Compiling resources...
-Linking...
-   Creating library Release/OcsWmi.lib and object Release/OcsWmi.exp
-<h3>
---------------------Configuration: SysInfo - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-Creating command line "rc.exe /l 0x40c /fo"Release/SysInfo.res" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\win32_agent\SysInfo\SysInfo.rc"" 
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4B4.tmp" with contents
-[
-/nologo /MD /W3 /WX /GX /O2 /I "../includes" /I "../OcsWmi" /I "C:\Program Files\SDK2003R2\Lib" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SYSINFO_EXPORTS" /D "_WINDLL" /D "_AFXDLL" /FR"Release/" /Fp"Release/SysInfo.pch" /YX"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
-"C:\ocs\agent\win32_agent\SysInfo\StoragePeripheral.cpp"
-]
-Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4B4.tmp" 
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4B5.tmp" with contents
-[
-wbemuuid.lib ws2_32.lib libeay32.lib setupapi.lib /nologo /dll /incremental:no /pdb:"Release/SysInfo.pdb" /machine:I386 /out:"..\_Release\SysInfo.dll" /implib:"Release/SysInfo.lib" /libpath:"C:\Program Files\Microsoft Platform SDK\Lib" /libpath:"..\include\Zip\Release" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" 
-.\Release\AccessLog.obj
-.\Release\AccountInfo.obj
-.\Release\BIOS.obj
-.\Release\cpu_info.obj
-.\Release\DebugLog.obj
-.\Release\DeviceComments.obj
-.\Release\DeviceCommentsList.obj
-.\Release\DeviceInventory.obj
-.\Release\DeviceInventoryList.obj
-.\Release\DeviceProperties.obj
-.\Release\DeviceRepairs.obj
-.\Release\DeviceRepairsList.obj
-.\Release\Dtwinver.obj
-.\Release\EDID.obj
-.\Release\FileVersion.obj
-.\Release\InputDevice.obj
-.\Release\InputDeviceList.obj
-.\Release\IPHelper.obj
-.\Release\LogicalDrive.obj
-.\Release\LogicalDriveList.obj
-.\Release\Markup.obj
-.\Release\Memory.obj
-.\Release\MemorySlot.obj
-.\Release\MemorySlotList.obj
-.\Release\Modem.obj
-.\Release\ModemList.obj
-.\Release\Monitor.obj
-.\Release\MonitorList.obj
-.\Release\NetworkAdapter.obj
-.\Release\NetworkAdapterList.obj
-.\Release\OcsCrypto.obj
-.\Release\OcsProcess.obj
-.\Release\Printer.obj
-.\Release\PrinterList.obj
-.\Release\Registry.obj
-.\Release\RegistryValue.obj
-.\Release\RegistryValueList.obj
-.\Release\SNMP.obj
-.\Release\SnmpAPI.obj
-.\Release\Software.obj
-.\Release\SoftwareList.obj
-.\Release\SoundDevice.obj
-.\Release\SoundDeviceList.obj
-.\Release\StdAfx.obj
-.\Release\StoragePeripheral.obj
-.\Release\StoragePeripheralList.obj
-.\Release\SysInfo.obj
-.\Release\SystemController.obj
-.\Release\SystemControllerList.obj
-.\Release\SystemPort.obj
-.\Release\SystemPortList.obj
-.\Release\SystemSlot.obj
-.\Release\SystemSlotList.obj
-.\Release\VideoAdapter.obj
-.\Release\VideoAdapterList.obj
-.\Release\WindowsSocket.obj
-.\Release\Wmi.obj
-.\Release\SysInfo.res
-\ocs\agent\win32_agent\OcsWmi\Release\OcsWmi.lib
-]
-Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP4B5.tmp"
-<h3>Output Window</h3>
-Compiling resources...
-Compiling...
-StoragePeripheral.cpp
-Linking...
-   Creating library Release/SysInfo.lib and object Release/SysInfo.exp
-<h3>
 --------------------Configuration: OCSInventory Agent - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\T
+
+
+
+<h3>Results</h3>
+OCSInventory.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OCSInventory Agent - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OCSInventory.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsWmi - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsWmi.dll - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsWmi - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsWmi.dll - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsService - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsService.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsService - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsService.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsServiceMsg - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsService.dll - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsServiceMsg - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsService.dll - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: Zip - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+Zip.lib - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: Zip - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+Zip.lib - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: download - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+download.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: download - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+download.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: mo_dev - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+inst32.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: mo_dev - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+inst32.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

@@ -446,9 +446,6 @@ BOOL SysInfo::isNotebook()
 
 BOOL SysInfo::getUserName(CString &csUserName)
 {
-
-
-	
 	TCHAR szUserName[255]; 
 	DWORD dwUserName = 80; 
 	PROCESSENTRY32 pe;

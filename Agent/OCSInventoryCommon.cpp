@@ -373,7 +373,7 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 			CString reponse,contentS;		
 			
 			AddLog( _T( "HTTP SERVER: Getting HTTP Connection to server %s port %i using %s..."), 
-				csServer, iPort, csHttpUserName?"authentication":"no authentication");
+				csServer, iPort, ( csHttpUserName.GetLength() && csHttpPassword.GetLength() )?"authentication":"no authentication" );
 			try {				
 				pConnect = sess.GetHttpConnection(csServer, iPort, csHttpUserName, csHttpPassword);
 				AddLog( _T( "OK.\n"));
@@ -638,7 +638,7 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 				AddLog( _T( "OK.\n"));
 
 				AddLog( _T( "HTTP SERVER: Getting HTTP Connection to server %s port %i using %s..."), 
-					csServer, iPort, csHttpUserName?"authentication":"no authentication");
+					csServer, iPort, ( csHttpUserName.GetLength() && csHttpPassword.GetLength() )?"authentication":"no authentication");
 				pConnect = sess2.GetHttpConnection(csServer, iPort, csHttpUserName, csHttpPassword);
 				AddLog( _T( "OK\n"));
 				
