@@ -563,7 +563,7 @@ int CDownloadApp::download( CPackage * pP ) {
 				AddLog("ERROR: Can't chdir to ..\\..");
 				finish();
 				ExitProcess(1);
-			} 
+			}
 			pP->done();
 		}
 	}
@@ -710,6 +710,11 @@ int CPackage::execute() {
 				}
 			//system("..\\..\\run.bat "+Command);
 			system( Command );
+			
+			if( needDoneAction ){
+				AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
+			}
+
 			if( errno ) {
 				AddLog("ERROR: Error occured while running %s: %s", Name, strerror(errno));
 				return 1;
@@ -767,6 +772,9 @@ int CPackage::execute() {
 			
 			if( unzip( "build.zip", Path )) {
 				return 1;
+			}
+			if( needDoneAction ){
+				AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
 			}
 		}	
 	}
