@@ -46,7 +46,7 @@ BOOL CWmi::Connect( LPCTSTR lpstrDevice)
 		AddLog( _T( "WMI Connect: Trying to connect to WMI namespace root\\cimv2 on device <%s>..."), 
 			(lpstrDevice == NULL ? _T( "Localhost") : lpstrDevice));
 		if (lpstrDevice == NULL)
-			csCimRoot.Format( _T( "root\\cimv2"));
+			csCimRoot.Format( _T( "\\\\.\\root\\cimv2"));
 		else
 			csCimRoot.Format( _T( "\\\\%s\\root\\cimv2"), lpstrDevice);
 		if (!m_dllWMI.ConnectWMI( csCimRoot))
@@ -1159,6 +1159,10 @@ BOOL CWmi::GetSystemPorts(CSystemPortList *pMyList)
 
 DWORD CWmi::GetProcessors(CString &csProcType, CString &csProcSpeed)
 {
+	// If not WMI connected => cannot do this
+	if (!m_bConnected)
+		return FALSE;
+
 	AddLog( _T( "WMI GetProcessors: Trying to find Win32_Processor WMI objects..."));
 	try
 	{
@@ -1198,6 +1202,10 @@ DWORD CWmi::GetProcessors(CString &csProcType, CString &csProcSpeed)
 
 UINT CWmi::GetOS(CString &csName, CString &csVersion, CString &csComment, CString &csDescription)
 {
+	// If not WMI connected => cannot do this
+	if (!m_bConnected)
+		return FALSE;
+
 	AddLog( _T( "WMI GetOS: Trying to find Win32_OperatingSystem WMI objects..."));
 	try
 	{
@@ -1230,6 +1238,7 @@ UINT CWmi::GetOS(CString &csName, CString &csVersion, CString &csComment, CStrin
 						// If this key exists, this is a server
 						uType = WINDOWS_SERVER;
 				}
+				AddLog( ""); 
 				csDescription = m_dllWMI.GetClassObjectStringValue( _T( "Description"));
 				StrForSQL( csDescription);
 				uIndex ++;
@@ -1254,6 +1263,10 @@ UINT CWmi::GetOS(CString &csName, CString &csVersion, CString &csComment, CStrin
 
 BOOL CWmi::GetWindowsRegistration( CString &csCompany, CString &csUser, CString &csSN)
 {
+	// If not WMI connected => cannot do this
+	if (!m_bConnected)
+		return FALSE;
+
 	AddLog( _T( "WMI GetWindowsRegistration: Trying to find Win32_OperatingSystem WMI objects..."));
 	try
 	{
