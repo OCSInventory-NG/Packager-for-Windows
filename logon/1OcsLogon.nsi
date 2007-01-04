@@ -35,7 +35,7 @@
 !define OCSserver "ocsinventory-ng"
 !define TimeOut "600000"
 !define Compile_version "4.0.2.7"
-!define hard_option "/debug "
+!define hard_option "/debug " 
  var url
  var version
  var OcsLogon_v ; to complete the debug option
