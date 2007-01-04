@@ -11,6 +11,9 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;4028
+;added stopservice function before uninstall
+; todo: verify if service is realy stopped
 ;4027 win 9x service reboot issue patched
 ;ocsdat reading file option added
 ;Silent uninstall added
@@ -18,7 +21,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory Agent"
-!define PRODUCT_VERSION "4.0.2.7"
+!define PRODUCT_VERSION "4.0.2.8"
 !define PRODUCT_PUBLISHER "OCS Inventory Team"
 !define PRODUCT_WEB_SITE "htttp://ocsinventory.sf.net"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"
@@ -128,6 +131,7 @@ lbl_uninst:
 ;it's true (or silent)!"
   readregstr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\OCS Inventory Agent"  UninstallString
   strcpy $R1 $R0 -11
+  call stopservice
   execwait "$R1\ocsservice.exe -uninstall" $R0
  ; messagebox mb_OK "$R1\ocsservice.exe -uninstall"
  ; messagebox mb_OK "desinst= $R0"
@@ -302,8 +306,20 @@ DeleteRegValue HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices" "OCS
 no_REBOOT:
 FunctionEnd
 
+Function stopservice
+  nsExec::Exec 'net stop "OCS INVENTORY"'
+  pop $0
+  ;messagebox mb_ok $0
+FunctionEnd
+
+Function un.stopservice
+  nsExec::Exec 'net stop "OCS INVENTORY"'
+  pop $0
+  ;messagebox mb_ok $0
+FunctionEnd
+
 Function un.onInit
- Push "$CMDLINE"
+  Push "$CMDLINE"
   Push " /S"
   Call un.StrStr
   Pop $R9
@@ -311,9 +327,10 @@ Function un.onInit
   intcmp $0 2 sil 0 sil
   MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure to unistall $(^Name)?" IDYES +2
   Abort
- sil:
+sil:
+  call un.stopservice
   execwait "$INSTDIR\ocsservice.exe -uninstall" $R0
- sil_end:
+sil_end:
 FunctionEnd
 
 Section Uninstall
