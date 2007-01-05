@@ -1,4 +1,3 @@
-
 ################################################################################
 ##OCSInventory Version NG 1.0 Production
 ##Copyleft Emmanuel GUILLORY 2006
@@ -20,7 +19,7 @@
 !include "WordFunc.nsh"
 ;!insertmacro WordFind2X
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "1.0.1.6"
+!define Compile_version "1.0.1.7"
 
   VIProductVersion "${Compile_version}"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "OcsPackager"
@@ -53,7 +52,7 @@ Function .onInit
  File /oname=$PLUGINSDIR\upack.ico "upack.ico"
  File /oname=$PLUGINSDIR\instocs.exe "instocs.exe"
  File /oname=$PLUGINSDIR\uninsocs.exe "uninsocs.exe"
- File /oname=$PLUGINSDIR\1runas.vbs "1runas.vbs"
+;  File /oname=$PLUGINSDIR\1runas.vbs "1runas.vbs"
 ; File /oname=$PLUGINSDIR\msvcr71.dll "msvcr71.dll"
 FunctionEnd
 
@@ -280,7 +279,7 @@ sleep 1000
    ; messagebox mb_ok $filename
 
    CopyFiles "OcsPackage.exe" "$R0\"
-  ; CopyFiles "OcsUninstall.exe" "$R0\"
+   CopyFiles "OcsUninstall.exe" "$R0\"
    IfErrors bad_copy good_copy
    ;IfFileExists "$R0\$4.ocs" good_copy bad_copy
 
