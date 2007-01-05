@@ -1,3 +1,4 @@
+
 ################################################################################
 ##OCSInventory Version NG 1.0 Production
 ##Copyleft Emmanuel GUILLORY 2006
