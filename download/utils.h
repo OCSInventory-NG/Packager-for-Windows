@@ -1,6 +1,8 @@
 #ifndef _UTILS_H_
 #define _UTILS_H_
 
+#define CHECKSUM_COMPUTING_BUFFER 1024
+
 #include "stdafx.h"
 
 void OpenLog( LPCTSTR lpstrFolder, LPCTSTR lpstrCommandLine);
@@ -16,6 +18,7 @@ CString print_hex (unsigned char *bs, unsigned int n);
 /* A helper function for base64 encoding */
 CString base64_encode (unsigned char *buf, unsigned int len);
 int unzip(CString file, CString path);
+
 
 
 #endif // _UTILS_H_

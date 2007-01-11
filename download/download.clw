@@ -29,7 +29,7 @@ Type=0
 HeaderFile=downloadDlg.h
 ImplementationFile=downloadDlg.cpp
 Filter=D
-LastObject=IDC_DELAY
+LastObject=CDownloadDlg
 BaseClass=CDialog
 VirtualFilter=dWC
 

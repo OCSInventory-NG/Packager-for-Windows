@@ -447,6 +447,7 @@ static void CUtils::trace(CString mess, LPCTSTR lpstrCommandLine) {
 		return;
 
 	AfxMessageBox(mess);
-}	
+}
+
 };
 #endif //_UTILS_H_

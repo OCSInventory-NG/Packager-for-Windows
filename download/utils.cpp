@@ -9,6 +9,7 @@
 #include "../include/_common/commonDownload.h"
 
 CStdioFile	myFile;
+
 BOOL	bOpened = FALSE;
 
 void OpenLog( LPCTSTR lpstrFolder, LPCTSTR lpstrCommandLine)
@@ -152,20 +153,15 @@ int simple_digest (char *alg, CString fname, UINT *olen, UCHAR **bdigest) {
   
 	// Open build.zip
 	CFile	fRead;
+	// 
+	BYTE * buf = new BYTE[ CHECKSUM_COMPUTING_BUFFER ];
+
 	if( ! fRead.Open( fname, CFile::modeRead )) {
 		AddLog("ERROR: Can't open %s, error:%i", fname, GetLastError());
 		return 1;
 	}
 
-	// Read build.zip
-	UINT len = fRead.GetLength();
-	BYTE * buf = new BYTE[ len ];
-	fRead.Read( buf, len );
-	
-	// Close it
-	fRead.Close();
-
-	// Compute the checksum
+	// Initialize checksum computing
 	const EVP_MD *m;
 	EVP_MD_CTX ctx;
 
@@ -183,11 +179,21 @@ int simple_digest (char *alg, CString fname, UINT *olen, UCHAR **bdigest) {
 		return 1;
 	}
 	
-	// EVP compute it
+	// Computing the checksum
 	EVP_DigestInit (&ctx, m);
-	EVP_DigestUpdate (&ctx, buf, len);
-	EVP_DigestFinal( &ctx, *bdigest, olen);
 
+	int nByteRead;
+	do{
+		nByteRead = fRead.Read( buf, CHECKSUM_COMPUTING_BUFFER );
+		EVP_DigestUpdate (&ctx, buf, nByteRead);
+	}
+	while(nByteRead>0);
+
+	EVP_DigestFinal( &ctx, *bdigest, olen);
+	
+	// Close file
+	fRead.Close();
+	
 	// Free file content
 	delete [] buf;	
 	return 0;

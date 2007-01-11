@@ -32,7 +32,7 @@
 #define VER_D1					4
 #define VER_D2					0
 #define VER_D3					2
-#define VER_D4				    8
+#define VER_D4				    9
 
 #define NT4						_T( "NT 4.0")
 #define URL_SUFFIX				_T( "/ocsinventory")
@@ -47,7 +47,9 @@
 #define MAX_THREADS				300
 #define MAX_FASTIP_THREADS		800
 
-#define		SERVICE_INI				"service.ini"
+#define	SERVICE_INI				"service.ini"
+
+#define CHECKSUM_COMPUTING_BUFFER 1024
 /*
 #define IDS_NTSERV_INSTALL_FAIL_OPEN_SCM "CNTService::Install, Failed call to open SCM, Error:%1"
     #define IDS_NTSERV_INSTALL_FAIL_LOCK_SCM "CNTService::Install, Failed call to lock SCM, Error:%1"
