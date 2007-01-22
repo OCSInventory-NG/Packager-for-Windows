@@ -633,68 +633,46 @@ int CPackage::execute() {
 				AddLog("ERROR: Cannot find launcher...execute stage aborted");
 				return 1;
 			}
-			
-			// Checking if binary does exist
-			int iIndex = 0;
-			CString csExeName;
-			BOOL exeFound = FALSE;
 
-			//We take the last ".exe"
-			while( ( iIndex = Name.Find(".exe", 0) ) != -1){
-				csExeName = Name.Left( iIndex + sizeof(".exe") );
-				if( fileExists( csExeName.GetBuffer(NULL) ) ){
-					exeFound = TRUE;
-					break;
-				}
+			AddLog("LAUNCH: Launching %s",Name);
+			
+			STARTUPINFO si;
+			PROCESS_INFORMATION pi;
+
+			ZeroMemory( &si, sizeof(si) );
+			si.cb = sizeof(si);
+			ZeroMemory( &pi, sizeof(pi) );
+
+			si.wShowWindow = SW_HIDE;
+
+			si.dwFlags=STARTF_USESHOWWINDOW;
+			CString commandLine = "..\\..\\..\\inst32.exe /exe:" + CString("\"") + Name + CString("\"") + " /log:instlog.txt";
+
+			if( ! CreateProcess( NULL, commandLine.GetBuffer(0), NULL, NULL, TRUE, 0, NULL, NULL, &si,&pi )) {
+				AddLog("ERROR: Error %d occured while running %s", GetLastError(), Name);
+				return 1;
+			}
+			
+			if( WaitForSingleObject( pi.hProcess, INFINITE ) ){
+				AddLog("ERROR: while waiting for %s (error %s)", Name, GetLastError());
 			}
 
-			if( exeFound ){
-
-				AddLog("LAUNCH: Launching %s",Name);
-				
-				STARTUPINFO si;
-				PROCESS_INFORMATION pi;
-
-				ZeroMemory( &si, sizeof(si) );
-				si.cb = sizeof(si);
-				ZeroMemory( &pi, sizeof(pi) );
-
-				si.wShowWindow = SW_HIDE;
-
-				si.dwFlags=STARTF_USESHOWWINDOW;
-				CString commandLine = "..\\..\\..\\inst32.exe /exe:" + CString("\"") + Name + CString("\"") + " /log:instlog.txt";
-
-				if( ! CreateProcess( NULL, commandLine.GetBuffer(0), NULL, NULL, TRUE, 0, NULL, NULL, &si,&pi )) {
-					AddLog("ERROR: Error %d occured while running %s", GetLastError(), Name);
-					return 1;
-				}
-				
-				if( WaitForSingleObject( pi.hProcess, INFINITE ) ){
-					AddLog("ERROR: while waiting for %s (error %s)", Name, GetLastError());
-				}
-
-				if( needDoneAction ){
-					AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
-				}
-				
-				DWORD exitCode;
-				if ( ! GetExitCodeProcess( pi.hProcess , &exitCode ) ) {
-					AddLog("ERROR: Cannot get the return status");
-					return 0;
-				}
-				else {
-					AddLog("Program %s returned %i code", Name, exitCode);
-					//CString code;
-					char code[50];
-					itoa (exitCode, code, 10);
-					CNetUtils::downloadMessage( CODE_SUCCESS + CString("_") + code, Id, pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy);	
-					return 5;
-				}
+			if( needDoneAction ){
+				AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
+			}
+			
+			DWORD exitCode;
+			if ( ! GetExitCodeProcess( pi.hProcess , &exitCode ) ) {
+				AddLog("ERROR: Cannot get the return status");
+				return 0;
 			}
 			else {
-					AddLog("ERROR: .exe not found. Check the program name");
-					return 1;
-			
+				AddLog("Program %s returned %i code", Name, exitCode);
+				//CString code;
+				char code[50];
+				itoa (exitCode, code, 10);
+				CNetUtils::downloadMessage( CODE_SUCCESS + CString("_") + code, Id, pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy);	
+				return 5;
 			}
 
 		}

@@ -80,7 +80,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 libeay32.lib ssleay32.lib zlib.lib zip.lib srclient.lib /nologo /subsystem:windows /debug /machine:I386 /out:"..\_Debug\download.exe" /pdbtype:sept /libpath:"C:\Program Files\vieux_sdk\Lib" /libpath:"..\include\Zip\Debug" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib"
+# ADD LINK32 libeay32.lib ssleay32.lib zlib.lib zip.lib srclient.lib /nologo /subsystem:windows /debug /machine:I386 /out:"..\_Debug\download.exe" /pdbtype:sept /libpath:"C:\Program Files\Vieux Microsoft SDK\Lib" /libpath:"..\include\Zip\Debug" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib"
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -174,6 +174,10 @@ SOURCE=.\res\download.rc2
 SOURCE=".\logo OCS-ng-48.ico"
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=..\..\include\OpenSSL\include\openssl\asn1.h
+# End Source File
 # Begin Source File
 
 SOURCE=.\ReadMe.txt
