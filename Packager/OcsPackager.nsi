@@ -32,7 +32,7 @@
 
 var deployed_file
 BRANDINGTEXT "OCS Packager ${Compile_version}"
-Icon "logoOCS.ico"
+Icon "logoOCS3.ico"
 ShowInstDetails hide
 Name "OCS Packager"
 OutFile "OcsPackager.exe"
@@ -52,8 +52,6 @@ Function .onInit
  File /oname=$PLUGINSDIR\upack.ico "upack.ico"
  File /oname=$PLUGINSDIR\instocs.exe "instocs.exe"
  File /oname=$PLUGINSDIR\uninsocs.exe "uninsocs.exe"
-;  File /oname=$PLUGINSDIR\1runas.vbs "1runas.vbs"
-; File /oname=$PLUGINSDIR\msvcr71.dll "msvcr71.dll"
 FunctionEnd
 
 Function StrStr
