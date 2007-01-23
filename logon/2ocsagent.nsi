@@ -11,16 +11,16 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
-;4027
+;4030
 ;
 ;4026
 ;added /lnk  ---------------------------------------------> fait
 ;4004-4014
 ; added /local
 ;Normal roadmapped improvments
-;!include "MUI.nsh"
-;!insertmacro MUI_LANGUAGE "english"
-!define Compile_version "4.0.2.7"
+!include "MUI.nsh"
+!insertmacro MUI_LANGUAGE "english"
+!define Compile_version "4.0.3.0"
 BRANDINGTEXT "OCS Inventory NG ${Compile_version}"
 Icon "Aocs2.ico"
 ShowInstDetails hide
@@ -179,7 +179,7 @@ PASPBt:  ; Can Write so temp user
   goto suite
 PBt: ; Can not Write so exit and try to alert server
  ; messagebox mb_ok "$R8"
-  NSISdl::download_quiet /TIMEOUT=600000 /NOIEPROXY "http://$R8$http_port_number/ocsinventory/deploy/nodeploy" "$R7\nodeploy"
+  NSISdl::download_quiet /TIMEOUT=600000 /NOIEPROXY "http://$R8/ocsinventory/deploy/nodeploy" "$R7\nodeploy"
   abort
 suite:
 ;messagebox mb_ok "$r7"
