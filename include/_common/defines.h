@@ -31,8 +31,8 @@
 
 #define VER_D1					4
 #define VER_D2					0
-#define VER_D3					2
-#define VER_D4				    9
+#define VER_D3					3
+#define VER_D4				    0
 
 #define NT4						_T( "NT 4.0")
 #define URL_SUFFIX				_T( "/ocsinventory")
