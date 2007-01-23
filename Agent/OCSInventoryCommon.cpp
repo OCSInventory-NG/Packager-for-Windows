@@ -1162,14 +1162,6 @@ END_MESSAGE_MAP()
 void CInputDlg::OnOK() 
 {
 	UpdateData(TRUE);
-/*	if(m_ValV.GetLength()<5) { TODO: checking
-		AfxMessageBox("Votre code unité doit être entré sur 5 chiffres",MB_OK|MB_ICONEXCLAMATION);
-	}
-	else {	
-		if(atoi(m_ValV)==0)	{
-			AfxMessageBox("Votre code unité doit être un nombre",MB_OK|MB_ICONEXCLAMATION);			
-		}
-		else*/
 	CDialog::OnOK();
 //	}
 }

@@ -130,6 +130,7 @@ int CModuleDownload::response(CMarkup* pXml, CString* pRawResponse) {
 							
 			if( csHistBuf.Find( TmpValue ) != -1 ) {
 				AddLog("DOWNLOAD: Will not download %s that is already in the history file\n", TmpValue);
+				CNetUtils::downloadMessage(ERR_ALREADY_SETUP, TmpValue, pC->GetDeviceID(), server, port, proxy, http_u, http_w );
 				delete pOptDownloadPackage;
 				cmpt++;
 				continue;
@@ -267,6 +268,8 @@ void CModuleDownload::configToFile()
 	WritePrivateProfileString(OCS_AGENT_KEY, "On", m_csDownloadOn, "download\\config.ini");
 	WritePrivateProfileString(OCS_AGENT_KEY, "DeviceId",pC->GetDeviceID(), "download\\config.ini");
 	WritePrivateProfileString(OCS_AGENT_KEY, "Server",server, "download\\config.ini");
+	WritePrivateProfileString(OCS_AGENT_KEY, "Http_u",http_u, "download\\config.ini");
+	WritePrivateProfileString(OCS_AGENT_KEY, "Http_w",http_w, "download\\config.ini");
 	WritePrivateProfileString(OCS_AGENT_KEY, "Proxy",itoa(proxy,useless,10), "download\\config.ini");
 	WritePrivateProfileString(OCS_AGENT_KEY, "Port",itoa(port,useless,10), "download\\config.ini");
 }
@@ -359,7 +362,7 @@ int COptDownloadPackage::readResponse(SSL *ssl) {
 			if( line.Find( "200 OK", 0) < 0 ) {
 				line.TrimRight();
 				AddLog( "ERROR: DOWNLOAD: Line: %s, Id:%s\n", line, m_csId );				
-				CNetUtils::downloadMessage(ERR_DOWNLOAD_INFO, m_csId, pM->pC->GetDeviceID(), pM->server, pM->port, pM->proxy );
+				CNetUtils::downloadMessage(ERR_DOWNLOAD_INFO, m_csId, pM->pC->GetDeviceID(), pM->server, pM->port, pM->proxy, pM->http_u, pM->http_w );
 				return -2;
 			}
 			firstLineFeed = FALSE;

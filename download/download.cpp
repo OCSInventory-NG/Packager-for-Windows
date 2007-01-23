@@ -112,6 +112,10 @@ BOOL CDownloadApp::InitInstance()
 		m_csTimeout = buf;
 		GetPrivateProfileString(OCS_AGENT_KEY, "On", "0", buf ,sizeof(buf), serIni);
 		m_csOn = buf;
+		GetPrivateProfileString(OCS_AGENT_KEY, "Http_u", "0", buf ,sizeof(buf), serIni);
+		m_csHttp_u = buf;
+		GetPrivateProfileString(OCS_AGENT_KEY, "Http_w", "0", buf ,sizeof(buf), serIni);
+		m_csHttp_w = buf;
 		
 		GetPrivateProfileString(OCS_AGENT_KEY, "DeviceId", "0", buf ,sizeof(buf), serIni);
 		m_csDeviceId = buf;
@@ -177,7 +181,7 @@ BOOL CDownloadApp::InitInstance()
 			if( pPack->Id != fName ) {
 				AddLog("\tERROR: ID [%s] differs from the directory [%s]",pPack->Id,fName);
 				
-				if( ! CNetUtils::downloadMessage(ERR_BAD_ID,fName,m_csDeviceId, m_csServer, m_iPort, m_iProxy))
+				if( ! CNetUtils::downloadMessage(ERR_BAD_ID,fName,m_csDeviceId, m_csServer, m_iPort, m_iProxy, m_csHttp_u, m_csHttp_w ))
 					cleanPackage( fName );
 				delete pPack;
 				continue;
@@ -206,7 +210,7 @@ BOOL CDownloadApp::InitInstance()
 			DWORD lTimeout = atol( m_csTimeout );				
 			if( (((float)(time(NULL) - lSince) / 86400)) > ((float)(lTimeout)) ) {
 				AddLog("\tERROR: Package timed out (now:%ld, since:%ld, Timeout:%ld)",time(NULL),lSince,lTimeout);
-				if( ! CNetUtils::downloadMessage(ERR_TIMEOUT,pPack->Id,m_csDeviceId, m_csServer, m_iPort, m_iProxy) ) {
+				if( ! CNetUtils::downloadMessage(ERR_TIMEOUT,pPack->Id,m_csDeviceId, m_csServer, m_iPort, m_iProxy, m_csHttp_u, m_csHttp_w) ) {
 					cleanPackage( fName );
 				}
 				delete pPack;
@@ -530,7 +534,7 @@ int CDownloadApp::download( CPackage * pP ) {
 		
 			//4 = user aborted process
 			if( errExec == 4 ) {
-				if( ! CNetUtils::downloadMessage(ERR_ABORTED,pP->Id,m_csDeviceId, m_csServer, m_iPort, m_iProxy) ) {
+				if( ! CNetUtils::downloadMessage(ERR_ABORTED,pP->Id,m_csDeviceId, m_csServer, m_iPort, m_iProxy, m_csHttp_u, m_csHttp_w) ) {
 					cleanPackage(pP->Id);
 				}
 				return 1;
@@ -552,7 +556,7 @@ int CDownloadApp::download( CPackage * pP ) {
 				return 1;
 			}
 
-			if( ! CNetUtils::downloadMessage(ERR_EXECUTE,pP->Id,m_csDeviceId, m_csServer, m_iPort, m_iProxy)) {
+			if( ! CNetUtils::downloadMessage(ERR_EXECUTE,pP->Id,m_csDeviceId, m_csServer, m_iPort, m_iProxy, m_csHttp_u, m_csHttp_w)) {
 				cleanPackage(pP->Id);
 			}
 			return 1;
@@ -593,7 +597,7 @@ int CPackage::execute() {
 		notifyRet = dlg.DoModal();
 		
 		if ( notifyRet == IDCANCEL) {
-			CNetUtils::downloadMessage(ERR_ABORTED, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy);
+			CNetUtils::downloadMessage(ERR_ABORTED, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);
 			return 4;
 		}
 		else if ( notifyRet == IDOK && dlg.delayed == TRUE ) {
@@ -667,11 +671,13 @@ int CPackage::execute() {
 				return 0;
 			}
 			else {
-				AddLog("Program %s returned %i code", Name, exitCode);
+				AddLog("Launcher returned %i code", Name, exitCode);
+				if( exitCode != INST32_OK_CODE )
+					return 1;
 				//CString code;
 				char code[50];
 				itoa (exitCode, code, 10);
-				CNetUtils::downloadMessage( CODE_SUCCESS + CString("_") + code, Id, pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy);	
+				CNetUtils::downloadMessage( CODE_SUCCESS, Id, pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);	
 				return 5;
 			}
 
@@ -794,7 +800,7 @@ void CPackage::done(BOOL needToSendSuccess) {
 	
 	if (needToSendSuccess) {
 		AddLog("Package %s done, sending message", Id);
-		if( ! CNetUtils::downloadMessage( CODE_SUCCESS, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy)) {
+		if( ! CNetUtils::downloadMessage( CODE_SUCCESS, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w)) {
 			cleanPackage( Id );
 		}
 	}
@@ -845,7 +851,7 @@ int CPackage::buildPackage() {
 	zipArchive.Close();	
 
 	if( checkSignature() ) {
-		CNetUtils::downloadMessage(ERR_BAD_DIGEST,Id,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy);
+		CNetUtils::downloadMessage(ERR_BAD_DIGEST,Id,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);
 		return 3;
 	}
 	

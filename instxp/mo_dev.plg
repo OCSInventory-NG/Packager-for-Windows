@@ -1,0 +1,184 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: OCSInventory Agent - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OCSInventory.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OCSInventory Agent - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OCSInventory.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsWmi - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsWmi.dll - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsWmi - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsWmi.dll - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsService - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsService.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsService - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsService.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsServiceMsg - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsService.dll - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: OcsServiceMsg - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+OcsService.dll - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: Zip - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+Zip.lib - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: Zip - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+Zip.lib - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: download - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP317.tmp" with contents
+[
+/nologo /MD /W3 /WX /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/download.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\ocs\agent\win32_agent\download\download.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP317.tmp" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP318.tmp" with contents
+[
+libeay32.lib ssleay32.lib zip.lib zlib.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/download.pdb" /machine:I386 /nodefaultlib:"libc" /out:"..\_Release\download.exe " /libpath:"..\include\Zip\Release" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" /libpath:"C:\Program Files\Microsoft Platform SDK\Lib" 
+.\Release\commonDownload.obj
+.\Release\download.obj
+.\Release\downloadDlg.obj
+.\Release\FileOperations.obj
+.\Release\flate.obj
+.\Release\Markup.obj
+.\Release\StdAfx.obj
+.\Release\utils.obj
+.\Release\download.res
+\ocs\agent\win32_agent\include\zip\Release\Zip.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP318.tmp"
+<h3>Output Window</h3>
+Compiling...
+download.cpp
+Linking...
+LINK : warning LNK4089: all references to "SSLEAY32.dll" discarded by /OPT:REF
+
+
+
+<h3>Results</h3>
+download.exe - 0 error(s), 1 warning(s)
+<h3>
+--------------------Configuration: download - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP31A.tmp" with contents
+[
+/nologo /MDd /W3 /WX /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/download.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\ocs\agent\win32_agent\download\download.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP31A.tmp" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP31B.tmp" with contents
+[
+libeay32.lib ssleay32.lib zlib.lib zip.lib srclient.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/download.pdb" /debug /machine:I386 /out:"..\_Debug\download.exe" /pdbtype:sept /libpath:"C:\Program Files\Vieux Microsoft SDK\Lib" /libpath:"..\include\Zip\Debug" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" 
+.\Debug\commonDownload.obj
+.\Debug\download.obj
+.\Debug\downloadDlg.obj
+.\Debug\FileOperations.obj
+.\Debug\flate.obj
+.\Debug\Markup.obj
+.\Debug\StdAfx.obj
+.\Debug\utils.obj
+.\Debug\download.res
+\ocs\agent\win32_agent\include\zip\Debug\Zip.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP31B.tmp"
+<h3>Output Window</h3>
+Compiling...
+download.cpp
+Linking...
+
+
+
+<h3>Results</h3>
+download.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: mo_dev - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+inst32.exe - 0 error(s), 0 warning(s)
+<h3>
+--------------------Configuration: mo_dev - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+
+
+
+<h3>Results</h3>
+inst32.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

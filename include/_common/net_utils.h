@@ -233,7 +233,7 @@ static CByteArray* deCompressBin(CByteArray* data) {
 	return dst;
 }
 
-static int downloadMessage( CString mess ,CString Id, CString did, CString server, INTERNET_PORT port, UINT proxy ) {
+static int downloadMessage( CString mess ,CString Id, CString did, CString server, INTERNET_PORT port, UINT proxy, CString http_u, CString http_w ) {
 	
 	AddLog("Sending download message: %s ID:%s\n", mess, did);
 	
@@ -253,7 +253,7 @@ static int downloadMessage( CString mess ,CString Id, CString did, CString serve
 
 	try{
 		pSess = new CInternetSession("windows_download_agent", 1, proxy);	
-		pConnect = pSess->GetHttpConnection(server, port);
+		pConnect = pSess->GetHttpConnection(server, port, http_u, http_w);
 	}
 	catch(CException *err){
 		AddLog("ERROR: Error with HTTP connection\n");

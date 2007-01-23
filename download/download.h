@@ -15,6 +15,7 @@
 #include "resource.h"		// main symbols
 #include "../include/xml/markup.h"
 
+#define INST32_OK_CODE 130
 /////////////////////////////////////////////////////////////////////////////
 // CDownloadApp:
 // See download.cpp for the implementation of this class
@@ -41,7 +42,9 @@ public:
 	UINT m_iProxy;	
 	UINT m_iPort;
 	CString m_csDeviceId,
-			m_csServer;
+			m_csServer,
+			m_csHttp_u,
+			m_csHttp_w;
 
 	CDownloadApp();
 	BOOL isAN( LPCSTR st );
