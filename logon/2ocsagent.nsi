@@ -11,7 +11,8 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
-;4030
+;4031
+; FOLDER error 
 ;
 ;4026
 ;added /lnk  ---------------------------------------------> fait
@@ -146,13 +147,15 @@ folder_end:
   delete "$R7\file.dat"
 ;  goto suite
 ;PB: ; Can not Write so giving $R7 the user temp value
-IfFileExists "$R7\ocsagent.exe" 0 et1
-delete "$R7\ocsagent.new"
-IfFileExists "$R7\ocsagent.new" PB 0
-rename "$R7\ocsagent.exe" "$R7\ocsagent.old"
-IfFileExists "$R7\ocsagent.old" 0 PB
-delete "$R7\ocsagent.old"
-et1:
+;***************** NEVER TEST OCSAGENT HERE....
+;****************
+;IfFileExists "$R7\ocsagent.exe" 0 et1
+;delete "$R7\ocsagent.new"
+;IfFileExists "$R7\ocsagent.new" PB 0
+;rename "$R7\ocsagent.exe" "$R7\ocsagent.old"
+;IfFileExists "$R7\ocsagent.old" 0 PB
+;delete "$R7\ocsagent.old"
+;et1:
 IfFileExists "$R7\ocsinventory.exe" 0 suite
 rename "$R7\ocsinventory.exe" "$R7\ocsinventory.old"
 IfFileExists "$R7\ocsinventory.old" 0 PB
