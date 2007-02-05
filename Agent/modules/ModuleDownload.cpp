@@ -526,6 +526,8 @@ int CModuleDownload::inventory(CMarkup *pXml, CDeviceProperties *pPc)
 		pXml->OutOfElem();
 	}
 	else{
+		pXml->OutOfElem();
+		pXml->OutOfElem();
 		AddLog("DOWNLOAD: ERROR: Cannot open history file: %i\n", GetLastError());
 		return 1;
 	}
