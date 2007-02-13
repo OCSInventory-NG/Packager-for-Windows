@@ -6,13 +6,13 @@
 --------------------Configuration: download - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP2AC.tmp" with contents
+Creating temporary file "C:\DOCUME~1\serpent\LOCALS~1\Temp\RSPA0.tmp" with contents
 [
 /nologo /MDd /W3 /WX /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/download.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
-"C:\ocs\agent\win32_agent\download\download.cpp"
+"C:\ocs\win32_agent\download\download.cpp"
 ]
-Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP2AC.tmp" 
-Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP2AD.tmp" with contents
+Creating command line "cl.exe @C:\DOCUME~1\serpent\LOCALS~1\Temp\RSPA0.tmp" 
+Creating temporary file "C:\DOCUME~1\serpent\LOCALS~1\Temp\RSPA1.tmp" with contents
 [
 libeay32.lib ssleay32.lib zlib.lib zip.lib srclient.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/download.pdb" /debug /machine:I386 /out:"..\_Debug\download.exe" /pdbtype:sept /libpath:"C:\Program Files\Vieux Microsoft SDK\Lib" /libpath:"..\include\Zip\Debug" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" 
 .\Debug\commonDownload.obj
@@ -24,9 +24,9 @@ libeay32.lib ssleay32.lib zlib.lib zip.lib srclient.lib /nologo /subsystem:windo
 .\Debug\StdAfx.obj
 .\Debug\utils.obj
 .\Debug\download.res
-\ocs\agent\win32_agent\include\zip\Debug\Zip.lib
+\ocs\win32_agent\include\zip\Debug\Zip.lib
 ]
-Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP2AD.tmp"
+Creating command line "link.exe @C:\DOCUME~1\serpent\LOCALS~1\Temp\RSPA1.tmp"
 <h3>Output Window</h3>
 Compiling...
 download.cpp

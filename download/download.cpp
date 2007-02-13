@@ -374,12 +374,12 @@ void CDownloadApp::period( CObArray * pC ) {
 				if( rt.GetSize() ) {
 					if( fileExists("done", pP->Id ) > 0 ) {
 						pP->done();
-						AddLog("Now pausing for fragment latency");
+						AddLog("Now pausing for fragment latency(%s secs)", m_csFragLatency);
 						Sleep( atoi(m_csFragLatency) * 1000 );
 						continue;
 					}
 					download( pP );
-					AddLog("Now pausing for fragment latency");
+					AddLog("Now pausing for fragment latency(%s secs)", m_csFragLatency);
 					Sleep( atoi(m_csFragLatency) * 1000 );
 					continue;
 				}
@@ -394,7 +394,7 @@ void CDownloadApp::period( CObArray * pC ) {
 			//regular priority package
 			if( fileExists("done", pP->Id ) > 0 ) {
 				pP->done();
-				AddLog("Now pausing for fragment latency");
+				AddLog("Now pausing for fragment latency(%s secs)", m_csFragLatency);
 				Sleep( atoi(m_csFragLatency) * 1000 );
 				continue;
 			}
@@ -410,9 +410,11 @@ void CDownloadApp::period( CObArray * pC ) {
 			AddLog("Now pausing for fragment latency");
 			Sleep( atoi(m_csFragLatency) * 1000 );		
 		}
+		AddLog("Now pausing for cycle latency(%s secs)", m_csCycleLatency);
+		Sleep( atoi(m_csCycleLatency) * 1000 );
 	}
-	AddLog("Now pausing for cycle latency");
-	Sleep( atoi(m_csCycleLatency) * 1000 );
+	AddLog("Now pausing for period latency(%s secs)", m_csPeriodLatency);
+	Sleep( atoi(m_csPeriodLatency) * 1000 );
 
 }
 
@@ -671,12 +673,15 @@ int CPackage::execute() {
 				return 0;
 			}
 			else {
-				AddLog("Launcher returned %i code", Name, exitCode);
-				if( exitCode != INST32_OK_CODE )
-					return 1;
+				AddLog("Launcher returned %i code", exitCode);
+				if( exitCode != INST32_OK_CODE ){
+					CString csExitCode;
+					ltoa(exitCode, csExitCode.GetBuffer(NULL), 10);
+					csExitCode.Format("%s_%s", ERR_EXECUTE, csExitCode.GetBuffer(NULL));
+					CNetUtils::downloadMessage( csExitCode, Id, pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);	
+					return 5;
+				}
 				//CString code;
-				char code[50];
-				itoa (exitCode, code, 10);
 				CNetUtils::downloadMessage( CODE_SUCCESS, Id, pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);	
 				return 5;
 			}
