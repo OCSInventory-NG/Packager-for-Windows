@@ -12,9 +12,151 @@
 <h3>Results</h3>
 OCSInventory.exe - 0 error(s), 0 warning(s)
 <h3>
+--------------------Configuration: SysInfo - Win32 Debug--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x40c /fo"Debug/SysInfo.res" /d "_DEBUG" /d "_AFXDLL" "C:\ocs\agent\win32_agent\SysInfo\SysInfo.rc"" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP3D.tmp" with contents
+[
+/nologo /MDd /W3 /WX /Gm /GX /ZI /Od /I "../includes" /I "../OcsWmi" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SYSINFO_EXPORTS" /D "_WINDLL" /D "_AFXDLL" /Fp"Debug/SysInfo.pch" /YX"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\ocs\agent\win32_agent\SysInfo\AccountInfo.cpp"
+"C:\ocs\agent\win32_agent\SysInfo\DeviceProperties.cpp"
+"C:\ocs\agent\win32_agent\SysInfo\EDID.cpp"
+"C:\ocs\agent\win32_agent\SysInfo\OcsProcess.cpp"
+"C:\ocs\agent\win32_agent\SysInfo\Registry.cpp"
+"C:\ocs\agent\win32_agent\SysInfo\SysInfo.cpp"
+"C:\ocs\agent\win32_agent\SysInfo\WindowsSocket.cpp"
+"C:\ocs\agent\win32_agent\SysInfo\Wmi.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP3D.tmp" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP3E.tmp" with contents
+[
+wbemuuid.lib ws2_32.lib libeay32.lib setupapi.lib /nologo /dll /incremental:yes /pdb:"Debug/SysInfo.pdb" /debug /machine:I386 /out:"..\_Debug\SysInfo.dll" /implib:"Debug/SysInfo.lib" /pdbtype:sept /libpath:"..\include\Zip\Release" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" /libpath:"C:\Program Files\Vieux Microsoft SDK\Lib" 
+.\Debug\AccessLog.obj
+.\Debug\AccountInfo.obj
+.\Debug\BIOS.obj
+.\Debug\cpu_info.obj
+.\Debug\DebugLog.obj
+.\Debug\DeviceComments.obj
+.\Debug\DeviceCommentsList.obj
+.\Debug\DeviceInventory.obj
+.\Debug\DeviceInventoryList.obj
+.\Debug\DeviceProperties.obj
+.\Debug\DeviceRepairs.obj
+.\Debug\DeviceRepairsList.obj
+.\Debug\Dtwinver.obj
+.\Debug\EDID.obj
+.\Debug\FileVersion.obj
+.\Debug\InputDevice.obj
+.\Debug\InputDeviceList.obj
+.\Debug\IPHelper.obj
+.\Debug\LogicalDrive.obj
+.\Debug\LogicalDriveList.obj
+.\Debug\Markup.obj
+.\Debug\Memory.obj
+.\Debug\MemorySlot.obj
+.\Debug\MemorySlotList.obj
+.\Debug\Modem.obj
+.\Debug\ModemList.obj
+.\Debug\Monitor.obj
+.\Debug\MonitorList.obj
+.\Debug\NetworkAdapter.obj
+.\Debug\NetworkAdapterList.obj
+.\Debug\OcsCrypto.obj
+.\Debug\OcsProcess.obj
+.\Debug\Printer.obj
+.\Debug\PrinterList.obj
+.\Debug\Registry.obj
+.\Debug\RegistryValue.obj
+.\Debug\RegistryValueList.obj
+.\Debug\SNMP.obj
+.\Debug\SnmpAPI.obj
+.\Debug\Software.obj
+.\Debug\SoftwareList.obj
+.\Debug\SoundDevice.obj
+.\Debug\SoundDeviceList.obj
+.\Debug\StdAfx.obj
+.\Debug\StoragePeripheral.obj
+.\Debug\StoragePeripheralList.obj
+.\Debug\SysInfo.obj
+.\Debug\SystemController.obj
+.\Debug\SystemControllerList.obj
+.\Debug\SystemPort.obj
+.\Debug\SystemPortList.obj
+.\Debug\SystemSlot.obj
+.\Debug\SystemSlotList.obj
+.\Debug\VideoAdapter.obj
+.\Debug\VideoAdapterList.obj
+.\Debug\WindowsSocket.obj
+.\Debug\Wmi.obj
+.\Debug\SysInfo.res
+\ocs\agent\win32_agent\OcsWmi\Debug\OcsWmi.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP3E.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+AccountInfo.cpp
+DeviceProperties.cpp
+EDID.cpp
+OcsProcess.cpp
+Registry.cpp
+SysInfo.cpp
+WindowsSocket.cpp
+Wmi.cpp
+Linking...
+<h3>
 --------------------Configuration: OCSInventory Agent - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x409 /fo"Debug/OCSInventory.res" /d "_DEBUG" /d "_AFXDLL" "C:\ocs\agent\win32_agent\Agent\OCSInventory.rc"" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP3F.tmp" with contents
+[
+/nologo /MDd /W3 /WX /Gm /GX /ZI /Od /I "..\OcsDB" /I "..\SysInfo" /I "..\OcsWmi" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "_OCS_AGENT" /D "_AFXDLL" /FR"Debug/" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\ocs\agent\win32_agent\Agent\modules\ModuleDownload.cpp"
+"C:\ocs\agent\win32_agent\Agent\modules\ModuleIpdiscover.cpp"
+"C:\ocs\agent\win32_agent\Agent\modules\ModuleRegistry.cpp"
+"C:\ocs\agent\win32_agent\Agent\OCSInventory.cpp"
+"C:\ocs\agent\win32_agent\Agent\OCSInventoryCommon.cpp"
+"C:\ocs\agent\win32_agent\Agent\OCSInventoryState.cpp"
+"C:\ocs\agent\win32_agent\Agent\StoreInteract.cpp"
+"C:\ocs\agent\win32_agent\Agent\XMLInteract.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP3F.tmp" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP40.tmp" with contents
+[
+wbemuuid.lib zlibstat.lib libeay32.lib ssleay32.lib zlib.lib Ws2_32.lib wininet.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/de.pdb" /debug /machine:I386 /nodefaultlib:"libc.lib" /out:"..\_Debug\OCSInventory.exe" /pdbtype:sept /libpath:"C:\Program Files\Vieux Microsoft SDK\Lib" /libpath:"..\include\zlib" /libpath:"..\include\openssl\lib\VC" /nodefaultlib:"libc.lib"/out:"..\Debug\OCSInventory.exe" 
+.\Debug\commonDownload.obj
+.\Debug\flate.obj
+.\Debug\Markup.obj
+.\Debug\ModuleDownload.obj
+.\Debug\ModuleIpdiscover.obj
+.\Debug\ModuleRegistry.obj
+.\Debug\OCSInventory.obj
+.\Debug\OCSInventoryCommon.obj
+.\Debug\OCSInventoryState.obj
+.\Debug\StdAfx.obj
+.\Debug\StoreInteract.obj
+.\Debug\XMLInteract.obj
+.\Debug\OCSInventory.res
+\ocs\agent\win32_agent\SysInfo\Debug\SysInfo.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP40.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+ModuleDownload.cpp
+Generating Code...
+Compiling...
+ModuleIpdiscover.cpp
+ModuleRegistry.cpp
+OCSInventory.cpp
+OCSInventoryCommon.cpp
+OCSInventoryState.cpp
+StoreInteract.cpp
+XMLInteract.cpp
+Generating Code...
+Linking...
 
 
 
@@ -30,18 +172,29 @@ OCSInventory.exe - 0 error(s), 0 warning(s)
 <h3>Results</h3>
 OcsWmi.dll - 0 error(s), 0 warning(s)
 <h3>
---------------------Configuration: OcsWmi - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-OcsWmi.dll - 0 error(s), 0 warning(s)
-<h3>
 --------------------Configuration: OcsService - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x1809 /fo"Release/OcsService.res" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\win32_agent\service\OcsService.rc"" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP41.tmp" with contents
+[
+libeay32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/OcsService.pdb" /machine:I386 /out:"../_Release/OcsService.exe" /libpath:"..\include\openssl\lib\VC" 
+.\Release\App.obj
+.\Release\base64.obj
+.\Release\ntserv.obj
+.\Release\ntservCmdLineInfo.obj
+.\Release\ntservEventLog.obj
+.\Release\ntservEventLogRecord.obj
+.\Release\ntservEventLogSource.obj
+.\Release\ntservScmService.obj
+.\Release\ntservServiceControlManager.obj
+.\Release\StdAfx.obj
+.\Release\OcsService.res
+]
+Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP41.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Linking...
 
 
 
@@ -51,6 +204,26 @@ OcsService.exe - 0 error(s), 0 warning(s)
 --------------------Configuration: OcsService - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x1809 /fo"Debug/OcsService.res" /d "_DEBUG" /d "_AFXDLL" "C:\ocs\agent\win32_agent\service\OcsService.rc"" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP43.tmp" with contents
+[
+libeay32.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/OcsService.pdb" /debug /machine:I386 /out:"../_Debug/OcsService.exe" /libpath:"..\include\openssl\LIB\VC" 
+.\Debug\App.obj
+.\Debug\base64.obj
+.\Debug\ntserv.obj
+.\Debug\ntservCmdLineInfo.obj
+.\Debug\ntservEventLog.obj
+.\Debug\ntservEventLogRecord.obj
+.\Debug\ntservEventLogSource.obj
+.\Debug\ntservScmService.obj
+.\Debug\ntservServiceControlManager.obj
+.\Debug\StdAfx.obj
+.\Debug\OcsService.res
+]
+Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP43.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Linking...
 
 
 
@@ -96,15 +269,70 @@ Zip.lib - 0 error(s), 0 warning(s)
 --------------------Configuration: download - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x40c /fo"Release/download.res" /d "NDEBUG" /d "_AFXDLL" "C:\ocs\agent\win32_agent\download\download.rc"" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP44.tmp" with contents
+[
+/nologo /MD /W3 /WX /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Fp"Release/download.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"C:\ocs\agent\win32_agent\download\download.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP44.tmp" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP45.tmp" with contents
+[
+libeay32.lib ssleay32.lib zip.lib zlib.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/download.pdb" /machine:I386 /nodefaultlib:"libc" /out:"..\_Release\download.exe " /libpath:"..\include\Zip\Release" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" /libpath:"C:\Program Files\Microsoft Platform SDK\Lib" 
+.\Release\commonDownload.obj
+.\Release\download.obj
+.\Release\downloadDlg.obj
+.\Release\FileOperations.obj
+.\Release\flate.obj
+.\Release\Markup.obj
+.\Release\StdAfx.obj
+.\Release\utils.obj
+.\Release\download.res
+\ocs\agent\win32_agent\include\zip\Release\Zip.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP45.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+download.cpp
+Linking...
+LINK : warning LNK4089: all references to "SSLEAY32.dll" discarded by /OPT:REF
 
 
 
 <h3>Results</h3>
-download.exe - 0 error(s), 0 warning(s)
+download.exe - 0 error(s), 1 warning(s)
 <h3>
 --------------------Configuration: download - Win32 Debug--------------------
 </h3>
 <h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x40c /fo"Debug/download.res" /d "_DEBUG" /d "_AFXDLL" "C:\ocs\agent\win32_agent\download\download.rc"" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP47.tmp" with contents
+[
+/nologo /MDd /W3 /WX /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Debug/" /Fp"Debug/download.pch" /Yu"stdafx.h" /Fo"Debug/" /Fd"Debug/" /FD /GZ /c 
+"C:\ocs\agent\win32_agent\download\download.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP47.tmp" 
+Creating temporary file "C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP48.tmp" with contents
+[
+libeay32.lib ssleay32.lib zlib.lib zip.lib srclient.lib /nologo /subsystem:windows /incremental:yes /pdb:"Debug/download.pdb" /debug /machine:I386 /out:"..\_Debug\download.exe" /pdbtype:sept /libpath:"C:\Program Files\Vieux Microsoft SDK\Lib" /libpath:"..\include\Zip\Debug" /libpath:"..\include\openssl\lib\VC" /libpath:"..\include\zlib" 
+.\Debug\commonDownload.obj
+.\Debug\download.obj
+.\Debug\downloadDlg.obj
+.\Debug\FileOperations.obj
+.\Debug\flate.obj
+.\Debug\Markup.obj
+.\Debug\StdAfx.obj
+.\Debug\utils.obj
+.\Debug\download.res
+\ocs\agent\win32_agent\include\zip\Debug\Zip.lib
+]
+Creating command line "link.exe @C:\DOCUME~1\PASCAL~1.DAN\LOCALS~1\Temp\RSP48.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+download.cpp
+Linking...
 
 
 
