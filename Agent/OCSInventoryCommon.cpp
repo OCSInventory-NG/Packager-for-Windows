@@ -547,13 +547,14 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 			AddLog( _T( "Reading last inventory state file...\n"));
 			csMessage.Format( _T( "%s%s"), szExecutionFolder, OCS_LAST_STATE_FILE);
 			m_pTheDB->ReadLastInventoryState( csMessage, m_State);
-			// Check state to see if changed
-			HasChanged( &m_ThePC, szExecutionFolder);
-			
+						
 			// Running "inventory" functions from modules
 			for( modCount=0; modCount < modules.GetSize(); modCount++) {
 					((CModuleApi*)modules.GetAt(modCount))->inventory(pXml,&m_ThePC);
 			}
+
+			// Check state to see if changed
+			HasChanged( &m_ThePC, szExecutionFolder);
 
 			// Update the database
 			if (!m_pTheDB->UpdateDevice( m_ThePC))
