@@ -966,6 +966,7 @@ LRESULT		wmPaint( HWND hwnd)
 #define ISWINME(x) (x.dwMajorVersion == 4 && x.dwMinorVersion == 90 && x.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
 #define ISWINXP(x) (x.dwMajorVersion == 5 && x.dwMinorVersion == 1 && x.dwPlatformId == VER_PLATFORM_WIN32_NT)
 #define ISWIN2000(x) (x.dwMajorVersion == 5 && x.dwMinorVersion == 0 && x.dwPlatformId == VER_PLATFORM_WIN32_NT)
+#define ISWIN2003(x) (x.dwMajorVersion == 5 && x.dwMinorVersion == 2 && x.dwPlatformId == VER_PLATFORM_WIN32_NT)
 
 LRESULT 	wmCreate( HWND hwnd)
 {
