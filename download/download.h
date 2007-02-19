@@ -106,9 +106,11 @@ public:
 	CPackage(CDownloadApp * p) { pA = p;};
 	BOOL fromXml( CMarkup* pX ); 
 	int execute();	
-	void done(BOOL needToSendSuccess = TRUE);
+	void done();
 	int buildPackage();
 	int checkSignature() ;
+	int markAsDone( CString );
+
 };
 
 /////////////////////////////////////////////////////////////////////////////

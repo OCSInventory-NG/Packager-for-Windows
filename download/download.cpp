@@ -524,54 +524,21 @@ int CDownloadApp::download( CPackage * pP ) {
 	else {
 		AddLog("File %s successfully downloaded, executing package",pP->Id);
 		int errExec = pP->execute();
-		
-		if( errExec ) {
-			// if errExec == 2 no setcurrentdirectory was previously done, we do not need to chdir back to ..\..
-			if( errExec != 2 &&  errExec != 3  &&  errExec != 4 &&  errExec != 6)
-				if( ! SetCurrentDirectory("..\\..") ) {
-					AddLog("ERROR: Can't chdir to ..\\..");
-					finish();
-					ExitProcess(1);
-				} 
-		
-			//4 = user aborted process
-			if( errExec == 4 ) {
-				if( ! CNetUtils::downloadMessage(ERR_ABORTED,pP->Id,m_csDeviceId, m_csServer, m_iPort, m_iProxy, m_csHttp_u, m_csHttp_w) ) {
-					cleanPackage(pP->Id);
-				}
-				return 1;
-			}
-			//5 = program returned an error value
-			else if( errExec == 5 ) {
-				pP->done(FALSE);
-				return 0;
-			}
-			//6 = install has been canceled
-			else if( errExec == 6 ) {
-				AddLog("Package %s delayed (will process it next time)", pP->Id);
-				blackList(pP->Id);
-				return 0;
-			}
-			//3 = Bad digest (have not changed directory yet)
-			else if( errExec == 3 ) {
-				cleanPackage(pP->Id);
-				return 1;
-			}
 
-			if( ! CNetUtils::downloadMessage(ERR_EXECUTE,pP->Id,m_csDeviceId, m_csServer, m_iPort, m_iProxy, m_csHttp_u, m_csHttp_w)) {
-				cleanPackage(pP->Id);
-			}
-			return 1;
-		}
-
-		else {
+		if( errExec != -1 ){
 			if( ! SetCurrentDirectory("..\\..") ) {
 				AddLog("ERROR: Can't chdir to ..\\..");
 				finish();
 				ExitProcess(1);
 			}
-			pP->done();
 		}
+		else{
+			AddLog("ERROR: Execute returned -1. Will not try to change drectory");
+		}
+
+		if( errExec )
+			pP->done();
+		return 0;
 	}
 	return 0;
 }
@@ -581,6 +548,19 @@ int CPackage::execute() {
 	AddLog("Executing orders for package %s", Id);
 
 	UINT msgType, notifyRet;
+
+	if( buildPackage() ) {
+		return -1;
+	}
+
+	// If we cannot change directory, we consider that there is a big issue. We give up.
+	CString tmpPath;
+	tmpPath.Format("%s\\tmp", Id );
+	if( ! SetCurrentDirectory(tmpPath) ) {
+		AddLog( "ERROR: Can't chdir to %s", tmpPath);
+		((CDownloadApp*)AfxGetApp())->finish();
+		ExitProcess(1);
+	}
 	
 	/* Popup the message if there is a user notification */
 	if( notifyUser ) {
@@ -599,176 +579,161 @@ int CPackage::execute() {
 		notifyRet = dlg.DoModal();
 		
 		if ( notifyRet == IDCANCEL) {
-			CNetUtils::downloadMessage(ERR_ABORTED, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);
-			return 4;
+			 markAsDone( ERR_ABORTED );
+			return 1;
 		}
 		else if ( notifyRet == IDOK && dlg.delayed == TRUE ) {
-			return 6;
-
+			theApp.blackList( Id );
+			return 0;
 		}
 		
 	}
 	
-	int errCode = 0;
-	if( errCode = buildPackage() ) {
-		return errCode;
+	if( Act == "LAUNCH" ) {
+		if ( Frags )
+			if( unzip( "build.zip", "." ) ) {
+				markAsDone( ERR_UNZIP );
+				return 1;
+			}
+		
+		if( !Name.GetLength() ) {
+			AddLog("ERROR: No Name for a LAUNCH action");
+			markAsDone( ERR_BAD_PARAM );
+			return 1;
+		}
+
+		if( !fileExists( "..\\..\\..\\inst32.exe" ) ) {
+			AddLog("ERROR: Cannot find launcher...execute stage aborted");
+			markAsDone( ERR_NO_LAUNCHER );
+			return 1;
+		}
+
+		AddLog("LAUNCH: Launching %s",Name);
+		
+		STARTUPINFO si;
+		PROCESS_INFORMATION pi;
+
+		ZeroMemory( &si, sizeof(si) );
+		si.cb = sizeof(si);
+		ZeroMemory( &pi, sizeof(pi) );
+
+		si.wShowWindow = SW_HIDE;
+
+		si.dwFlags=STARTF_USESHOWWINDOW;
+		CString commandLine = "..\\..\\..\\inst32.exe /exe:" + CString("\"") + Name + CString("\"") + " /log:instlog.txt";
+
+		if( ! CreateProcess( NULL, commandLine.GetBuffer(0), NULL, NULL, TRUE, 0, NULL, NULL, &si,&pi )) {
+			AddLog("ERROR: Error %d occured while running %s", GetLastError(), Name);
+			markAsDone( ERR_EXECUTE );
+			return 1;
+		}
+		
+		if( WaitForSingleObject( pi.hProcess, INFINITE ) ){
+			AddLog("ERROR: while waiting for %s (error %s)", Name, GetLastError());
+		}
+
+		if( needDoneAction ){
+			AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
+		}
+		
+		DWORD exitCode;
+		if ( ! GetExitCodeProcess( pi.hProcess , &exitCode ) ) {
+			AddLog("ERROR: Cannot get the return status");
+			markAsDone( ERR_NO_INST32_CODE );
+			return 1;
+		}
+		else {
+			AddLog("Launcher returned %i code", exitCode);
+			if( exitCode != INST32_OK_CODE ){
+				CString csExitCode;
+				ltoa(exitCode, csExitCode.GetBuffer(NULL), 10);
+				csExitCode.Format("%s_%s", ERR_EXECUTE, csExitCode.GetBuffer(NULL));
+				markAsDone( csExitCode );
+				return 1;
+			}
+		}
+
 	}
-	else {
-		CString tmpPath;
-		tmpPath.Format("%s\\tmp", Id );
-		if( ! SetCurrentDirectory(tmpPath) ) {
-			AddLog( "ERROR: Can't chdir to %s", tmpPath);
-			((CDownloadApp*)AfxGetApp())->finish();
-			ExitProcess(1);
+	else if( Act == "EXECUTE" ) {
+		if( !Command.GetLength() ) {
+			AddLog("ERROR: No Command for an EXECUTE action");
+			markAsDone( ERR_BAD_PARAM );
+			return 1;
+		}
+		AddLog("EXECUTE: Executing command: %s",Command);
+		if ( Frags )
+			if( unzip( "build.zip", "." ) ) {
+				markAsDone( ERR_UNZIP );
+				return 1;
+			}
+		//system("..\\..\\run.bat "+Command);
+		system( Command );
+		
+		if( errno ) {
+			AddLog("ERROR: Error occured while running %s: %s", Name, strerror(errno));
+		}
+		
+		if( needDoneAction ){
+			AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
 		}
 
-		//createRestorePoint(Id);
-	
-		if( Act == "LAUNCH" ) {
-			if ( Frags )
-				if( unzip( "build.zip", "." ) ) {
-					return 1;
-				}
-			
-			if( !Name.GetLength() ) {
-				AddLog("ERROR: No Name for a LAUNCH action");
-				return 1;
-			}
-
-			if( !fileExists( "..\\..\\..\\inst32.exe" ) ) {
-				AddLog("ERROR: Cannot find launcher...execute stage aborted");
-				return 1;
-			}
-
-			AddLog("LAUNCH: Launching %s",Name);
-			
-			STARTUPINFO si;
-			PROCESS_INFORMATION pi;
-
-			ZeroMemory( &si, sizeof(si) );
-			si.cb = sizeof(si);
-			ZeroMemory( &pi, sizeof(pi) );
-
-			si.wShowWindow = SW_HIDE;
-
-			si.dwFlags=STARTF_USESHOWWINDOW;
-			CString commandLine = "..\\..\\..\\inst32.exe /exe:" + CString("\"") + Name + CString("\"") + " /log:instlog.txt";
-
-			if( ! CreateProcess( NULL, commandLine.GetBuffer(0), NULL, NULL, TRUE, 0, NULL, NULL, &si,&pi )) {
-				AddLog("ERROR: Error %d occured while running %s", GetLastError(), Name);
-				return 1;
-			}
-			
-			if( WaitForSingleObject( pi.hProcess, INFINITE ) ){
-				AddLog("ERROR: while waiting for %s (error %s)", Name, GetLastError());
-			}
-
-			if( needDoneAction ){
-				AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
-			}
-			
-			DWORD exitCode;
-			if ( ! GetExitCodeProcess( pi.hProcess , &exitCode ) ) {
-				AddLog("ERROR: Cannot get the return status");
-				return 0;
-			}
-			else {
-				AddLog("Launcher returned %i code", exitCode);
-				if( exitCode != INST32_OK_CODE ){
-					CString csExitCode;
-					ltoa(exitCode, csExitCode.GetBuffer(NULL), 10);
-					csExitCode.Format("%s_%s", ERR_EXECUTE, csExitCode.GetBuffer(NULL));
-					CNetUtils::downloadMessage( csExitCode, Id, pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);	
-					return 5;
-				}
-				//CString code;
-				CNetUtils::downloadMessage( CODE_SUCCESS, Id, pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);	
-				return 5;
-			}
-
-		}
-		else if( Act == "EXECUTE" ) {
-			if( !Command.GetLength() ) {
-				AddLog("ERROR: No Command for an EXECUTE action");
-				return 1;
-			}
-			AddLog("EXECUTE: Executing command: %s",Command);
-			if ( Frags )
-				if( unzip( "build.zip", "." ) ) {
-					return 1;
-				}
-			//system("..\\..\\run.bat "+Command);
-			system( Command );
-			
-			if( needDoneAction ){
-				AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
-			}
-
-			if( errno ) {
-				AddLog("ERROR: Error occured while running %s: %s", Name, strerror(errno));
-				return 1;
-			}
-		}
-		else if( Act == "STORE" ) {
-			AddLog("STORE: Storing in: %s",Path);
-
-			Path.Replace( "/", "\\" );
-			
-			if( !Path.GetLength() ) {
-				AddLog("ERROR: No Path for a STORE action");
-				return 1;
-			}
-
-			if( Path[0] == '\\' )
-				Path = Path.Right( Path.GetLength() -1 );
-
-			Path.Replace( "INSTALL_PATH", "..\\.." );
-
-			// Windows path must begin with ..\ or x:\ , else we are copying directory in itself
-			if( Path.Left(3) != "..\\" && Path.Mid(1,2) != ":\\" ) {
-				AddLog("ERROR: Can't store in tmp folder");
-				return 1;
-			}
-
-			// trying to bypass previous checkings
-			if( Path.Left(6) == "..\\tmp" ) {
-				AddLog("ERROR: Can't store in tmp folder");
-				return 1;
-			}
-			
-			char seps[]   = "\\/";			
-			char* token;
-			CString tokenize = Path;
-			token = strtok( tokenize.GetBuffer(0), seps );
-			CString concat = token;
-
-			while( token != NULL ) {
-				if( ! CreateDirectory( concat, NULL ) ) {
-					AddLog("Directory %s already exists", token);
-				}
-				token = strtok( NULL, seps );
-				concat += CString("\\") + token ;
-			}
-
-			/*CFileOperation cf;
-			cf.SetOverwriteMode( true );
-			if( ! cf.Copy( ".", Path) ) {
-				AddLog("ERROR: move of %s to %s failed with error:\n\t\t\t[%s]", Id, Path, cf.GetErrorString());
-				return 1;
-			}*/
-
-			delete token;
-			
-			if( unzip( "build.zip", Path )) {
-				return 1;
-			}
-			if( needDoneAction ){
-				AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
-			}
-		}	
 	}
+	else if( Act == "STORE" ) {
+		AddLog("STORE: Storing in: %s",Path);
 
-	return 0;
+		Path.Replace( "/", "\\" );
+		
+		if( !Path.GetLength() ) {
+			AddLog("ERROR: No Path for a STORE action");
+			markAsDone( ERR_BAD_PARAM );
+			return 1;
+		}
+
+		if( Path[0] == '\\' )
+			Path = Path.Right( Path.GetLength() -1 );
+
+		Path.Replace( "INSTALL_PATH", "..\\.." );
+
+		// Windows path must begin with ..\ or x:\ , else we are copying directory in itself
+		if( Path.Left(3) != "..\\" && Path.Mid(1,2) != ":\\" ) {
+			AddLog("ERROR: Can't store in tmp folder");
+			markAsDone( ERR_BAD_PARAM );
+			return 1;
+		}
+
+		// trying to bypass previous checkings
+		if( Path.Left(6) == "..\\tmp" ) {
+			AddLog("ERROR: Can't store in tmp folder");
+			markAsDone( ERR_BAD_PARAM );
+			return 1;
+		}
+		
+		char seps[]   = "\\/";			
+		char* token;
+		CString tokenize = Path;
+		token = strtok( tokenize.GetBuffer(0), seps );
+		CString concat = token;
+
+		while( token != NULL ) {
+			if( ! CreateDirectory( concat, NULL ) ) {
+				AddLog("Directory %s already exists", token);
+			}
+			token = strtok( NULL, seps );
+			concat += CString("\\") + token ;
+		}
+
+		delete token;
+		
+		if( unzip( "build.zip", Path )) {
+			markAsDone( ERR_UNZIP );
+			return 1;
+		}
+		if( needDoneAction ){
+			AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
+		}
+	}
+	markAsDone( CODE_SUCCESS );
+	return 1;
 }
 
 void CDownloadApp::finish() {
@@ -783,35 +748,60 @@ void CDownloadApp::finish() {
 	///ExitProcess(1);
 }
 
-void CPackage::done(BOOL needToSendSuccess) {
-	
+// Use to create the done flag that contains the event message
+int CPackage::markAsDone( CString message ){
+
 	CFile done;
 	if( done.Open( Id + "\\done", CFile::modeCreate|CFile::modeWrite )) {
+		done.Write( message.GetBuffer(NULL), sizeof(message.GetBuffer(NULL)) );
 		done.Close();
+		return 1;
 	}
 	else {
 		AddLog("ERROR: Can't create done (%s), error %i", Id + "\\done", GetLastError());
+		return 0;
 	}
+}
 
-	CStdioFile history;
-	if (history.Open("history", CFile::modeWrite|CFile::modeNoTruncate)){
-		history.SeekToEnd();
-		history.WriteString( Id + "\n" );
-		history.Close();
-	}
-	else{
-		AddLog("ERROR: Cannot open history file\n");
-	}
+void CPackage::done() {
+
 	
-	if (needToSendSuccess) {
-		AddLog("Package %s done, sending message", Id);
-		if( ! CNetUtils::downloadMessage( CODE_SUCCESS, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w)) {
+	CStdioFile history, done;
+	CString code;
+
+	if(done.Open("done", CFile::modeRead)){
+		if( !done.Read( code.GetBuffer(NULL), done.GetLength() ) ){
+			AddLog("ERROR: Cannot read done file\n");
+			CNetUtils::downloadMessage( "UNKNOWN", Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);
 			cleanPackage( Id );
 		}
 	}
-	else {
-		AddLog("Package %s done, will not sending message", Id);
+	else{
+		AddLog("ERROR: Cannot open done file\n");
 		cleanPackage( Id );
+	}
+
+	if(code.Compare(CODE_SUCCESS)==0){
+		if (history.Open("history", CFile::modeWrite)){
+			history.SeekToEnd();
+			history.WriteString( Id + "\n" );
+			history.Close();
+		}
+		else{
+			AddLog("ERROR: Cannot open history file\n");
+		}
+	}
+	else{
+		AddLog("ERROR: Will not register this package in history: not a success\n");
+	}
+	
+	AddLog("Package %s done, sending message", Id);
+	if( ! CNetUtils::downloadMessage( code, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w)) {
+		cleanPackage( Id );
+	}
+	else {
+		AddLog("Cannot send event message for %s. Will retry later", Id);
+		theApp.blackList(Id);
 	}
 }
 
@@ -822,7 +812,6 @@ int CPackage::buildPackage() {
 	if( ! CreateDirectory( tmpPath, NULL ) ) {
 		if ( GetLastError() != ERROR_ALREADY_EXISTS ) {
 			AddLog("ERROR: can't create %s\\tmp directory", Id);
-			return 2;
 		}
 		else {
 			AddLog("Will not create %s\\tmp directory, it already exists", Id);
@@ -838,12 +827,14 @@ int CPackage::buildPackage() {
 	for( UINT i = 1; i <= Frags; i++ ) {
 		if( ! fileExists( Id + "-" + itoa(i,pt,10), Id )) {
 			AddLog("ERROR: File %s\\%s is missing", Id, Id + "-" + itoa(i,pt,10));
-			return 2;
+			markAsDone( ERR_BUILD );
+			return 1;
 		}
 
 		if( ! curFrag.Open( Id + "\\"+ Id + "-" + itoa(i,pt,10), CFile::modeRead)) {
 			AddLog("ERROR: Can't open %s\\%s for reading", Id, Id + "-" + itoa(i,pt,10));
-			return 2;
+			markAsDone( ERR_BUILD );
+			return 1;
 		}
 		UINT len = curFrag.GetLength();
 		BYTE * buf = new BYTE[ len ];
@@ -856,8 +847,8 @@ int CPackage::buildPackage() {
 	zipArchive.Close();	
 
 	if( checkSignature() ) {
-		CNetUtils::downloadMessage(ERR_BAD_DIGEST,Id,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);
-		return 3;
+		markAsDone( ERR_BAD_DIGEST );
+		return 1;
 	}
 	
 	AddLog("Building of %s OK", Id);
@@ -921,22 +912,6 @@ int CPackage::checkSignature() {
 		return 1;
 	}
 }
-
-/*
-
-*/
-/*
-void CDownloadApp::cleanId( CString Id ) {
-	for( j=0; j < packages.GetSize(); j++ ) {
-		CPackage * pP = packages[j];
-		if( pP->Id == Id ) {
-			delete pP;
-			packages.RemoveAt(j);
-			break;
-		}
-
-	}
-}*/
 
 
 

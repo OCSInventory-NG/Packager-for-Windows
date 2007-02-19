@@ -11,10 +11,12 @@ LastPage=0
 ClassCount=3
 Class1=COCSInventoryApp
 
-ResourceCount=1
+ResourceCount=3
 Class2=CInputDlg
 Class3=CCodeDlg
 Resource1=IDD_CU
+Resource2=IDD_DIALOG1
+Resource3=IDD_DIALOG2
 
 [CLS:COCSInventoryApp]
 Type=0
@@ -53,4 +55,18 @@ Control3=IDC_LABEL_TEXT,static,1342308864
 Control4=IDC_STATIC,static,1342177283
 Control5=IDC_STATIC,static,1342308352
 Control6=IDC_STATIC,button,1342177287
+
+[DLG:IDD_DIALOG1]
+Type=1
+Class=?
+ControlCount=2
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
+
+[DLG:IDD_DIALOG2]
+Type=1
+Class=?
+ControlCount=2
+Control1=IDOK,button,1342242817
+Control2=IDCANCEL,button,1342242816
 

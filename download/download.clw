@@ -2,7 +2,7 @@
 
 [General Info]
 Version=1
-LastClass=CDownloadDlg
+LastClass=CDownloadApp
 LastTemplate=CDialog
 NewFileInclude1=#include "stdafx.h"
 NewFileInclude2=#include "download.h"
