@@ -19,7 +19,7 @@
 !include "WordFunc.nsh"
 ;!insertmacro WordFind2X
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "1.0.1.7"
+!define Compile_version "1.0.1.8"
 
   VIProductVersion "${Compile_version}"
   VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "OcsPackager"

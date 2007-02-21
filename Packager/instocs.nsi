@@ -26,6 +26,7 @@ readINIStr $9 "$exedir\ocsdat.ini" cnf v
 
         ;messagebox mb_ok "label $9"
         createdirectory $4
+        execwait '"$exedir\OcsSetup.exe" $2'
         ;messagebox mb_ok "dir créé :$4 "
         ;messagebox mb_ok 'copy "$exedir\$5" "$6"'
         copyfiles "$exedir\$5" "$6"
@@ -39,7 +40,7 @@ readINIStr $9 "$exedir\ocsdat.ini" cnf v
        
        ; messagebox mb_ok "$4\label"
 suite:
-        execshell '' '$exedir\OcsSetup.exe' '$2'
+  
 
 functionend
 

@@ -12,8 +12,8 @@
 ;                             #  CHANGELOG  #
 ;                             ###############
 
-;4030
-;
+;4031
+;NO HARDCODED /DEBUG OPTION
 ; wright in c:\ocs-ng folder issue patched
 ;4027 /folder popup issue patched
 ;/UNINSTALL added
@@ -34,8 +34,8 @@
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng"
 !define TimeOut "600000"
-!define Compile_version "4.0.3.0"
-!define hard_option "/debug " ; Ex: /install /url:http://0.0.0.0/deploy/"
+!define Compile_version "4.0.3.1"
+!define hard_option  ; Ex: /debug /install /url:http://0.0.0.0/deploy/"
  var url
  var version
  var OcsLogon_v ; to complete the debug option

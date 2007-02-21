@@ -12,7 +12,7 @@
 ;                             #  CHANGELOG  #
 ;                             ###############
 ;4031
-; FOLDER error 
+; FOLDER error if not /install
 ;
 ;4026
 ;added /lnk  ---------------------------------------------> fait
@@ -21,7 +21,7 @@
 ;Normal roadmapped improvments
 !include "MUI.nsh"
 !insertmacro MUI_LANGUAGE "english"
-!define Compile_version "4.0.3.0"
+!define Compile_version "4.0.3.1"
 BRANDINGTEXT "OCS Inventory NG ${Compile_version}"
 Icon "Aocs2.ico"
 ShowInstDetails hide
