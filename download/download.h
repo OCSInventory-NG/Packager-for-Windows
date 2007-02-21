@@ -109,7 +109,7 @@ public:
 	void done();
 	int buildPackage();
 	int checkSignature() ;
-	int markAsDone( CString );
+	int markAsDone( CString, CString Path = ".." );
 
 };
 

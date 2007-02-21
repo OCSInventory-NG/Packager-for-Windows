@@ -749,10 +749,10 @@ void CDownloadApp::finish() {
 }
 
 // Use to create the done flag that contains the event message
-int CPackage::markAsDone( CString message ){
+int CPackage::markAsDone( CString message, CString Path ){
 
 	CFile done;
-	if( done.Open( Id + "\\done", CFile::modeCreate|CFile::modeWrite )) {
+	if( done.Open( Path + "\\" + Id + "\\done", CFile::modeCreate|CFile::modeWrite )) {
 		done.Write( message.GetBuffer(NULL), sizeof(message.GetBuffer(NULL)) );
 		done.Close();
 		return 1;
@@ -827,7 +827,7 @@ int CPackage::buildPackage() {
 	for( UINT i = 1; i <= Frags; i++ ) {
 		if( ! fileExists( Id + "-" + itoa(i,pt,10), Id )) {
 			AddLog("ERROR: File %s\\%s is missing", Id, Id + "-" + itoa(i,pt,10));
-			markAsDone( ERR_BUILD );
+			markAsDone( ERR_BUILD, "." );
 			return 1;
 		}
 
@@ -847,7 +847,7 @@ int CPackage::buildPackage() {
 	zipArchive.Close();	
 
 	if( checkSignature() ) {
-		markAsDone( ERR_BAD_DIGEST );
+		markAsDone( ERR_BAD_DIGEST, "." );
 		return 1;
 	}
 	
