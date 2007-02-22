@@ -11,9 +11,9 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
-;4028
+;4030
 ;added stopservice function before uninstall
-; todo: verify if service is realy stopped
+;
 ;4027 win 9x service reboot issue patched
 ;ocsdat reading file option added
 ;Silent uninstall added
@@ -21,7 +21,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory Agent"
-!define PRODUCT_VERSION "4.0.2.8"
+!define PRODUCT_VERSION "4.0.3.0"
 !define PRODUCT_PUBLISHER "OCS Inventory Team"
 !define PRODUCT_WEB_SITE "htttp://ocsinventory.sf.net"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"
@@ -51,15 +51,6 @@ ICON "aocs2.ico"
 ; Directory page
 Page custom customOCSFloc ValidatecustomOCSFloc ""
 
-  VIProductVersion "${PRODUCT_VERSION}"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "OcsServiceAgent"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "Windows Service Agent for OCS Inventory"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "Ocs Inventory ng Team"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "OcsServiceAgent is a part of ocs Inventory NG Application. Under GNU Licence."
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "OCS Inventory Team http://ocsinventory.sourceforge.net"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "OcsServiceAgent"
-  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${PRODUCT_VERSION}"
-
 !insertmacro MUI_PAGE_DIRECTORY
 ; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
@@ -76,49 +67,53 @@ Page custom customOCSFloc ValidatecustomOCSFloc ""
 !insertmacro MUI_LANGUAGE "French"
 
 ; MUI end ------
-BRANDINGTEXT "OCS Inventory NG"
-Page instfiles
-Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-OutFile "OcsAgentSetup.exe"
-InstallDir "$PROGRAMFILES\OCS Inventory Agent"
-InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
-;ShowInstDetails show
+  VIProductVersion "${PRODUCT_VERSION}"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "OcsServiceAgent"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "Windows Service Agent for OCS Inventory"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "Ocs Inventory ng Team"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "OcsServiceAgent is a part of ocs Inventory NG Application. Under GNU Licence."
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "OCS Inventory Team http://ocsinventory.sourceforge.net"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "OcsServiceAgent"
+  VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${PRODUCT_VERSION}"
 
-ShowUnInstDetails show
+  BRANDINGTEXT "OCS Inventory NG"
+  Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
+  OutFile "OcsAgentSetup.exe"
+  InstallDir "$PROGRAMFILES\OCS Inventory Agent"
+  InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
+  ShowUnInstDetails show
 
 Function .oninit
- InitPluginsDir
- File /oname=$PLUGINSDIR\options.ini "options.ini"
- File /oname=$PLUGINSDIR\splash.bmp "banner-ocs.bmp"
- System::Call 'kernel32::CreateMutexA(i 0, i 0, t "OcsSetupNG") i .r1 ?e'
- Pop $R0
- StrCmp $R0 0 not_running
-abort
+  InitPluginsDir
+  File /oname=$PLUGINSDIR\options.ini "options.ini"
+  File /oname=$PLUGINSDIR\splash.bmp "banner-ocs.bmp"
+  System::Call 'kernel32::CreateMutexA(i 0, i 0, t "OcsSetupNG") i .r1 ?e'
+  Pop $R0
+  StrCmp $R0 0 not_running
+  abort
 not_running:
-
- Fileopen $9 "ocsdat" r
- Fileread $9 "$2"
- Fileclose $9
- strcmp $9 "" +2 0
- strcpy $CMDLINE '"$PLUGINSDIR\" $2'
- 
- ;messagebox mb_OK $CMDLINE
- 
-; File /oname=$PLUGINSDIR\exec.vbs "exec.vbs"
-advsplash::show 900 160 840 0xFFFFF $PLUGINSDIR\splash
- Call testinstall
- Call parsecmd
+  Fileopen $9 "ocsdat" r
+  Fileread $9 "$2"
+  Fileclose $9
+  strcmp $9 "" +2 0
+  strcpy $CMDLINE '"$PLUGINSDIR\" $2'
+  ;messagebox mb_OK $CMDLINE
+  advsplash::show 900 160 840 0xFFFFF $PLUGINSDIR\splash
+  Call testinstall
+  Call parsecmd
 FunctionEnd
 
 Function testinstall
-; detect admin right
- Call IsUserAdmin
- Pop "$R0"
- strcmp $R0 "true" Okadmin 0
- messagebox MB_iconstop "Your are not logged on with admin privilege."
-abort
+                    ;**********************
+                    ;* detect admin right *
+                    ;**********************
+  Call IsUserAdmin
+  Pop "$R0"
+  strcmp $R0 "true" Okadmin 0
+  messagebox MB_iconstop "Your are not logged on with admin privilege."
+  abort
 Okadmin:
-;Est ce que le service existe?
+  ;Does service exist?
   readregstr $R0 HKLM "SYSTEM\CurrentControlSet\Services\OCS INVENTORY"  DisplayName
   IfErrors 0 lbl_uninst
   goto lbl_test_end
@@ -133,8 +128,6 @@ lbl_uninst:
   strcpy $R1 $R0 -11
   call stopservice
   execwait "$R1\ocsservice.exe -uninstall" $R0
- ; messagebox mb_OK "$R1\ocsservice.exe -uninstall"
- ; messagebox mb_OK "desinst= $R0"
   Goto lbl_test_end
 false2:
   abort
@@ -157,29 +150,29 @@ Section "OCS Inventory Agent" SEC01
   File "ocsagent\SysInfo.dll"
   File "ocsagent\PSAPI.DLL"
   File "ocsagent\zlib.dll"
-
-Call iniModif
- Copyfiles "$PLUGINSDIR\service.ini" "$INSTDIR\service.ini"
-;Call iniModif
- Push "$CMDLINE"
- Push " /S "
- Call StrStr
- Pop $R9
- Strlen $0 $R9
- intcmp $0 4 quiet 0 quiet
- goto quiet_end
+  Call iniModif
+  Copyfiles "$PLUGINSDIR\service.ini" "$INSTDIR\service.ini"
+  Push "$CMDLINE"
+  Push " /S "
+  Call StrStr
+  Pop $R9
+  Strlen $0 $R9
+  intcmp $0 4 quiet 0 quiet
+  goto quiet_end
 quiet:
- Push "$CMDLINE"
- Push "/"
- Call StrStr
- Pop $1
- writeinistr "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous" " $1"
-  ;messagebox mb_ok "$INSTDIR\service.ini"
+  Push "$CMDLINE"
+  Push "/"
+  Call StrStr
+  Pop $1
+  writeinistr "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous" " $1"
 quiet_end:
+  call startsvc
 SectionEnd
+
 ;section "RemoteInstall" remote
 ; InstallOptions::dialog "$PLUGINSDIR\options2.ini"
 ;sectionend
+
 Function StrStr
   Exch $R1 ; st=haystack,old$R1, $R1=needle
   Exch    ; st=old$R1,haystack
@@ -238,36 +231,32 @@ done:
   Exch $R1
 FunctionEnd
 
-Function .onInstSuccess
-; Y a  t il une ancienne install
-; *****************************
-
- strcpy $R7 $WINDIR 2
- IfFileExists "$R7\ocs-ng\ocsconv.dat" Traite
- IfFileExists "$R7\ocs-ng\ocsinventory.dat" 0 NonDat
- copyfiles "$R7\ocs-ng\ocsinventory.dat" "$INSTDIR\ocsinventory.dat"
-; messagebox mb_ok "$R7\ocs-ng\ocsinventory.dat"
- rename "$R7\ocs-ng\ocsinventory.dat" "$R7\ocs-ng\ocsconv.dat"
- goto Traite
+Function startsvc
+ ; Y a  t il une ancienne install
+ ; *****************************
+  strcpy $R7 $WINDIR 2
+  IfFileExists "$R7\ocs-ng\ocsconv.dat" Traite
+  IfFileExists "$R7\ocs-ng\ocsinventory.dat" 0 NonDat
+  copyfiles "$R7\ocs-ng\ocsinventory.dat" "$INSTDIR\ocsinventory.dat"
+  rename "$R7\ocs-ng\ocsinventory.dat" "$R7\ocs-ng\ocsconv.dat"
+  goto Traite
 NonDat:
- IfFileExists "$R7\ocs-ng\ocsinventory.conf" 0 Traite
- copyfiles "$R7\ocs-ng\ocsinventory.conf" "$INSTDIR\ocsinventory.conf"
- rename "$R7\ocs-ng\ocsinventory.conf" "$R7\ocs-ng\ocsconv.dat"
+  IfFileExists "$R7\ocs-ng\ocsinventory.conf" 0 Traite
+  copyfiles "$R7\ocs-ng\ocsinventory.conf" "$INSTDIR\ocsinventory.conf"
+  rename "$R7\ocs-ng\ocsinventory.conf" "$R7\ocs-ng\ocsconv.dat"
 Traite:
   ;VRIFYING IF NOT NT
-   ClearErrors
-   ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
-   IfErrors 0 lbl_winnt
-   writeregstr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices" "OCS Inventory NG" "$INSTDIR\ocsservice.exe -debug"
+  ClearErrors
+  ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
+  IfErrors 0 lbl_winnt
+  writeregstr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices" "OCS Inventory NG" "$INSTDIR\ocsservice.exe -debug"
 goto not_nt
 lbl_winnt:
-   execwait "$INSTDIR\ocsservice -install" $R0
-  ;MESSAGEBOX MB_ok "-install : $R0"
-   execwait "$INSTDIR\ocsservice -start" $R0
-  ;MESSAGEBOX MB_ok "-start : $R0"
+  execwait "$INSTDIR\ocsservice -install" $R0
+  execwait "$INSTDIR\ocsservice -start" $R0
   goto instend
 not_nt:
-exec "$INSTDIR\ocsservice -debug"
+  exec "$INSTDIR\ocsservice -debug"
 instend:
 FunctionEnd
 
@@ -286,36 +275,86 @@ SectionEnd
 
 Function un.onUninstSuccess
   HideWindow
- Push "$CMDLINE"
+  Push "$CMDLINE"
   Push " /S"
   Call un.StrStr
   Pop $R9
   Strlen $0 $R9
   intcmp $0 2 sil1 0 sil1
-
-  MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) a été désinstallé avec succès de votre ordinateur."
+  ;MessageBox MB_ICONINFORMATION|MB_OK "$(^Name) a été désinstallé avec succès de votre ordinateur."
   ;VRIFYING IF NOT NT
-; if not REBOOT
+  ;if not REBOOT
   ClearErrors
-   ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
-   IfErrors 0 no_REBOOT
-   messagebox MB_ok "Please restart your computer"
-   sil1:
-DeleteRegValue HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices" "OCS Inventory NG"
-
+  ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
+  IfErrors 0 no_REBOOT
+  messagebox MB_ok "Please restart your computer"
+sil1:
+  DeleteRegValue HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices" "OCS Inventory NG"
 no_REBOOT:
 FunctionEnd
 
 Function stopservice
   nsExec::Exec 'net stop "OCS INVENTORY"'
-  pop $0
-  ;messagebox mb_ok $0
+  ; KillProcDLL ©2003 by DITMan, based upon the KILL_PROC_BY_NAME function programmed by Ravi, reach him at: http://www.physiology.wisc.edu/ravi/
+  ;* 0 = Process was successfully terminated
+  ;* 603 = Process was not currently running
+  ;* 604 = No permission to terminate process
+  ;* 605 = Unable to load PSAPI.DLL
+  ;* 602 = Unable to terminate process for some other reason
+  ;* 606 = Unable to identify system type
+  ;* 607 = Unsupported OS
+  ;* 632 = Invalid process name
+  ;* 700 = Unable to get procedure address from PSAPI.DLL
+  ;* 701 = Unable to get process list, EnumProcesses failed
+  ;* 702 = Unable to load KERNEL32.DLL
+  ;* 703 = Unable to get procedure address from KERNEL32.DLL
+  ;* 704 = CreateToolhelp32Snapshot failed
+  KillProcDLL::KillProc "OCSInventory.exe"
+  pop $r0
+  intcmp $r0 603 0 nstp nstp
+  strcpy $r0 "0"
+nstp:
+  ;messagebox mb_ok "Result: '$r0'"
+  seterrorlevel $r0
+  KillProcDLL::KillProc "download.exe"
+  pop $r0
+  intcmp $r0 603 0 nstp1 nstp1
+  strcpy $r0 "0"
+nstp1:
+ ; messagebox mb_ok "Result: '$r0'"
+  seterrorlevel $r0
 FunctionEnd
 
 Function un.stopservice
   nsExec::Exec 'net stop "OCS INVENTORY"'
-  pop $0
-  ;messagebox mb_ok $0
+  ; KillProcDLL ©2003 by DITMan, based upon the KILL_PROC_BY_NAME function programmed by Ravi, reach him at: http://www.physiology.wisc.edu/ravi/
+  ;* 0 = Process was successfully terminated
+  ;* 603 = Process was not currently running
+  ;* 604 = No permission to terminate process
+  ;* 605 = Unable to load PSAPI.DLL
+  ;* 602 = Unable to terminate process for some other reason
+  ;* 606 = Unable to identify system type
+  ;* 607 = Unsupported OS
+  ;* 632 = Invalid process name
+  ;* 700 = Unable to get procedure address from PSAPI.DLL
+  ;* 701 = Unable to get process list, EnumProcesses failed
+  ;* 702 = Unable to load KERNEL32.DLL
+  ;* 703 = Unable to get procedure address from KERNEL32.DLL
+  ;* 704 = CreateToolhelp32Snapshot failed
+  KillProcDLL::KillProc "OCSInventory.exe"
+  pop $r0
+  intcmp $r0 603 0 unstp unstp
+  strcpy $r0 "0"
+unstp:
+  ; messagebox mb_ok "Result: '$r0'"
+  seterrorlevel $r0
+  KillProcDLL::KillProc "download.exe"
+  pop $r0
+  intcmp $r0 603 0 unstp1 unstp1
+  strcpy $r0 "0"
+unstp1:
+  ; messagebox mb_ok "Result: '$r0'"
+  seterrorlevel $r0
 FunctionEnd
 
 Function un.onInit
@@ -330,7 +369,6 @@ Function un.onInit
 sil:
   call un.stopservice
   execwait "$INSTDIR\ocsservice.exe -uninstall" $R0
-sil_end:
 FunctionEnd
 
 Section Uninstall
@@ -364,30 +402,26 @@ Function ValidatecustomOCSFloc
 FunctionEnd
 
 Function iniModif
-strcpy $R1 ""
+  strcpy $R1 ""
   ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 2" "State"
   strcmp $R0 1 0 proxy
   strcpy $R1 " /NP"
 proxy:
   writeinistr "$PLUGINSDIR\service.ini" "OCS_SERVICE" "NoProxy" $R0
-
   ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 5" "State"
   strcpy $R1 "$R1 /server:$R0"
   writeinistr "$PLUGINSDIR\service.ini" "OCS_SERVICE" "Server" $R0
-
   ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 6" "State"
   strcpy $R1 "$R1 /pnum:$R0"
   writeinistr "$PLUGINSDIR\service.ini" "OCS_SERVICE" "Pnum" $R0
-
   ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 8" "State"
   writeinistr "$PLUGINSDIR\service.ini" "OCS_SERVICE" "Miscellaneous" "$R0 $R1"
  ; exec "notepad $PLUGINSDIR\service.ini " ;messagebox mb_ok "$PLUGINSDIR\service.ini  fait"
-
 FunctionEnd
 
 Function parsecmd
 ;detection proxy
-writeINIStr "$PLUGINSDIR\options.ini" "Field 2" "State" "0"
+  writeINIStr "$PLUGINSDIR\options.ini" "Field 2" "State" "0"
   Push "$CMDLINE"
   Push " /np"
   Call StrStr
@@ -398,11 +432,10 @@ writeINIStr "$PLUGINSDIR\options.ini" "Field 2" "State" "0"
   np:
   writeINIStr "$PLUGINSDIR\options.ini" "Field 2" "State" "1"
 np_end:
- 
 ;detection pnum
- ;**********************
- ;  Port Number option ;*
- ;**********************
+;**********************
+;  Port Number option ;*
+;**********************
   Push "$CMDLINE"
   Push " /pnum:"
   Call StrStr
@@ -444,12 +477,10 @@ ADD_NUM:
   IntOp $R4 $R4 + 1
   goto get_number
 port_end:
-strcmp "" "$1" +2
-writeINIStr "$PLUGINSDIR\options.ini" "Field 6" "State" "$1"
-;   messagebox mb_ok " $1 ok pnum"
-
-
-Push "$CMDLINE"
+  strcmp "" "$1" +2
+  writeINIStr "$PLUGINSDIR\options.ini" "Field 6" "State" "$1"
+;messagebox mb_ok " $1 ok pnum"
+  Push "$CMDLINE"
   Push " /server:"
   Call StrStr
   Pop $R9
@@ -457,8 +488,7 @@ Push "$CMDLINE"
   intcmp $0 9 folder_use 0 folder_use
   goto folder_end
 folder_use:
-
- strcpy $R7 $R9 "" 9
+  strcpy $R7 $R9 "" 9
 ; repérer la séquence {blanc slash}
   Push "$R7"
   Push " /"
@@ -470,56 +500,48 @@ folder_use:
   strcpy $R7 $R7 $3 0
   writeINIStr "$PLUGINSDIR\options.ini" "Field 5" "State" "$R7"
 folder_end:
-
-Push "$CMDLINE"
+  Push "$CMDLINE"
   Push "/"
   Call StrStr
   Pop $1
   writeinistr "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous" " $1"
   writeINIStr "$PLUGINSDIR\options.ini" "Field 8" "State" "$1"
-
 functionend
 
 Function IsUserAdmin
-Push $R0
-Push $R1
-Push $R2
-
-ClearErrors
+  Push $R0
+  Push $R1
+  Push $R2
+  ClearErrors
 UserInfo::GetName
-IfErrors Win9x
+  IfErrors Win9x
 Pop $R1
 UserInfo::GetAccountType
-Pop $R2
-
-StrCmp $R2 "Admin" 0 Continue
+  Pop $R2
+  StrCmp $R2 "Admin" 0 Continue
 ; Observation: I get here when running Win98SE. (Lilla)
 ; The functions UserInfo.dll looks for are there on Win98 too,
 ; but just don't work. So UserInfo.dll, knowing that admin isn't required
 ; on Win98, returns admin anyway. (per kichik)
 ; MessageBox MB_OK 'User "$R1" is in the Administrators group'
-StrCpy $R0 "true"
-Goto Done
-
+  StrCpy $R0 "true"
+ Goto Done
 Continue:
 ; You should still check for an empty string because the functions
 ; UserInfo.dll looks for may not be present on Windows 95. (per kichik)
-StrCmp $R2 "" Win9x
-StrCpy $R0 "false"
+  StrCmp $R2 "" Win9x
+  StrCpy $R0 "false"
 ;MessageBox MB_OK 'User "$R1" is in the "$R2" group'
-Goto Done
-
+  Goto Done
 Win9x:
 ; comment/message below is by UserInfo.nsi author:
 ; This one means you don't need to care about admin or
 ; not admin because Windows 9x doesn't either
 ;MessageBox MB_OK "Error! This DLL can't run under Windows 9x!"
-StrCpy $R0 "true"
-
+  StrCpy $R0 "true"
 Done:
  ;MessageBox MB_OK 'User= "$R1"  AccountType= "$R2"  IsUserAdmin= "$R0"'
-
-Pop $R2
-Pop $R1
-Exch $R0
+  Pop $R2
+  Pop $R1
+  Exch $R0
 FunctionEnd
