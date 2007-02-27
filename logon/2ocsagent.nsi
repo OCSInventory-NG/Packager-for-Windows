@@ -21,7 +21,7 @@
 ;Normal roadmapped improvments
 !include "MUI.nsh"
 !insertmacro MUI_LANGUAGE "english"
-!define Compile_version "4.0.3.1"
+!define Compile_version "4.0.3.2"
 BRANDINGTEXT "OCS Inventory NG ${Compile_version}"
 Icon "Aocs2.ico"
 ShowInstDetails hide

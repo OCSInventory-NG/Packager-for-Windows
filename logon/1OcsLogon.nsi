@@ -1,5 +1,5 @@
 ################################################################################
-##OCSInventory Version NG 1.0 Production
+##OCSInventory Version NG 1.01 Production
 ##Copyleft Emmanuel GUILLORY 2006
 ##Web : http://ocsinventory.sourceforge.net
 ##
@@ -14,9 +14,9 @@
 
 ;4031
 ;NO HARDCODED /DEBUG OPTION
-; wright in c:\ocs-ng folder issue patched
+; right in c:\ocs-ng folder issue patched
 ;4027 /folder popup issue patched
-;/UNINSTALL added
+; /UNINSTALL added
 ; /URL:added
 ; /install option added (so try downloading OcsPackage.exe) ---> Fait
 ; no longer label download-------------------------------------> Fait
@@ -34,7 +34,7 @@
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng"
 !define TimeOut "600000"
-!define Compile_version "4.0.3.1"
+!define Compile_version "4.0.3.2"
 !define hard_option  ; Ex: /debug /install /url:http://0.0.0.0/deploy/"
  var url
  var version
@@ -357,14 +357,15 @@ function test_installed_service
 ; Si /install ok alors abort
 ;tESTER SI LE service est, si oui, on quitte
 
- strcpy $OcsLogon_v "$OcsLogon_vTesting Service... "
+ strcpy $OcsLogon_v "$OcsLogon_vTesting Service...$\r$\n"
  ReadRegStr $R0 HKLM "SYSTEM\CurrentControlSet\Services\OCS INVENTORY" "start"
  strcmp $R0 "2" 0 lbl_fintestservice
  strcpy $OcsLogon_v "$OcsLogon_vService installed.$\r$\nExiting OcsLogon.$\r$\n"
  call Write_Log
  abort
  ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices" "OCS Inventory NG"
- strcmp $R0 "2" 0 lbl_fintestservice
+ strlen $0 $R0
+ intcmp $0 21 lbl_fintestservice lbl_fintestservice 0
  strcpy $OcsLogon_v "$OcsLogon_vService installed on Widows 9x.$\r$\nExiting OcsLogon.$\r$\n"
  call Write_Log
  abort
@@ -642,7 +643,7 @@ push $R7
  strcpy $0 $0 $1 1
  ;messagebox MB_ok $0
  strcmp $0 "" normalop 0
- strcpy $OcsLogon_v  "$OcsLogon_v Sevice is installed on: $0$\r$\n"
+ strcpy $OcsLogon_v  "$OcsLogon_v Service is installed on: $0$\r$\n"
  strcpy $R7 $0
 normalop:
  strcmp $0 "" 0 normalop1
