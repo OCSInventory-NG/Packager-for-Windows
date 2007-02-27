@@ -11,6 +11,8 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;4032
+;
 ;4031
 ; Added /nosplash
 ; Added stopservice and kill function before uninstall
@@ -26,7 +28,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory Agent"
-!define PRODUCT_VERSION "4.0.3.1"
+!define PRODUCT_VERSION "4.0.3.2"
 !define PRODUCT_PUBLISHER "OCS Inventory Team"
 !define PRODUCT_WEB_SITE "htttp://ocsinventory.sf.net"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"
@@ -379,7 +381,7 @@ nstp2:
  ; messagebox mb_ok "Result: '$r0'"
   seterrorlevel $r0
 
-
+ 
 FunctionEnd
 
 Function un.stopservice
