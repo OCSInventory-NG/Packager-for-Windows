@@ -11,8 +11,9 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
-;4032
-;
+;4033
+; win98 Sevice.ini bug
+; win98 uninstall bug
 ;4031
 ; Added /nosplash
 ; Added stopservice and kill function before uninstall
@@ -28,12 +29,16 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory Agent"
-!define PRODUCT_VERSION "4.0.3.2"
+!define PRODUCT_VERSION "4.0.3.3"
 !define PRODUCT_PUBLISHER "OCS Inventory Team"
 !define PRODUCT_WEB_SITE "htttp://ocsinventory.sf.net"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
+!include "FileFunc.nsh"
+!insertmacro GetOptionsS
+!insertmacro GetOptions
+
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
@@ -89,7 +94,7 @@ Page custom customOCSFloc ValidatecustomOCSFloc ""
   InstallDir "$PROGRAMFILES\OCS Inventory Agent"
   InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
   ShowUnInstDetails show
-
+  var OcsLogon_v ; to complete the debug option
 Function .oninit
   InitPluginsDir
   File /oname=$PLUGINSDIR\options.ini "options.ini"
@@ -106,8 +111,8 @@ not_running:
   strcpy $CMDLINE '"$PLUGINSDIR\" $2'
   ;messagebox mb_OK $CMDLINE
 ; /nosplash option
- Push "$CMDLINE"
- Push "/nosplash"
+  Push "$CMDLINE"
+  Push "/nosplash"
   Call StrStr
   Pop $R9
   Strlen $0 $R9
@@ -115,7 +120,6 @@ not_running:
   intcmp $0 9 Nsp 0 Nsp
   advsplash::show 900 160 840 0xFFFFF $PLUGINSDIR\splash
 Nsp:
-
   Call parsecmd
 FunctionEnd
 
@@ -129,21 +133,10 @@ Function testinstall
   messagebox MB_iconstop "Your are not logged on with admin privilege."
   abort
 Okadmin:
-  ;Does service exist?
-  readregstr $R0 HKLM "SYSTEM\CurrentControlSet\Services\OCS INVENTORY"  DisplayName
-  IfErrors 0 lbl_uninst
-  goto lbl_test_end
-lbl_uninst:
-; if not NT end
-  ClearErrors
-  ReadRegStr $R8 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
-  IfErrors lbl_test_end 0
- ; MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure to unistall $R0 ?" IDNO false2 ;+2
-  ;MessageBox MB_YESNO "Uninstall $R0 ?" /SD IDYES IDNO false2
-;it's true (or silent)!"
+;////////////Does service exist?
   readregstr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\OCS Inventory Agent"  UninstallString
   strcpy $R1 $R0 -11
- call stopservice
+  call stopservice
  ; execwait "$R1\ocsservice.exe -uninstall" $R0
   setoutpath "$R1"
   copyfiles /SILENT "$R1\inst32.exe" "$R1\inst32b.exe"
@@ -152,11 +145,8 @@ lbl_uninst:
   execwait 'inst32b.exe /exe:"$R1\uninst.exe /S" /log:inst32b.log' ;attention je rends tout de suite la main...
   sleep 2000
   delete "$R1\inst32b.exe"
-  Goto lbl_test_end
-false2:
-  quit
-lbl_test_end:
-FunctionEnd
+
+ FunctionEnd
 
 Section "OCS Inventory Agent" SEC01
   Call testinstall
@@ -177,20 +167,21 @@ Section "OCS Inventory Agent" SEC01
   File "ocsagent\PSAPI.DLL"
   File "ocsagent\zlib.dll"
   Call iniModif
-  Copyfiles "$PLUGINSDIR\service.ini" "$INSTDIR\service.ini"
-  Push "$CMDLINE"
-  Push " /S "
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  intcmp $0 4 quiet 0 quiet
-  goto quiet_end
-quiet:
+  ;**************************************
+  ; Correct detection of " /S" option   *
+  ;**************************************
+  strcpy $0 $CMDLINE  "" -3 #
+  StrCmpS " /S" $0 quiet 0
+  ${GetOptionsS} "$CMDLINE" "/S "  $R0
+  IfErrors 0 +2
+  goto  quiet_end
+  quiet:
   Push "$CMDLINE"
   Push "/"
   Call StrStr
   Pop $1
-  writeinistr "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous" " $1"
+  ;messagebox mb_ok "réécriture Miscellaneous"
+  writeinistr "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous" "$1"
 quiet_end:
   call startsvc
 SectionEnd
@@ -300,7 +291,7 @@ Section -Post
 ; UPDATE FUNCTION FOR GUI PACKAGING
 ;********************************************
   readinistr $1 "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous"
-; MESSAGEBOX MB_ok "1Update OK :$1"
+ ;MESSAGEBOX MB_ok "Miscellaneous :$1"
   Push $1
   Push "/upgrade"
   Call StrStr
@@ -379,13 +370,16 @@ KillProcDLL::KillProc "inst32.exe"
   strcpy $r0 "0"
 nstp2:
  ; messagebox mb_ok "Result: '$r0'"
-  seterrorlevel $r0
-
- 
+ KillProcDLL::KillProc "OcsService.exe"
+  pop $r0
+  intcmp $r0 603 0 nstp3 nstp3
+  strcpy $r0 "0"
+nstp3:
+   seterrorlevel $r0
 FunctionEnd
 
 Function un.stopservice
-  nsExec::Exec 'net stop "OCS INVENTORY"'
+   nsExec::Exec 'net stop "OCS INVENTORY"'
   ; KillProcDLL ©2003 by DITMan, based upon the KILL_PROC_BY_NAME function programmed by Ravi, reach him at: http://www.physiology.wisc.edu/ravi/
   ;* 0 = Process was successfully terminated
   ;* 603 = Process was not currently running
@@ -418,7 +412,12 @@ KillProcDLL::KillProc "inst32.exe"
   strcpy $r0 "0"
 nstp2:
  ; messagebox mb_ok "Result: '$r0'"
-  seterrorlevel $r0
+ KillProcDLL::KillProc "OcsService.exe"
+  pop $r0
+  intcmp $r0 603 0 nstp3 nstp3
+  strcpy $r0 "0"
+nstp3:
+   seterrorlevel $r0
 FunctionEnd
 
 Function un.onInit
@@ -432,7 +431,12 @@ Function un.onInit
   Abort
 sil:
   call un.stopservice
+  ;VRIFYING IF NOT NT
+  ClearErrors
+  ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
+  IfErrors not_nt1 0
   execwait "$INSTDIR\ocsservice.exe -uninstall" $R0
+ not_nt1:
 FunctionEnd
 
 Section Uninstall
@@ -471,16 +475,16 @@ Function iniModif
   strcmp $R0 1 0 proxy
   strcpy $R1 " /NP"
 proxy:
-  writeinistr "$PLUGINSDIR\service.ini" "OCS_SERVICE" "NoProxy" $R0
+  writeinistr "$INSTDIR\service.ini" "OCS_SERVICE" "NoProxy" $R0
   ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 5" "State"
   strcpy $R1 "$R1 /server:$R0"
-  writeinistr "$PLUGINSDIR\service.ini" "OCS_SERVICE" "Server" $R0
+  writeinistr "$INSTDIR\service.ini" "OCS_SERVICE" "Server" $R0
   ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 6" "State"
   strcpy $R1 "$R1 /pnum:$R0"
-  writeinistr "$PLUGINSDIR\service.ini" "OCS_SERVICE" "Pnum" $R0
+  writeinistr "$INSTDIR\service.ini" "OCS_SERVICE" "Pnum" $R0
   ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 8" "State"
-  writeinistr "$PLUGINSDIR\service.ini" "OCS_SERVICE" "Miscellaneous" "$R0 $R1"
- ; exec "notepad $PLUGINSDIR\service.ini " ;messagebox mb_ok "$PLUGINSDIR\service.ini  fait"
+  writeinistr "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous" "$R0 $R1"
+  sleep 1000
 FunctionEnd
 
 Function parsecmd
@@ -560,6 +564,8 @@ folder_use:
   Pop $R9
   Strlen $2 $R7
   Strlen $1 $R9
+  intcmp $1 0 0 0 +2
+  intop $1 $1 + 1
   intop $3 $2 - $1
   strcpy $R7 $R7 $3 0
   writeINIStr "$PLUGINSDIR\options.ini" "Field 5" "State" "$R7"
@@ -568,7 +574,6 @@ folder_end:
   Push "/"
   Call StrStr
   Pop $1
-  writeinistr "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous" " $1"
   writeINIStr "$PLUGINSDIR\options.ini" "Field 8" "State" "$1"
 functionend
 
@@ -608,4 +613,17 @@ Done:
   Pop $R2
   Pop $R1
   Exch $R0
+FunctionEnd
+
+Function Write_Log
+ ClearErrors
+;messagebox mb_ok "$OcsLogon_v"
+ strcmp $OcsLogon_v "" done 0
+ FileOpen $0 "$exedir\OcsAgentSetup.log" a
+ FileSeek $0 END END
+ IfErrors done
+ FileWrite $0 "$OcsLogon_v"
+ strcpy $OcsLogon_v ""
+ FileClose $0
+done:
 FunctionEnd

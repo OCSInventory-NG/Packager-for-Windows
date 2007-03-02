@@ -11,22 +11,28 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
-
+;4033
+; /folder: bug patched
+; Win9x Deploy service bug patched
+; /url: bug patched (en cours)
+; Added /editlog
+;4032
 ;4031
 ;NO HARDCODED /DEBUG OPTION
 ; right in c:\ocs-ng folder issue patched
-;4027 /folder popup issue patched
-; /UNINSTALL added
-; /URL:added
-; /install option added (so try downloading OcsPackage.exe) ---> Fait
+;4027
+; /folder popup issue patched
+; Added /UNINSTALL
+; Added /URL:[url]
+; Added /install (so try downloading OcsPackage.exe) ---> Fait
 ; no longer label download-------------------------------------> Fait
 ;4026
-;added /folder: ---------------------------------------------> Fait
-;/RegRun option eventually ----------------------------------> Reported
-;added /
-;replaced "NSISdl::download" by "NSISdl::download_quiet" ----> Fait
+; Added /folder: ---------------------------------------------> Fait
+; /RegRun option eventually ----------------------------------> Reported
+; Added /
+; Replaced "NSISdl::download" by "NSISdl::download_quiet" ----> Fait
 ;4004-4014
-;Normal roadmapped improvments
+; Normal roadmapped improvments
 ;
 ;###############################################################################
 !include "MUI.nsh"
@@ -34,8 +40,8 @@
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng"
 !define TimeOut "600000"
-!define Compile_version "4.0.3.2"
-!define hard_option  ; Ex: /debug /install /url:http://0.0.0.0/deploy/"
+!define Compile_version "4.0.3.3"
+!define hard_option ; "/debug /editlog " ; /install /url:http://0.0.0.0/deploy/"
  var url
  var version
  var OcsLogon_v ; to complete the debug option
@@ -53,10 +59,10 @@ Icon "ocs.ico"
 Name "OcsLogon"
 OutFile "OcsLogon.exe"
 ;$R7 became the install folder
-;SilentInstall silent
+SilentInstall silent
 ; Page instfiles
 Page custom customOCSFloc ValidatecustomOCSFloc ""
-
+page instfiles
 ;--------------------------------
 ;Version Information
   VIProductVersion "${Compile_version}"
@@ -107,13 +113,15 @@ not_running:
   goto url_end
 url_use:
  strcpy $R8 $R9 "" 6
-; repérer la séquence {blanc slash}
+ ; repérer la séquence {blanc slash}
   Push "$R8"
   Push " /"
   Call StrStr
   Pop $R9
   Strlen $2 $R8
   Strlen $4 $R9
+  intcmp $4 0 0 0 +2
+  intop $4 $4 + 1
   intop $3 $2 - $4
   strcpy $R8 $R8 $3 0
   strcpy $URL $R8
@@ -293,6 +301,7 @@ noUNinstall_requested:
 ; Si le servce est installé on quitte sinon on lance l'agent come d'hab
 ; call test_installed_service
 ;noinstall_requested:
+;messagebox mb_ok "call test install"
  call test_install
 
   ;**********************
@@ -356,19 +365,23 @@ FunctionEnd
 function test_installed_service
 ; Si /install ok alors abort
 ;tESTER SI LE service est, si oui, on quitte
-
+ ;messagebox mb_ok "test_installed_service"
  strcpy $OcsLogon_v "$OcsLogon_vTesting Service...$\r$\n"
  ReadRegStr $R0 HKLM "SYSTEM\CurrentControlSet\Services\OCS INVENTORY" "start"
- strcmp $R0 "2" 0 lbl_fintestservice
+ strcmp $R0 "2" 0 lbl_test98
  strcpy $OcsLogon_v "$OcsLogon_vService installed.$\r$\nExiting OcsLogon.$\r$\n"
  call Write_Log
- abort
+ call showlog
+abort
+ lbl_test98:
  ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices" "OCS Inventory NG"
  strlen $0 $R0
+ ;messagebox mb_ok "clé =$0 --- $R0"
  intcmp $0 21 lbl_fintestservice lbl_fintestservice 0
  strcpy $OcsLogon_v "$OcsLogon_vService installed on Widows 9x.$\r$\nExiting OcsLogon.$\r$\n"
  call Write_Log
- abort
+ call showlog
+abort
  
 lbl_fintestservice:
  strcpy $OcsLogon_v "$OcsLogon_vService missing "
@@ -569,16 +582,18 @@ folder_use:
   Pop $R9
   Strlen $2 $R7
   Strlen $1 $R9
+  intcmp $1 0 0 0 +2
+  intop $1 $1 + 1
   intop $3 $2 - $1
   strcpy $R7 $R7 $3 0
-  ;messagebox mb_ok "install dans le dossier :$R7"
   createdirectory "$R7"
+ 
   goto suite
 folder_end:
+; messagebox mb_ok "install dans le dossier :$R7"
   ; end testing /folder option
   createdirectory "$R7"
-
- FileOpen $1 "$R7\file.dat" w
+  FileOpen $1 "$R7\file.dat" w
   FileWrite $1 "OCS_NG"
   Fileclose $1
   FileOpen $0 "$R7\file.dat" r
@@ -627,7 +642,7 @@ PBt: ; Can not Write so exit and try to alert server
   NSISdl::download_quiet /TIMEOUT=600000 /NOIEPROXY "http://$R8$http_port_number/ocsinventory/deploy/nodeploy" "$R7\nodeploy"
   abort
 suite:
-;messagebox mb_ok "$r7"
+;messagebox mb_ok "install dans le dossier :$R7"
 FunctionEnd
 
 Function test_install
@@ -637,6 +652,26 @@ Function test_install
   ;IfFileExists "$R7\ver" 0 set_install
 ;pop $0
 push $R7
+
+; VRIFYING IF NOT NT
+   ClearErrors
+   ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
+   IfErrors 0 lbl_winnt
+;  NOT NT SO WIN9X
+   ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices" "OCS Inventory NG"
+   strlen $1 $0
+   ;messagebox mb_ok "longueur clé runservices :$1 $0"
+   intop $1 $1 - 22
+   strcpy $0 $0 $1 0
+   ;messagebox mb_ok "reste $0"
+   strcmp $0 "" normalop 0
+   strcpy $OcsLogon_v  "$OcsLogon_v Service Win9x is installed on: $0$\r$\n"
+   strcpy $R7 $0
+   ;messagebox MB_ok "$OcsLogon_v Service Win9x is installed on: $0$\r$\n"
+   goto normalop
+;/////////////////////////////////////////////////
+lbl_winnt:
+   ClearErrors
  ReadRegStr $0 HKLM "SYSTEM\CurrentControlSet\Services\OCS INVENTORY" "imagepath"
  strlen $1 $0
  intop $1 $1 - 17
@@ -828,4 +863,22 @@ FunctionEnd
 Section
    hidewindow
    setautoclose true
+SectionEnd
+function showlog
+ Push $CMDLINE
+  Push "/editlog"
+  Call StrStr
+  Pop $R9
+  Strlen $0 $R9
+  ;MESSAGEBOX MB_ok "$0 edit OK :$R9"
+  intcmp $0 8 editlog 0 editlog
+  goto editlogend
+editlog:
+  Execshell open "$R7\ocslogon.log"
+editlogend:
+;***************FIN
+functionend
+
+Section -Post
+ call showlog
 SectionEnd

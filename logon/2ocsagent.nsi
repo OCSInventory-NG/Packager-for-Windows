@@ -1,5 +1,5 @@
 ################################################################################
-##OCSInventory Version 1.0
+##OCSInventory Version 1.01 Production
 ##Copyleft Emmanuel GUILLORY 2006
 ##Web : http://ocsinventory.sourceforge.net
 ##
@@ -11,8 +11,15 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;
+;4033
+; /folder: bug patched
+; Win9x Deploy service bug patched
+; /url: bug patched (en cours)
+; Added /editlog
+;4032
 ;4031
-; FOLDER error if not /install
+; FOLDER error if no /install
 ;
 ;4026
 ;added /lnk  ---------------------------------------------> fait
@@ -125,10 +132,12 @@ folder_use:
   Pop $R9
   Strlen $2 $R7
   Strlen $1 $R9
+  intcmp $1 0 0 0 +2
+  intop $1 $1 + 1
   intop $3 $2 - $1
   strcpy $R7 $R7 $3 0
-  ;messagebox mb_ok "install dans le dossier :$R7"
   createdirectory "$R7"
+
   goto suite
 folder_end:
   ; end testing /folder option
