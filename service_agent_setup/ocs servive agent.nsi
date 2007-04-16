@@ -602,6 +602,14 @@ StartSvc_nt_skip_install:
   ; Start NT service
   ExecWait "$INSTDIR\ocsservice -start" $R0
 StartSvc_end:
+  ; Read Launch [/now]
+  ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 8" "State"
+  ; launch
+  StrCmp "$R0" "1" ocsinventory_launch ocsinventory_launch_end
+ocsinventory_launch:
+  ReadINIStr $R0 "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous"
+  ExecWait "$INSTDIR\ocsinventory.exe $R0 /force" $R0
+ocsinventory_launch_end:
   ; Restore used register
   Pop $R0
 FunctionEnd
@@ -727,13 +735,6 @@ WriteServiceIni_proxy_end:
 WriteServiceIni_debug:
   StrCpy $R0 "$R0 /DEBUG"
 WriteServiceIni_debug_end:
-  ; Read Launch
-  ReadINIStr $R1 "$PLUGINSDIR\options.ini" "Field 8" "State"
-  ; Write launch
-  StrCmp "$R1" "1" WriteServiceIni_launch WriteServiceIni_launch_end
-WriteServiceIni_launch:
-  WriteINIStr "$INSTDIR\service.ini" "OCS_SERVICE" "TTO_WAIT" "1"
-WriteServiceIni_launch_end:
   ; Write miscellaneous
   WriteINIStr "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous" "$R0"
   Sleep 1000
