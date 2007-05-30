@@ -11,7 +11,7 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
-;4034
+; pre 4034
 ; Do not uninstall service when upgrading, just stop service, and kill all processes
 ; Added /NOW command line switch to force inventory just after setup
 ; New argument parsing method
@@ -36,7 +36,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory Agent"
-!define PRODUCT_VERSION "4.0.3.4"
+!define PRODUCT_VERSION "4.0.3.3"
 !define PRODUCT_PUBLISHER "OCS Inventory NG Team"
 !define PRODUCT_WEB_SITE "http://ocsinventory.sourceforge.net"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"
@@ -114,7 +114,7 @@ Page custom customOCSFloc ValidatecustomOCSFloc ""
   InstallDir "$PROGRAMFILES\OCS Inventory Agent"
   InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
   ShowUnInstDetails show
-  
+
 #####################################################################
 # Global variables
 #####################################################################
@@ -123,7 +123,7 @@ Page custom customOCSFloc ValidatecustomOCSFloc ""
   var /GLOBAL OcsNoSplash ; To store if setup must display spash screen (FALSE) or not (TRUE)
   var /GLOBAL OcsSilent ; To store if setup must be silent (TRUE) or not (FALSE)
   var /GLOBAL OcsUpgrade ; To store if /UPGRADE option used (TRUE) or not (FALSE)
-  
+
 #####################################################################
 # GetParameters
 # input, none
