@@ -18,7 +18,7 @@
 !insertmacro WordFind
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "1.0.2.2"
+!define Compile_version "1.0.2.4"
 !define help_file "OCS_Inventory_NG-Packager_Usage_Guide_1.02_EN.pdf"
 
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
@@ -56,11 +56,10 @@ Function .onInit
  File /oname=$PLUGINSDIR\RemCom.exe "RemCom.exe"
  File /oname=$PLUGINSDIR\pack.ico "pack.ico"
  File /oname=$PLUGINSDIR\upack.ico "upack.ico"
- File /oname=$PLUGINSDIR\inst32.exe "inst32.exe"
  File /oname=$PLUGINSDIR\instocs.exe "instocs.exe"
  File /oname=$PLUGINSDIR\uninsocs.exe "uninsocs.exe"
  File /oname=$PLUGINSDIR\${help_file} "${help_file}"
-
+ File /oname=$PLUGINSDIR\ListBox.exe "ListBox.exe"
 FunctionEnd
 
 Function StrStr
@@ -124,7 +123,7 @@ Function Validatedonnee
    !insertmacro MUI_INSTALLOPTIONS_READ $0 "donnee.ini" "Settings" "State"
    ;  messagebox mb_ok $0
    StrCmp $0 "17" 0 no_select_files
-   execwait "ListBox.exe"
+   execwait "$PLUGINSDIR\ListBox.exe"
    call change_button
    abort
 no_select_files:
@@ -144,6 +143,7 @@ no_help:
    Example 2:  /S /server:my.server.com /np /pnum:8090 /D=D:\my app\my inventory appp'
    abort
 no_help2:
+   execwait "$PLUGINSDIR\ListBox.exe /S"
    ReadINIStr $R3 "$PLUGINSDIR\donnee.ini" "Field 3" "State"
    strcpy $deployed_file $R3
    ${GetFileName} "$R3" $0
@@ -163,7 +163,8 @@ chemin_calcule:
    ReadINIStr $R1 "$PLUGINSDIR\donnee.ini" "Field 7" "State"
 ;  ReadINIStr $R6 "$PLUGINSDIR\donnee.ini" "Field 13" "State"
 ;  to replace by...
-   Readinistr $R6 "$PLUGINSDIR\${COL_FILE}" "collection" "Liste"
+;   Readinistr $R6 "$PLUGINSDIR\${COL_FILE}" "collection" "Liste"
+;   messagebox mb_ok $R6
 ;  sum of files in collection in $r6
    ReadINIStr $R7 "$PLUGINSDIR\donnee.ini" "Field 15" "State"
 ;   ReadINIStr $R0 "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State"
@@ -209,7 +210,10 @@ rien:
  ; chercher si other1 file
  ;call folder
  ;MESSAGEBOX MB_OK "$r6   other..."
-  Readinistr $R6 "$exedir\${COL_FILE}" "collection" "Liste"
+  Readinistr $R6 "$PLUGINSDIR\${COL_FILE}" "collection" "Liste"
+;  messagebox mb_ok $R6
+  ;Readinistr $R6 "$exedir\${COL_FILE}" "collection" "Liste"
+  ;messagebox mb_ok $R6
   ;*******************
   ; open runas.nsi
   ;*******************
@@ -324,11 +328,12 @@ Section
    IntOp $R4 $R1 / 0x00010000
    IntOp $R5 $R1 & 0x0000FFFF
    StrCpy $r6 "$R2.$R3.$R4.$R5"
-  ;messagebox mb_ok "Version: $r6"
+;messagebox mb_ok "Version: $r6"
    ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Compile_version' '$r6' '/S=1' $0
 sleep 1000
-   Execwait "$PLUGINSDIR\nsis\makensisw.exe runas.nsi"
- ;  Execwait "$PLUGINSDIR\nsis\makensisw.exe runasuninst.nsi"
+  nsExec::Exec "$PLUGINSDIR\nsis\makensis.exe runas.nsi"
+ ;  Execwait "$PLUGINSDIR\nsis\makensis.exe runas.nsi"
+; Execwait "$PLUGINSDIR\nsis\makensisw.exe runasuninst.nsi"
 ClearErrors
    CopyFiles "OcsPackage.exe" "$R0\"
  ;  CopyFiles "OcsUninstall.exe" "$R0\"

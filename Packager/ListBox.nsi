@@ -8,7 +8,7 @@
 !insertmacro WordFind
 !insertmacro MUI_LANGUAGE "English"
 !define COL_FILE "col.txt"
-!define Compile_version "1.0.2.0"
+!define Compile_version "1.0.2.3"
 Var /GLOBAL HWND
 Var /GLOBAL FILELIST_NUMBER
 BRANDINGTEXT "OCS Packager ${Compile_version}"
