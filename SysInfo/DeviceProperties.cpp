@@ -454,7 +454,7 @@ LPCTSTR CDeviceProperties::GetHash()
 
 	if (!myHash.HashInit())
 		return NULL;
-	csToHash.Format( _T( "%s%s%s%s%s%s%u%lu%s%s%s"), m_csDomain, m_csOSName,
+	csToHash.Format( _T( "%s%s%s%s%s%s%s%u%lu%s%s%s"), m_csDeviceName, m_csDomain, m_csOSName,
 					 m_csOSVersion, m_csOSComment, m_csProcessorType,
 					 m_csProcessorSpeed,m_dwNumberOfProcessor,m_ulPhysicalMemory,
 					 m_csWinRegCompany, m_csWinRegOwner, m_csWinRegProductID);
