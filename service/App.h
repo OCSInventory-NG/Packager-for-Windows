@@ -50,7 +50,7 @@ private:
 	CString		m_csProxyUser;
 	CString		m_csProxyPwd;
 
-	void runAgent();	
+	BOOL runAgent();	
 	int generateRandNumber(int max);
 	void readIniFile( CString section=OCS_SERVICE, int* storeVar=NULL, CString toRead="", CString def="" );
 	void readIniFile( CString section, CString & storeVar, CString toRead, CString defaultVal="" );

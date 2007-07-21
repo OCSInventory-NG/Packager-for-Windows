@@ -77,7 +77,7 @@ int CApp::ExitInstance()
 	return (int) m_dwExitCode;
 }
 
-CMyService::CMyService() : CNTService(_T("OCS INVENTORY"), _T("OCS INVENTORY SERVICE"), SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_PAUSE_CONTINUE, _T("Automatic inventory and software deployment system")) 
+CMyService::CMyService() : CNTService(_T("OCS INVENTORY"), _T("OCS INVENTORY SERVICE"), SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_PAUSE_CONTINUE, _T("OCS Inventory NG Service: Automatic inventory and software deployment system")) 
 {
 	m_bWantStop = FALSE;     //Simple boolean which is set to request the service to stop
 }
@@ -146,13 +146,16 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 	preInit();
 
 	openHandles();	
-	
+
+	// Latency for launching agent when agent launch fails
+	int nLatencyAgentLaunch = m_iWriteIniLatency ? m_iWriteIniLatency : WRITE_TTOWAIT_EACH;
+
 	CString status;
-	status.Format("Service started successfully with parameters FREQ: %i, OLD_FREQ: %i, TTO_WAIT: %i", m_iPrologFreq, m_iOldPrologFreq, m_iTToWait);
+	status.Format( _T( "Service started successfully with parameters FREQ: %i, OLD_FREQ: %i, TTO_WAIT: %i"), m_iPrologFreq, m_iOldPrologFreq, m_iTToWait);
 	m_EventLogSource.Report(EVENTLOG_INFORMATION_TYPE, MSG_INFO_OCS, status);
 
-	while (!m_bWantStop) {
-		
+	while (!m_bWantStop)
+	{
 		if( m_iTToWait % (m_iWriteIniLatency?m_iWriteIniLatency:WRITE_TTOWAIT_EACH) == 0 ) 
 			writeIniFile(& m_iTToWait, TTO_WAIT );
 
@@ -160,33 +163,47 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 			UINT vOld = m_iOldPrologFreq;
 			closeHandles();
 			//closeIni();
-			runAgent();
-			//openIni();
-			openHandles();
-			readIniFile( OCS_SERVICE, & m_iPrologFreq, PROLOG_FREQ );
-
-			if( m_iPrologFreq != m_iOldPrologFreq )
-				m_iTToWait = generateRandNumber(m_iPrologFreq*PROLOG_FREQ_UNIT);			
+			if (!runAgent())
+			{
+				// Agent launch failed
+				if (nLatencyAgentLaunch < (m_iPrologFreq*PROLOG_FREQ_UNIT))
+					// At least, launch agent once a PROLOG_FREQ
+					nLatencyAgentLaunch = nLatencyAgentLaunch * 2;
+				m_iTToWait = generateRandNumber( nLatencyAgentLaunch);
+			}
 			else
-				m_iTToWait = m_iPrologFreq*PROLOG_FREQ_UNIT;
+			{
+				// Agent launch successful, restore initial latency
+				nLatencyAgentLaunch = m_iWriteIniLatency ? m_iWriteIniLatency : WRITE_TTOWAIT_EACH;
+				// Read new parameters
+				//openIni();
+				openHandles();
+				readIniFile( OCS_SERVICE, & m_iPrologFreq, PROLOG_FREQ );
+				// Compute new TTO_WAIT
+				if( m_iPrologFreq != m_iOldPrologFreq )
+					m_iTToWait = generateRandNumber(m_iPrologFreq*PROLOG_FREQ_UNIT);			
+				else
+					m_iTToWait = m_iPrologFreq*PROLOG_FREQ_UNIT;
+				
+				m_iOldPrologFreq = m_iPrologFreq;
+				writeIniFile();
 
-			m_iOldPrologFreq = m_iPrologFreq;
-			writeIniFile();
-
-			status.Format("Service lauched OCS. New parameters: FREQ: %i, OLD_FREQ: %i, TTO_WAIT: %i", m_iPrologFreq, vOld, m_iTToWait);
-			m_EventLogSource.Report(EVENTLOG_INFORMATION_TYPE, MSG_INFO_OCS, status);
+				status.Format( _T( "OCS Inventory NG Agent launched successfully. New service parameters: FREQ: %i, OLD_FREQ: %i, TTO_WAIT: %i"), m_iPrologFreq, vOld, m_iTToWait);
+				m_EventLogSource.Report(EVENTLOG_INFORMATION_TYPE, MSG_INFO_OCS, status);
+			}
 		}
 		Sleep(1000);
 		m_iTToWait--;
 	}
 
 	//Pretend that closing down takes some time
-	ReportStatus(SERVICE_STOP_PENDING, 1, 1100);
+	ReportStatus( SERVICE_STOP_PENDING, 1, 1100);
 	Sleep(1000);
 
 	//Report to the event log that the service has stopped successfully
-	m_EventLogSource.Report(EVENTLOG_INFORMATION_TYPE, CNTS_MSG_SERVICE_STOPPED, m_sDisplayName);
+	m_EventLogSource.Report( EVENTLOG_INFORMATION_TYPE, CNTS_MSG_SERVICE_STOPPED, m_sDisplayName);
 	closeHandles();
+	ReportStatus( SERVICE_STOPPED);
 }
 
 void CMyService::OnStop()
@@ -195,12 +212,13 @@ void CMyService::OnStop()
 	InterlockedExchange((LONG volatile*) &m_bWantStop, TRUE);
 }
 
-void CMyService::runAgent() {
+BOOL CMyService::runAgent() {
 	//RUN inventory !
 	CString cmd,
 			csAuth;
+	BOOL	bReturn;
 	
-	Sleep( generateRandNumber(m_iWriteIniLatency?m_iWriteIniLatency:WRITE_TTOWAIT_EACH) );
+	Sleep( generateRandNumber( m_iWriteIniLatency ? m_iWriteIniLatency : WRITE_TTOWAIT_EACH) );
 
 	// Check if Basic authentication required
 	csAuth.Empty();
@@ -213,7 +231,7 @@ void CMyService::runAgent() {
 		csAuth.Format( _T( " /auth_user:%s /auth_pwd:%s"), csUser, csPwd);
 	}
 	//cmd.Format("%s%s /server:%s /port:%s%s", m_sCurDir, RUN_OCS, m_csServer, m_csPort, (m_iProxy?"":" /np") );
-	cmd.Format("%s%s %s %s", m_sCurDir, RUN_OCS, m_csMisc, csAuth );
+	cmd.Format( _T( "%s%s %s %s"), m_sCurDir, RUN_OCS, m_csMisc, csAuth );
 	//AfxMessageBox("INVENTAIRE!");
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
@@ -225,22 +243,23 @@ void CMyService::runAgent() {
 	si.dwFlags=STARTF_USESHOWWINDOW;
 	si.wShowWindow=SW_SHOW;
 	DWORD waitRet;
-	if( ! CreateProcess( NULL, cmd.GetBuffer(0), NULL, NULL, FALSE,0/*CREATE_DEFAULT_ERROR_MODE|IDLE_PRIORITY_CLASS*/, NULL, NULL, &si,&pi )) {
+	if( !(bReturn = CreateProcess( NULL, cmd.GetBuffer(0), NULL, NULL, FALSE,0/*CREATE_DEFAULT_ERROR_MODE|IDLE_PRIORITY_CLASS*/, NULL, NULL, &si,&pi ))) {
 		CString errString;
-		errString.Format("Cant't launch OCS Agent, error:%d",GetLastError());
+		errString.Format( _T( "Cant't launch OCS Inventory NG Agent, error:%d"),GetLastError());
 		m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, errString);
 	}
 	/*else if( (waitRet = WaitForSingleObject( pi.hProcess, 30000 )) == WAIT_TIMEOUT ) {
-		m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, "OCS agent timeout !");
+		m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, "OCS Inventory NG agent timeout !");
 	}*/
 	//waitRet = WaitForMultipleObjects(1, &pi.hProcess,TRUE, 30000 );
 	waitRet = WaitForSingleObject( pi.hProcess, INFINITE );
+	return bReturn;
 }
 
 int CMyService::generateRandNumber(int max) {
 	
 	CString namePath;
-	namePath.Format("%s%s", m_sCurDir, RAND_FILE);
+	namePath.Format( _T( "%s%s"), m_sCurDir, RAND_FILE);
 	
 	RAND_write_file(namePath.GetBuffer(0));
 	BYTE* randBuf= new BYTE[sizeof(UINT)];
@@ -250,7 +269,7 @@ int CMyService::generateRandNumber(int max) {
 	BOOL errorOccured = FALSE;
 	while( ! fRand.Open(namePath, CFile::modeRead,&e) ) {		
 		if( ! ( e.m_cause == CFileException::sharingViolation) ) {
-			m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, "Can't open rand file, will seed with timestamp.");
+			m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, _T( "Can't open rand file, will seed with timestamp."));
 			errorOccured = TRUE;
 			break;
 		}		
@@ -271,14 +290,16 @@ int CMyService::generateRandNumber(int max) {
 	return UINT((max*rand())/RAND_MAX);
 }
 
-void CMyService::readIniFile( CString section, int* storeVar, CString toRead, CString def ) {
+void CMyService::readIniFile( CString section, int* storeVar, CString toRead, CString def )
+{
 	
 	if( storeVar != NULL){
 		//closeIni(); TODO: voir
 		char intRead[11];
 
 		if( ! GetPrivateProfileString(section, toRead, def,  intRead, 11, m_sServIni)) {
-			m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, "Can't get private profile string");
+			toRead.Insert( 0, _T( "Can't get private profile string for service option "));
+			m_EventLogSource.Report(EVENTLOG_WARNING_TYPE, MSG_ERROR_OCS, toRead);
 		}
 
 		*storeVar = atoi(intRead);
@@ -289,17 +310,17 @@ void CMyService::readIniFile( CString section, int* storeVar, CString toRead, CS
 		readIniFile( OCS_SERVICE, & m_iOldPrologFreq, OLD_PROLOG_FREQ, "0" );
 		readIniFile( OCS_SERVICE, & m_iTToWait, TTO_WAIT, "-1" );
 
-		readIniFile( OCS_SERVICE, m_csServer, "SERVER", "ocsinventory-ng" );
-		readIniFile( OCS_SERVICE, & m_iProxy, "NOPROXY", "0" );
-		readIniFile( OCS_SERVICE, m_csPort, "port", "80" );
-		readIniFile( OCS_SERVICE, m_csMisc, "MISCELLANEOUS", "" );
-		readIniFile( OCS_SERVICE, & m_iWriteIniLatency, "WRITE_INI_LATENCY", WRITE_TTOWAIT_EACH );
-		readIniFile( OCS_SERVICE, m_csAuthUser, AUTH_USER, "" );
-		readIniFile( OCS_SERVICE, m_csAuthPwd, AUTH_PWD, "" );
-		readIniFile( OCS_SERVICE, m_csProxyHost, PROXY_HOST, "" );
-		readIniFile( OCS_SERVICE, m_csProxyPort, PROXY_PORT, "" );
-		readIniFile( OCS_SERVICE, m_csProxyUser, PROXY_USER, "" );
-		readIniFile( OCS_SERVICE, m_csProxyPwd, PROXY_PWD, "" );
+		readIniFile( OCS_SERVICE, m_csServer, _T( "SERVER"), _T( "ocsinventory-ng"));
+		readIniFile( OCS_SERVICE, & m_iProxy, _T( "NOPROXY"), _T( "0"));
+		readIniFile( OCS_SERVICE, m_csPort, _T( "port"), _T( "80") );
+		readIniFile( OCS_SERVICE, m_csMisc, _T( "MISCELLANEOUS"), _T( "") );
+		readIniFile( OCS_SERVICE, & m_iWriteIniLatency, _T( "WRITE_INI_LATENCY"), WRITE_TTOWAIT_EACH );
+		readIniFile( OCS_SERVICE, m_csAuthUser, AUTH_USER, _T( ""));
+		readIniFile( OCS_SERVICE, m_csAuthPwd, AUTH_PWD, _T( ""));
+		readIniFile( OCS_SERVICE, m_csProxyHost, PROXY_HOST, _T( "") );
+		readIniFile( OCS_SERVICE, m_csProxyPort, PROXY_PORT, _T( "") );
+		readIniFile( OCS_SERVICE, m_csProxyUser, PROXY_USER, _T( "") );
+		readIniFile( OCS_SERVICE, m_csProxyPwd, PROXY_PWD, _T( "") );
 	}	
 }
 
@@ -309,7 +330,8 @@ void CMyService::readIniFile( CString section, CString & storeVar, CString toRea
 	char read[255];
 
 	if( ! GetPrivateProfileString(section, toRead, defaultVal,  read, 255, m_sServIni)) {
-		m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, "Can't get private profile string");
+			toRead.Insert( 0, _T( "Can't get private profile string for service option "));
+		m_EventLogSource.Report(EVENTLOG_WARNING_TYPE, MSG_ERROR_OCS, toRead);
 		storeVar = defaultVal;
 	}
 	else
@@ -324,7 +346,8 @@ void CMyService::writeIniFile( int* toBeStored, CString toWrite ) {
 		char intWrite[11];
 		_itoa( *toBeStored, intWrite, 10 );
 		if( ! WritePrivateProfileString(OCS_SERVICE, toWrite, intWrite, m_sServIni)) {
-			m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, "Can't write private profile string");
+			toWrite.Insert( 0, _T( "Can't write private profile string for service option "));
+			m_EventLogSource.Report(EVENTLOG_WARNING_TYPE, MSG_ERROR_OCS, toWrite);
 		}
 		//openIni();
 	}
@@ -337,16 +360,16 @@ void CMyService::writeIniFile( int* toBeStored, CString toWrite ) {
 
 void CMyService::openHandles() {
 	return;//TODO: voir
-	addOpenFile( "ocsinventory.exe");
-	addOpenFile( "last_state");
-	addOpenFile( "libeay.dll");
-	addOpenFile( "ocswmi.dll");
-	addOpenFile( "sysinfo.dll");
-	addOpenFile( "last_state");
-	addOpenFile( "ocsinventory.dat");
-	addOpenFile( "admininfo.conf");
-	addOpenFile( "update.exe");
-	addOpenFile( "mfc42.dll");
+	addOpenFile( _T( "ocsinventory.exe"));
+	addOpenFile( _T( "last_state"));
+	addOpenFile( _T( "libeay.dll"));
+	addOpenFile( _T( "ocswmi.dll"));
+	addOpenFile( _T( "sysinfo.dll"));
+	addOpenFile( _T( "last_state"));
+	addOpenFile( _T( "ocsinventory.dat"));
+	addOpenFile( _T( "admininfo.conf"));
+	addOpenFile( _T( "update.exe"));
+	addOpenFile( _T( "mfc42.dll"));
 }
 
 void CMyService::closeHandles() {
@@ -361,7 +384,7 @@ void CMyService::closeHandles() {
 
 void CMyService::addOpenFile( LPCSTR fname ) {
 	CString fnamedir;
-	fnamedir.Format("%s%s",m_sCurDir,fname);
+	fnamedir.Format( _T( "%s%s"),m_sCurDir,fname);
 	CFile* newFile=new CFile();
 	newFile->Open(fnamedir, CFile::shareExclusive|CFile::modeReadWrite);
 	m_tHandles.Add( newFile );
@@ -381,15 +404,15 @@ CString CMyService::getParamValue(LPCTSTR lpstrCommandLine, CString param) {
 	CString	csCommand = lpstrCommandLine;
 	CString option;
 
-	option.Format("%s:",param);
+	option.Format( _T( "%s:"),param);
 	
 	csCommand.MakeLower();
 	int iRngOpt = csCommand.Find( _T( option));
 	if( iRngOpt == -1 ) {
-			return "";
+			return _T( "");
 	}
 	
-	int iFin = csCommand.Find(" ", iRngOpt) != -1 ? csCommand.Find( " ", iRngOpt) : csCommand.GetLength();
+	int iFin = csCommand.Find( _T( " "), iRngOpt) != -1 ? csCommand.Find( _T( " "), iRngOpt) : csCommand.GetLength();
 	CString csName = csCommand.Mid( iRngOpt + option.GetLength() , iFin - iRngOpt - option.GetLength() );
 	return csName;
 }
