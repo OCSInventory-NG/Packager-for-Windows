@@ -181,9 +181,9 @@ LPCTSTR CNetworkAdapterList::GetHash()
 		myObject = GetNext( pos);
 	while (bContinue)
 	{
-		csToHash.Format( _T( "%s%s%s%s%s%s%s%s%s"), myObject.GetDescription(), myObject.GetType(),
+		csToHash.Format( _T( "%s%s%s%s%s%s%s%s%s%s"), myObject.GetDescription(), myObject.GetType(),
 						 myObject.GetTypeMIB(), myObject.GetSpeed(), myObject.GetMACAddress(),
-						 myObject.GetOperationalStatus(), myObject.GetIPNetMask(),
+						 myObject.GetOperationalStatus(), myObject.GetIPAddress(), myObject.GetIPNetMask(),
 						 myObject.GetGateway(), myObject.GetDhcpServer());
 		myHash.HashUpdate( LPCTSTR( csToHash), csToHash.GetLength());
 		bContinue = (pos != NULL);
