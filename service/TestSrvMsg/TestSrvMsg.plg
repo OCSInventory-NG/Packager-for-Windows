@@ -3,185 +3,51 @@
 <pre>
 <h1>Build Log</h1>
 <h3>
---------------------Configuration: OCSInventory Agent - Win32 Release--------------------
+--------------------Configuration: OcsServiceMsg - Win32 Release--------------------
 </h3>
 <h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-OCSInventory.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: OCSInventory Agent - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-OCSInventory.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: OcsWmi - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-OcsWmi.dll - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: OcsWmi - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-OcsWmi.dll - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: SysInfo - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-SysInfo.dll - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: SysInfo - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-SysInfo.dll - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: TestSrv - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-Creating temporary file "C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP708.tmp" with contents
+Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP223.bat" with contents
 [
-libeay32.lib /nologo /subsystem:windows /incremental:no /pdb:"Release/OcsService.pdb" /machine:I386 /out:"../_Release/OcsService.exe" /libpath:"..\include\openssl\lib\VC" 
-.\Release\App.obj
-.\Release\ntserv.obj
-.\Release\ntservCmdLineInfo.obj
-.\Release\ntservEventLog.obj
-.\Release\ntservEventLogRecord.obj
-.\Release\ntservEventLogSource.obj
-.\Release\ntservScmService.obj
-.\Release\ntservServiceControlManager.obj
-.\Release\StdAfx.obj
-.\Release\OcsService.res
-.\TestSrvMsg\Release\OcsService.lib
+@echo off
+mc.exe -r "." -h ".\.." ".\ntserv_msg.mc"
 ]
-Creating command line "link.exe @C:\DOCUME~1\DANEK~1.RES\LOCALS~1\Temp\RSP708.tmp"
+Creating command line "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP223.bat"
+Creating command line "rc.exe /l 0x1809 /fo"Release/TestSrvMsg.res" /d "NDEBUG" "D:\Developp\OCS Inventory NG\sources\win32_agent\service\TestSrvMsg\TestSrvMsg.rc"" 
+Compiling messages...
+MC: Compiling .\ntserv_msg.mc
+Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP224.tmp" with contents
+[
+/nologo /MT /W3 /WX /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /Fp"Release/TestSrvMsg.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\Developp\OCS Inventory NG\sources\win32_agent\service\TestSrvMsg\StdAfx.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP224.tmp" 
+Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP225.tmp" with contents
+[
+/nologo /MT /W4 /WX /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /Fp"Release/TestSrvMsg.pch" /YX /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\Developp\OCS Inventory NG\sources\win32_agent\service\TestSrvMsg\TestSrvMsg.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP225.tmp" 
+Creating temporary file "C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP226.tmp" with contents
+[
+kernel32.lib /nologo /subsystem:windows /dll /incremental:no /pdb:"Release/OcsService.pdb" /machine:I386 /out:"../_Release/OcsService.dll" /implib:"Release/OcsService.lib" 
+".\Release\StdAfx.obj"
+".\Release\TestSrvMsg.obj"
+".\Release\TestSrvMsg.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\DIDIER~1\LOCALS~1\Temp\RSP226.tmp"
 <h3>Output Window</h3>
+Compiling resources...
+Compiling...
+StdAfx.cpp
+Compiling...
+TestSrvMsg.cpp
 Linking...
-
-
-
-<h3>Results</h3>
-OcsService.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: TestSrv - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-OcsService.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: TestSrvMsg - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
+   Creating library Release/OcsService.lib and object Release/OcsService.exp
 
 
 
 <h3>Results</h3>
 OcsService.dll - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: TestSrvMsg - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-TestSrv.dll - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: TestSysInfo - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-TestSysInfo.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: TestSysInfo - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-TestSysInfo.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: Zip - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-Zip.lib - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: Zip - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-Zip.lib - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: download - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-download.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: download - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-download.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: mo_dev - Win32 Release--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-inst32.exe - 0 error(s), 0 warning(s)
-<h3>
---------------------Configuration: mo_dev - Win32 Debug--------------------
-</h3>
-<h3>Command Lines</h3>
-
-
-
-<h3>Results</h3>
-inst32.exe - 0 error(s), 0 warning(s)
 </pre>
 </body>
 </html>

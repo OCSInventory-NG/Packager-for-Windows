@@ -147,7 +147,7 @@ Severity=Informational
 Facility=Application
 SymbolicName=MSG_INFO_OCS
 Language=English
-OCS INFO: %1.
+Information: %1.
 .
 
 MessageID=20
@@ -155,5 +155,5 @@ Severity=Error
 Facility=Application
 SymbolicName=MSG_ERROR_OCS
 Language=English
-OCS ERROR: %1.
+ERROR: %1.
 .
