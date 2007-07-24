@@ -11,7 +11,7 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
-; pre 4034
+;4034
 ; Do not uninstall service when upgrading, just stop service, and kill all processes
 ; Added /NOW command line switch to force inventory just after setup
 ; New argument parsing method
@@ -36,7 +36,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory Agent"
-!define PRODUCT_VERSION "4.0.3.3"
+!define PRODUCT_VERSION "4.0.3.4"
 !define PRODUCT_PUBLISHER "OCS Inventory NG Team"
 !define PRODUCT_WEB_SITE "http://ocsinventory.sourceforge.net"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"

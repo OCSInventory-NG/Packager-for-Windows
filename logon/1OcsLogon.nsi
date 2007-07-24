@@ -11,7 +11,7 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
-;4033
+;4034
 ; /folder: bug patched
 ; Win9x Deploy service bug patched
 ; /url: bug patched (en cours)
@@ -40,7 +40,7 @@
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng"
 !define TimeOut "600000"
-!define Compile_version "4.0.3.3"
+!define Compile_version "4.0.3.4"
 !define hard_option ; "/debug /editlog " ; /install /url:http://0.0.0.0/deploy/"
  var url
  var version
@@ -537,13 +537,11 @@ no_verbose_install:
   ClearErrors
   ; SetShellVarContext all
   ; createdirectory "$SMPROGRAMS\ocs-ng"
-  ; CreateShortCut "$SMPROGRAMS\OCS-NG\OCS-NG.lnk" "$PROGRAMFILES\ocs-ng\OcsLogon.exe" \
-  ; "/local" '' 0 SW_SHOWNORMAL ALT|CONTROL|i "Lancement de OCS-NG en local."
+  ; CreateShortCut "$SMPROGRAMS\OCS-NG\OCS-NG.lnk" "$PROGRAMFILES\ocs-ng\OcsLogon.exe" "/local" '' 0 SW_SHOWNORMAL ALT|CONTROL|i "Lancement de OCS-NG en local."
   SetShellVarContext current
   ; SetShellVarContext all
   ; createdirectory "$SMPROGRAMS\ocs-ng"
-  ; CreateShortCut "$R7 local.lnk" "$R7\OcsLogon.exe" \
-  "/local" '' 0 SW_SHOWNORMAL ALT|CONTROL|i "Lancement de OCS-NG en local."
+  ; CreateShortCut "$R7 local.lnk" "$R7\OcsLogon.exe" "/local" '' 0 SW_SHOWNORMAL ALT|CONTROL|i "Lancement de OCS-NG en local."
 FunctionEnd
 
 Function test-folder
