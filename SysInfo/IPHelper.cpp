@@ -49,16 +49,14 @@ BOOL CIPHelper::GetNetworkAdapters(CNetworkAdapterList *pList)
 	DWORD				(WINAPI *lpfnGetIfTable)( PMIB_IFTABLE pIfTable, PULONG pdwSize, BOOL bOrder);
 	PMIB_IFTABLE		pIfTable;
 	PMIB_IFROW			pIfEntry;
-	PIP_ADAPTER_INFO	pAdapterInfo;
+	PIP_ADAPTER_INFO	pAdapterTable, pAdapterInfo;
 	ULONG				ulLength = 0;
-	LPBYTE				pData = NULL;
 	UINT				uIndex = 0;
 	DWORD				dwIndex;
 	CNetworkAdapter		cAdapter;
 	PIP_ADDR_STRING		pAddressList;
 	CString				csMAC,
 						csAddress,
-						csNetMask,
 						csGateway,
 						csDhcpServer;
 
@@ -88,6 +86,7 @@ BOOL CIPHelper::GetNetworkAdapters(CNetworkAdapterList *pList)
 		AddLog( _T( "IpHlpAPI GetNetworkAdapters: Failed because unable to load <iphlpapi.dll> !\n"));
 		return FALSE;
 	}
+
 	// Call GetIfTable to get memory size
 	AddLog( _T( "IpHlpAPI GetNetworkAdapters: Calling GetIfTable to determine network adapter properties..."));
 	pIfTable = NULL;
@@ -110,37 +109,146 @@ BOOL CIPHelper::GetNetworkAdapters(CNetworkAdapterList *pList)
 		AddLog( _T( "Failed because unknown error !\n" ));
 		return FALSE;
 	}
-	if ((pData = (LPBYTE) malloc( ulLength+1)) == NULL)
+	if ((pIfTable = (PMIB_IFTABLE) malloc( ulLength+1)) == NULL)
 	{
 		FreeLibrary( hDll);
 		AddLog( _T( "Failed because memory error !\n" ));
 		return FALSE;
 	}
 	// Recall GetIfTable
-	pIfTable = (PMIB_IFTABLE) pData;
 	switch( lpfnGetIfTable( pIfTable, &ulLength, TRUE))
 	{
 	case NO_ERROR: // No error
 		break;
 	case ERROR_NOT_SUPPORTED: // Not supported
-		free( pData);
+		free( pIfTable);
 		FreeLibrary( hDll);
 		AddLog( _T( "Failed because OS not support GetIfTable API function !\n" ));
 		return FALSE;
 	case ERROR_BUFFER_OVERFLOW: // We have allocated needed memory, but not sufficient
 	case ERROR_INSUFFICIENT_BUFFER:
-		free( pData);
+		free( pIfTable);
 		FreeLibrary( hDll);
 		AddLog( _T( "Failed because memory error !\n" ));
 		return FALSE;
 	default:
-		free( pData);
+		free( pIfTable);
 		FreeLibrary( hDll);
 		AddLog( _T( "Failed because unknown error !\n" ));
 		return FALSE;
 	}
+/*
+	// Dump IfTable
+	AddLog("\n=== DEBUG : dump IfTable ===\n");
+	for (dwIndex = 0; dwIndex < pIfTable->dwNumEntries; dwIndex ++)
+	{
+//		char wszName[MAX_INTERFACE_NAME_LEN];
+//		WideCharToMultiByte(CP_ACP, 0, pIfTable->table[dwIndex].wszName, -1, wszName, MAX_INTERFACE_NAME_LEN, NULL, NULL);
+
+		AddLog("+ Interface #%d\n", dwIndex);
+//		AddLog("\twszName       = %s\n", wszName);
+		AddLog("\tdwIndex       = %d\n", pIfTable->table[dwIndex].dwIndex);
+		AddLog("\tdwType        = %d\n", pIfTable->table[dwIndex].dwType);
+		AddLog("\tdwMtu         = %d\n", pIfTable->table[dwIndex].dwMtu);
+		AddLog("\tdwSpeed       = %d\n", pIfTable->table[dwIndex].dwSpeed);
+		AddLog("\tdwPhysAddrLen = %d\n", pIfTable->table[dwIndex].dwPhysAddrLen);
+		AddLog("\tbPhysAddr     =");
+		for (DWORD i=0 ; i<pIfTable->table[dwIndex].dwPhysAddrLen ; i++)
+			AddLog(" %02x", pIfTable->table[dwIndex].bPhysAddr[i]);
+		AddLog("\n");
+		AddLog("\tbPhysAddr     = %d\n", pIfTable->table[dwIndex].dwPhysAddrLen);
+		AddLog("\tdwAdminStatus = %d\n", pIfTable->table[dwIndex].dwAdminStatus);
+
+		AddLog("\tdwOperStatus  = %d\n", pIfTable->table[dwIndex].dwOperStatus);
+		AddLog("\tdwLastChange  = %d\n", pIfTable->table[dwIndex].dwLastChange);
+		AddLog("\tbDescr        = %s\n", pIfTable->table[dwIndex].bDescr);
+	}
+*/
+	// Call GetAdptersInfo with length to 0 to get size of required buffer
+	AddLog( _T( "OK\nIpHlpAPI GetNetworkAdapters: Calling GetAdapterInfo to determine IP Infos..."));
+	pAdapterTable = NULL;
+	switch( lpfnGetAdaptersInfo( pAdapterTable, &ulLength))
+	{
+	case NO_ERROR: // No error => no adapters
+	case ERROR_NO_DATA:
+		free( pIfTable);
+		FreeLibrary( hDll);
+		AddLog( _T( "Failed because no network adapters !\n"));
+		return FALSE;
+	case ERROR_NOT_SUPPORTED: // Not supported
+		free( pIfTable);
+		FreeLibrary( hDll);
+		AddLog( _T( "Failed because OS not support GetAdaptersInfo API function !\n" ));
+		return FALSE;
+	case ERROR_BUFFER_OVERFLOW: // We must allocate memory
+		break;
+	default:
+		free( pIfTable);
+		FreeLibrary( hDll);
+		AddLog( _T( "Failed because unknown error !\n" ));
+		return FALSE;
+	}
+	if ((pAdapterTable = (PIP_ADAPTER_INFO) malloc( ulLength+1)) == NULL)
+	{
+		FreeLibrary( hDll);
+		AddLog( _T( "Failed because memory error !\n" ));
+		return FALSE;
+	}
+
+	// Recall GetAdptersInfo
+	switch( lpfnGetAdaptersInfo( pAdapterTable, &ulLength))
+	{
+	case 0: // No error
+		break;
+	case ERROR_NO_DATA: // No adapters
+		free( pIfTable);
+		free( pAdapterTable);
+		FreeLibrary( hDll);
+		AddLog( _T( "Failed because no network adapters !\n"));
+		return FALSE;
+	case ERROR_NOT_SUPPORTED: // Not supported
+		free( pIfTable);
+		free( pAdapterTable);
+		FreeLibrary( hDll);
+		AddLog( _T( "Failed because OS not support GetAdaptersInfo API function !\n" ));
+		return FALSE;
+	case ERROR_BUFFER_OVERFLOW: // We have allocated needed memory, but not sufficient
+		free( pIfTable);
+		free( pAdapterTable);
+		FreeLibrary( hDll);
+		AddLog( _T( "Failed because memory error !\n" ));
+		return FALSE;
+	default:
+		free( pIfTable);
+		free( pAdapterTable);
+		FreeLibrary( hDll);
+		AddLog( _T( "Failed because unknown error !\n" ));
+		return FALSE;
+	}
+/*
+	// Dump IfTable
+	AddLog("\n=== DEBUG : dump AdaptersInfo ===\n");
+	for (dwIndex=0, pAdapterInfo=pAdapterTable ; pAdapterInfo != NULL ; pAdapterInfo = pAdapterInfo->Next, dwIndex++)
+	{
+		AddLog("+ Adaptater #%d\n", dwIndex);
+		AddLog("\tAdapterName   = %s\n", pAdapterInfo->AdapterName); 
+		AddLog("\tDescription   = %s\n", pAdapterInfo->Description); 
+		AddLog("\tAddressLength = %d\n", pAdapterInfo->AddressLength); 
+		AddLog("\tAddress       =");
+		for (DWORD i=0 ; i<pAdapterInfo->AddressLength ; i++)
+			AddLog(" %02x", pAdapterInfo->Address[i]);
+		AddLog("\n");
+		AddLog("\tIndex         = %d\n", pAdapterInfo->Index); 
+		AddLog("\tType          = %d\n", pAdapterInfo->Type); 
+		AddLog("\tDhcpEnabled   = %d\n", pAdapterInfo->DhcpEnabled); 
+	
+	}
+	AddLog("=== DEBUG : fin===\n");
+
+*/
 	// Call GetIfEntry for each interface
 	for (dwIndex = 0; dwIndex < pIfTable->dwNumEntries; dwIndex ++)
+		if (!IsLoopback( pIfTable->table[dwIndex].dwType))
 	{
 		pIfEntry = &(pIfTable->table[dwIndex]);
 		// Get the Index
@@ -164,141 +272,85 @@ BOOL CIPHelper::GetNetworkAdapters(CNetworkAdapterList *pList)
 		cAdapter.SetSpeed( pIfEntry->dwSpeed);
 		// Get the status
 		cAdapter.SetIpHelperStatus( pIfEntry->dwOperStatus);
-		cAdapter.SetIPAddress(  _T(""));
-		cAdapter.SetIPNetMask(  _T(""));
-		cAdapter.SetGateway(  _T(""));
-		cAdapter.SetDhcpServer(  _T(""));
 			
-		if (!IsLoopback( pIfEntry->dwType))
-		{
-			uIndex ++;
-			pList->AddTail( cAdapter);
-		}
+		// AddLog("+ IfTable => %s\n", csMAC);
+		
+		// Now parse the Adapter info
+		for (pAdapterInfo=pAdapterTable ; pAdapterInfo != NULL ; pAdapterInfo = pAdapterInfo->Next)
+			// Check the MAC Address (bad idea)
+			//if (pIfEntry->dwPhysAddrLen==pAdapterInfo->AddressLength && !memcmp(pIfEntry->bPhysAddr, pAdapterInfo->Address, pAdapterInfo->AddressLength))
+			// Check the AdapterIndex (better idea)
+			if (pIfEntry->dwIndex == pAdapterInfo->Index)
+			{
+				// AddLog("++ AdapterTable : %02X:%02X:%02X:%02X:%02X:%02X\n", pAdapterInfo->Address[0], pAdapterInfo->Address[1], pAdapterInfo->Address[2], pAdapterInfo->Address[3], pAdapterInfo->Address[4], pAdapterInfo->Address[5]);
+				// Get Gateways
+				pAddressList = &(pAdapterInfo->GatewayList);
+				csGateway = _T("");
+				do
+				{
+					csGateway += pAddressList->IpAddress.String;
+					pAddressList = pAddressList->Next;
+					if( pAddressList != NULL )
+						csGateway += _T( ",");
+				}
+				while( pAddressList != NULL );
+				cAdapter.SetGateway(csGateway);
+
+				// Get DHCP server
+				pAddressList = &(pAdapterInfo->DhcpServer);
+				csDhcpServer = _T("");
+				do
+				{
+					csDhcpServer += pAddressList->IpAddress.String;
+					pAddressList = pAddressList->Next;
+					if( pAddressList != NULL )
+						csDhcpServer += _T( ",");
+				}
+				while( pAddressList != NULL );
+				cAdapter.SetDhcpServer(csDhcpServer);
+
+				// Get IP addresses and NetMasks
+				pAddressList = &(pAdapterInfo->IpAddressList);
+				do
+				{
+					in_addr ipa;
+					ULONG   ipAdr, ipMsk, nbRez;		
+
+					cAdapter.SetIPAddress( pAddressList->IpAddress.String );
+					cAdapter.SetIPNetMask( pAddressList->IpMask.String );
+
+					// Update network number if possible		
+					if( inet_addr( pAddressList->IpAddress.String ) != INADDR_NONE ){
+						ipAdr = ntohl(inet_addr ( pAddressList->IpAddress.String ));
+						ipMsk = ntohl(inet_addr ( pAddressList->IpMask.String ));
+						nbRez = ipAdr & ipMsk ;
+	
+						ipa.S_un.S_addr = htonl(nbRez);
+					
+						cAdapter.SetNetNumber( inet_ntoa(ipa) );
+					}
+
+					// Create en Adapter entry for each Adapter/Address
+					pList->AddTail( cAdapter);
+					uIndex ++;
+
+					pAddressList = pAddressList->Next;
+
+				}
+				while( pAddressList != NULL );
+
+			// End If sameMac Address
+			}
+	// End For each interface
 	}
-	free( pData);
-	// Call GetAdptersInfo with length to 0 to get size of required buffer
-	AddLog( _T( "OK\nIpHlpAPI GetNetworkAdapters: Calling GetAdapterInfo to determine IP Infos..."));
-	pAdapterInfo = NULL;
-	switch( lpfnGetAdaptersInfo( pAdapterInfo, &ulLength))
-	{
-	case NO_ERROR: // No error => no adapters
-	case ERROR_NO_DATA:
-		FreeLibrary( hDll);
-		AddLog( _T( "Failed because no network adapters !\n"));
-		return FALSE;
-	case ERROR_NOT_SUPPORTED: // Not supported
-		FreeLibrary( hDll);
-		AddLog( _T( "Failed because OS not support GetAdaptersInfo API function !\n" ));
-		return FALSE;
-	case ERROR_BUFFER_OVERFLOW: // We must allocate memory
-		break;
-	default:
-		FreeLibrary( hDll);
-		AddLog( _T( "Failed because unknown error !\n" ));
-		return FALSE;
-	}
-	if ((pData = (LPBYTE) malloc( ulLength+1)) == NULL)
-	{
-		FreeLibrary( hDll);
-		AddLog( _T( "Failed because memory error !\n" ));
-		return FALSE;
-	}
-	// Recall GetAdptersInfo
-	pAdapterInfo = (PIP_ADAPTER_INFO) pData;
-	switch( lpfnGetAdaptersInfo( pAdapterInfo, &ulLength))
-	{
-	case 0: // No error
-		break;
-	case ERROR_NO_DATA: // No adapters
-		free( pData);
-		FreeLibrary( hDll);
-		AddLog( _T( "Failed because no network adapters !\n"));
-		return FALSE;
-	case ERROR_NOT_SUPPORTED: // Not supported
-		free( pData);
-		FreeLibrary( hDll);
-		AddLog( _T( "Failed because OS not support GetAdaptersInfo API function !\n" ));
-		return FALSE;
-	case ERROR_BUFFER_OVERFLOW: // We have allocated needed memory, but not sufficient
-		free( pData);
-		FreeLibrary( hDll);
-		AddLog( _T( "Failed because memory error !\n" ));
-		return FALSE;
-	default:
-		free( pData);
-		FreeLibrary( hDll);
-		AddLog( _T( "Failed because unknown error !\n" ));
-		return FALSE;
-	}
+
+	// Free memory
+	free( pIfTable);
+	free( pAdapterTable);
+
 	// Unload library
 	FreeLibrary( hDll);
-	// Now parse the infos
-	while (pAdapterInfo != NULL)
-	{
-		// Get MAC Address 
-		csMAC.Format( _T("%02X:%02X:%02X:%02X:%02X:%02X"),
-					   pAdapterInfo->Address[0], pAdapterInfo->Address[1],
-					   pAdapterInfo->Address[2], pAdapterInfo->Address[3],
-					   pAdapterInfo->Address[4], pAdapterInfo->Address[5]);
-		// Get IP addresses and NetMasks
-		pAddressList = &(pAdapterInfo->IpAddressList);
-		csAddress = _T("");
-		csNetMask = _T("");
-		do
-		{
-			csAddress += pAddressList->IpAddress.String;
-			csNetMask += pAddressList->IpMask.String;
-			pAddressList = pAddressList->Next;
-			if( pAddressList != NULL )
-			{
-				csAddress += _T( ",");
-				csNetMask += _T( ",");
-			}
-		}
-		while( pAddressList != NULL );
-		// Get Gateways
-		pAddressList = &(pAdapterInfo->GatewayList);
-		csGateway = _T("");
-		do
-		{
-			csGateway += pAddressList->IpAddress.String;
-			pAddressList = pAddressList->Next;
-			if( pAddressList != NULL )
-				csGateway += _T( ",");
-		}
-		while( pAddressList != NULL );
-		// Get DHCP server
-		pAddressList = &(pAdapterInfo->DhcpServer);
-		csDhcpServer = _T("");
-		do
-		{
-			csDhcpServer += pAddressList->IpAddress.String;
-			pAddressList = pAddressList->Next;
-			if( pAddressList != NULL )
-				csDhcpServer += _T( ",");
-		}
-		while( pAddressList != NULL );
 
-		// Update network number if possible
-		in_addr ipa;
-		ULONG   ipAdr, ipMsk, nbRez;		
-			
-		if( inet_addr( csAddress ) != INADDR_NONE ){
-			ipAdr = ntohl(inet_addr ( csAddress ));
-			ipMsk = ntohl(inet_addr ( csNetMask ));
-			nbRez = ipAdr & ipMsk ;
-		}
-
-		ipa.S_un.S_addr = htonl(nbRez);
-		LPCSTR csRez = inet_ntoa(ipa);
-		//
-
-		// Update adapter in the list
-		pList->SetIpAddrEntry( csMAC, csAddress, csNetMask, csGateway, csDhcpServer,csRez);
-		pAdapterInfo = pAdapterInfo->Next;
-	}
-	// Free memory
-	free( pData);
 	AddLog( _T( "OK\n"));
 	if (uIndex > 0)
 	{
