@@ -1,7 +1,7 @@
 ################################################################################
 ##OCSInventory Version NG 1.0 Production
 ##Copyleft Emmanuel GUILLORY 2006
-##Web : http://ocsinventory.sourceforge.net
+##Web http://ocsinventory.sourceforge.net
 ##
 ##This code is open source and may be copied and modified as long as the source
 ##code is always made freely available.
@@ -17,13 +17,14 @@
 !define SETUP_LOG_FILE "$exedir\ocspackage.log"
 !define COL_FILE "col.txt"
 !define Time_out "10"
+!define appname "ocspackage.exe"
 !include "FileFunc.nsh"
 !include "TextFunc.nsh"
 !insertmacro GetTime
 !insertmacro FileJoin
 var /GLOBAL OcsLogon_v ; To complete the setup log file
 silentinstall silent
-OutFile "ocspackage.exe"
+OutFile ${appname}
 ShowInstDetails hide
 Icon "pack.ico"
 VIProductVersion "Compile_version"
@@ -45,69 +46,68 @@ function setv
   WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf e "createdir"
   WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf r "othern.filen"
   WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf t "No certificate"
-;  WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf y "other1n.filen"
-;  WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf u "other1.file"
   WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf V "label.txt"
   WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf W "No_FILE_COLLECTION"
   WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf x "${SETUP_LOG_FILE}"
-
-  ;messagebox mb_ok "label du runas : label.txt  chemin $exedir"
-  ;messagebox mb_ok "dir créé : createdir"
   sleep 500
-  StrCpy $OcsLogon_v 'Parameters: $r2 $\r$\n'
+  StrCpy $OcsLogon_v '${appname}_:_Parameters: $r2 $\r$\n'
   Call Write_Log
-  StrCpy $OcsLogon_v 'Install folder: createdir $\r$\n'
+  StrCpy $OcsLogon_v '${appname}_:_Install folder: createdir $\r$\n'
   Call Write_Log
-  StrCpy $OcsLogon_v 'Certificate: No certificate $\r$\n'
+  StrCpy $OcsLogon_v '${appname}_:_Certificate: No certificate $\r$\n'
   Call Write_Log
-  StrCpy $OcsLogon_v 'File collection: No_FILE_COLLECTION $\r$\n'
+  StrCpy $OcsLogon_v '${appname}_:_File collection: No_FILE_COLLECTION $\r$\n'
   Call Write_Log
-  StrCpy $OcsLogon_v "Testing current user IsUserAdmin:$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_Testing current user IsUserAdmin:$\r$\n"
   Call Write_Log
   Call IsUserAdmin
   Pop "$R0"
   strcmp $R0 "true" Okadmin 0
-  StrCpy $OcsLogon_v "Current user is not admin:$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_Current user is not admin:$\r$\n"
   Call Write_Log
-  StrCpy $OcsLogon_v "Launching setup by remcom.exe...$\r$\n"
+  Call get_computer_name
+  pop $9
+  ; bug remcom*********************************
+  strcpy $9 "localhost"
+  ; bug remcom*********************************
+  
+  StrCpy $OcsLogon_v "${appname}_:_Launching setup by remcom.exe...$\r$\n"
   Call Write_Log
-  StrCpy $OcsLogon_v "With /user:$r4 /pwd:********$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_Remcom options: \\$9 /user:$r4 /pwd:********$\r$\n"
   Call Write_Log
-  ;messagebox mb_ok "--->$r4 /pwd:$r1"
-  nsExec::Exec 'cmd /c RemCom.exe \\localhost /user:$r4 /pwd:$r1 instocs.exe >remcom.log 2>&1'
-  StrCpy $OcsLogon_v "Waiting for RemCom.exe log:"
+  nsexec::exec 'cmd /c RemCom.exe \\$9 /user:$r4 /pwd:$r1 "$PLUGINSDIR\instocs.exe" > remcom.log 2>&1'
+  sleep 1000
+  StrCpy $OcsLogon_v "${appname}_:_Waiting for RemCom.exe log:"
   Call Write_Log
 wait_for_log:
   intop $9 $9 + 1
   StrCpy $OcsLogon_v ".$9"
   Call Write_Log
   strcmp $9 ${time_out} 0 no_timeout
-  StrCpy $OcsLogon_v "$\r$\nTimeout: ${time_out} Reached."
+  StrCpy $OcsLogon_v "$\r$\n${appname}_:_Timeout: ${time_out} Reached."
   Call Write_Log
   abort
 no_timeout:
   sleep 1000
   IfFileExists "remcom.log" 0 wait_for_log
-  sleep 3000
-  StrCpy $OcsLogon_v "$\r$\nStart Remcom log:$\r$\n"
+  StrCpy $OcsLogon_v '$\r$\n${appname}_:_============== Start of Remcom.exe log =============$\r$\n'
   Call Write_Log
   ${FileJoin} ${SETUP_LOG_FILE} 'remcom.log' ${SETUP_LOG_FILE}
-  StrCpy $OcsLogon_v "$\r$\nEnd Remcom log$\r$\n"
+  StrCpy $OcsLogon_v "$\r$\n${appname}_:_============== End of Remcom.exe log ==============$\r$\n"
   Call Write_Log
   goto NOkadmin
 Okadmin:
-  StrCpy $OcsLogon_v "User is Admin:$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_User is Admin:$\r$\n"
   Call Write_Log
-  StrCpy $OcsLogon_v "Launching setup directly...$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_Launching setup directly...$\r$\n"
   Call Write_Log
-  execshell '' 'instocs.exe' '' sw_hide
+  execwait 'instocs.exe'
+
 NOkadmin:
 functionend
 
 section
-  ;wait because execshell dont
-  setoutpath "$PLUGINSDIR"
-  sleep 60000
+  ;setoutpath "$PLUGINSDIR"
 SectionEnd
 
 Function IsUserAdmin
@@ -147,7 +147,7 @@ Win9x:
  StrCpy $R0 "true"
 
 Done:
- StrCpy $OcsLogon_v 'User= "$R1"  AccountType= "$R2"  IsUserAdmin= "$R0"$\r$\n'
+ StrCpy $OcsLogon_v '${appname}_:_User= "$R1"  AccountType= "$R2"  IsUserAdmin= "$R0"$\r$\n'
  Call Write_Log
  Pop $R2
  Pop $R1
@@ -179,20 +179,39 @@ WriteLog_end:
   Pop $R0
 FunctionEnd
 
+Function get_computer_name
+  ReadRegStr $0 HKLM "System\CurrentControlSet\Control\ComputerName\ActiveComputerName" "ComputerName"
+  StrCmp $0 "" win9x
+  StrCpy $1 $0 4 3
+;  MessageBox MB_OK "Your ComputerName : $0"
+  Goto done
+win9x:
+  ReadRegStr $0 HKLM "System\CurrentControlSet\Control\ComputerName\ComputerName" "ComputerName"
+  StrCpy $1 $0 4 3
+  MessageBox MB_OK "Your ComputerName : $0"
+done:
+ push $0 
+FunctionEnd
+
+function .onInstSuccess
+  ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+  StrCpy $OcsLogon_v "${appname}_:_End of ${appname} on $0/$1/$2 at $4:$5:$6$\r$\n"
+  Call Write_Log
+functionend
 
 Function .onInit
   InitPluginsDir
 
   ; Init debug log
   Delete ${SETUP_LOG_FILE}
-  StrCpy $OcsLogon_v "********************************************************$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_********************************************************$\r$\n"
   Call Write_Log
   ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
-  StrCpy $OcsLogon_v "Starting Ocspackager on $0/$1/$2 at $4:$5:$6$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_Starting Ocspackager on $0/$1/$2 at $4:$5:$6$\r$\n"
   Call Write_Log
-  StrCpy $OcsLogon_v "Contents: file_x_name vCompile_version$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_Contents: file_x_name vCompile_version$\r$\n"
   Call Write_Log
-  StrCpy $OcsLogon_v "Temp dir: $PLUGINSDIR\$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_Temp dir: $PLUGINSDIR\$\r$\n"
   Call Write_Log
   File /oname=$PLUGINSDIR\RemCom.exe "RemCom.exe"
   File /oname=$PLUGINSDIR\OcsSetup.exe "OcsAgentSetupTMP"
@@ -203,3 +222,4 @@ Function .onInit
 ;**********************************
 ;** ATUOCOMPLETED BY INSTELLER ! **
 ;**********************************
+

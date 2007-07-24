@@ -18,7 +18,7 @@
 !insertmacro WordFind
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "1.0.2.4"
+!define Compile_version "1.0.2.5"
 !define help_file "OCS_Inventory_NG-Packager_Usage_Guide_1.02_EN.pdf"
 
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
@@ -332,7 +332,7 @@ Section
    ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Compile_version' '$r6' '/S=1' $0
 sleep 1000
   nsExec::Exec "$PLUGINSDIR\nsis\makensis.exe runas.nsi"
- ;  Execwait "$PLUGINSDIR\nsis\makensis.exe runas.nsi"
+ ;Execwait "$PLUGINSDIR\nsis\makensis.exe runas.nsi"
 ; Execwait "$PLUGINSDIR\nsis\makensisw.exe runasuninst.nsi"
 ClearErrors
    CopyFiles "OcsPackage.exe" "$R0\"

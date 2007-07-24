@@ -1,15 +1,13 @@
 ;!include "MUI.nsh"
 !include "WordFunc.nsh"
 !insertmacro WordFind
-
 !include "FileFunc.nsh"
 !include "TextFunc.nsh"
 !insertmacro GetTime
 !insertmacro FileJoin
-
-
+!define appname "instocs.exe"
 silentinstall silent
-OutFile "instocs.exe"
+OutFile ${appname}
 var FILE_COLLECTION
 var SETUP_LOG_FILE
 var OcsLogon_v
@@ -42,7 +40,7 @@ function setv
 ;   messagebox mb_ok "COLLEC $FILE_COLLECTION"
    clearerrors
    createdirectory $4
-   StrCpy $OcsLogon_v 'Attempt to create "$4" dir...$\r$\n'
+   StrCpy $OcsLogon_v '${appname}_:_Attempt to create "$4" dir...$\r$\n'
    Call Write_Log
 ;   execwait '"$exedir\OcsSetup.exe" $2'
 ;   messagebox mb_ok "dir créé :$4 "
@@ -50,7 +48,7 @@ function setv
    clearerrors
    strcmp $5 "othern.filen" no_cert 0
    copyfiles "$exedir\$5" "$4\$5"
-   StrCpy $OcsLogon_v 'Copying certificate:$5 to "$4\"...$\r$\n'
+   StrCpy $OcsLogon_v '${appname}_:_Copying certificate:$5 to "$4\"...$\r$\n'
    Call Write_Log
 no_cert:
    ;messagebox mb_ok '"copy2 "$7" "$8"'
@@ -63,7 +61,7 @@ no_cert:
    fileopen $0 "$4\label" w
    filewrite $0 '$9'
    fileclose $0
-   StrCpy $OcsLogon_v 'Writing label "$9" to "$4\label"$\r$\n'
+   StrCpy $OcsLogon_v '${appname}_:_Writing label $9 to "$4\label"$\r$\n'
    Call Write_Log
    
 suite:
@@ -74,8 +72,6 @@ suite:
    ; TRAITEMENT DE LA COLLECTION DE FICHIERS
    ;********************************************
    ${WordFind} $FILE_COLLECTION "|" "*" $R0
-;   messagebox mb_ok "a tropuvé $R0"
-   ;editing each files
    strcpy $1 "0"
 loopfiles:
    intcmp $R0 $1 0 endloopfiles
@@ -83,33 +79,32 @@ loopfiles:
    ; retrieve current indexed_file
    ${WordFind} $FILE_COLLECTION "|" "+$1" $R1
    strcmp $R1 "" endloopfiles
-;   messagebox mb_ok "$R1"
    clearerrors
    copyfiles "$exedir\$R1" "$4\$R1"
-   StrCpy $OcsLogon_v 'Copying "$exedir\$R1" to "$4\$R1"...$\r$\n'
+   StrCpy $OcsLogon_v '${appname}_:_Copying "$exedir\$R1" to "$4\$R1"...$\r$\n'
    Call Write_Log
    goto loopfiles
 endloopfiles:
   ;fin de traitement de la collection
-  ;messagebox mb_ok "Ecriture du label($9)dans $4\label"
-  ;messagebox mb_ok "$4\label"
   clearerrors
   execwait '"$exedir\OcsSetup.exe" $2'
-  StrCpy $OcsLogon_v 'Lauching OcsSetup.exe (see Contents)...$\r$\n'
+  StrCpy $OcsLogon_v '${appname}_:_Lauching OcsSetup.exe (see Contents)...$\r$\n'
   Call Write_Log
   ;insérer log de ocsagentsetup
-  StrCpy $OcsLogon_v '============== Start of OcsSetup.exe log =============$\r$\n'
+  StrCpy $OcsLogon_v '${appname}_:_============== Start of OcsSetup.exe log =============$\r$\n'
   Call Write_Log
   ${FileJoin} $SETUP_LOG_FILE '$exedir\OcsAgentSetup.log' $SETUP_LOG_FILE
-  StrCpy $OcsLogon_v '============== End of OcsSetup.exe log =============$\r$\n'
+  StrCpy $OcsLogon_v '${appname}_:_============== End of OcsSetup.exe log =============$\r$\n'
   Call Write_Log
+functionend
+
+function .onInstSuccess
   ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
-  StrCpy $OcsLogon_v "End of Ocspackager on $0/$1/$2 at $4:$5:$6$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_End of ${appname} on $0/$1/$2 at $4:$5:$6$\r$\n"
   Call Write_Log
 functionend
 
 section
-  sleep 1000
 SectionEnd
 
 
