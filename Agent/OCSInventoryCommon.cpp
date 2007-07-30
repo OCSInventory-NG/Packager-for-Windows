@@ -143,6 +143,19 @@ BOOL COCSInventoryApp::InitInstance()
 			//AfxMessageBox( IDS_ERROR_INIT_FAILED, MB_ICONSTOP);
 			return FALSE;
 		}
+
+		/*****
+		 *
+		 *	Gets agent version
+		 *
+		 ****/
+		CUtils::trace("GET_AGENT_VERSION",cmdL);
+		csAgentVer=CUtils::getVersion( szExecutionFolder);
+		if(csAgentVer=="") {
+			AddLog( _T("ERROR: NO agent version read. 1 assumed.\n"));
+			csAgentVer="1";
+		}
+
 		CUtils::trace("GET_COMPUTER_NAME",cmdL);
 		// Get the Device netbios Name
 		ulBufferLength = MAX_COMPUTERNAME_LENGTH+1;
@@ -163,18 +176,6 @@ BOOL COCSInventoryApp::InitInstance()
 		CUtils::trace("OPEN_LOG",cmdL);
 		OpenLog( csMessage,cmdL );
 		
-		/*****
-		 *
-		 *	Gets agent version
-		 *
-		 ****/
-		CUtils::trace("GET_AGENT_VERSION",cmdL);
-		csAgentVer=CUtils::getVersion();
-		if(csAgentVer=="") {
-			AddLog( _T("ERROR: NO agent version read. 1 assumed.\n"));
-			csAgentVer="1";
-		}
-
 		/*****
 		 *
 		 *	Log file header
@@ -356,7 +357,7 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 			if( bOldFlag )
 				pXml->AddElemNV("OLD_DEVICEID",csFileDeviceID);
 
-			pXml->AddElemNV("VERSIONCLIENT",CUtils::getVersion());
+			pXml->AddElemNV("VERSIONCLIENT",csAgentVer);
 		}		
 
 		/*****

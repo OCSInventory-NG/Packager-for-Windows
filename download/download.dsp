@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /Yu"stdafx.h" /FD /c
-# ADD CPP /nologo /MD /W3 /WX /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /Yu"stdafx.h" /FD /c
+# ADD CPP /nologo /MD /W3 /WX /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR /Yu"stdafx.h" /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x40c /d "NDEBUG" /d "_AFXDLL"
@@ -114,6 +114,10 @@ SOURCE=..\include\fileoperations\FileOperations.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\_common\FilePackageHistory.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\zlib\flate.cpp
 # End Source File
 # Begin Source File
@@ -144,6 +148,10 @@ SOURCE=.\download.h
 # Begin Source File
 
 SOURCE=.\downloadDlg.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\_common\FilePackageHistory.h
 # End Source File
 # Begin Source File
 

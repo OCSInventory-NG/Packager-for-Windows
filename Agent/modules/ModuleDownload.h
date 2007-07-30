@@ -42,6 +42,7 @@
 #endif // _MSC_VER > 1000
 
 #include "../../include/_common/commonDownload.h"
+#include "../../include/_common/FilePackageHistory.h"
 #include "ModuleApi.h"
 
 class CModuleDownload : public CModuleApi

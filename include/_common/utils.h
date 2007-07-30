@@ -358,11 +358,22 @@ static CString getResponse(CMarkup xmlResp) {
 	return xmlResp.GetData();
 }
 
-static CString getVersion() {
-		
-		CString myVer;
-		myVer.Format("%u%u%u%u",VER_D1, VER_D2, VER_D3, VER_D4);
-		return myVer;
+static CString getVersion( LPCTSTR lpstrFile)
+{
+	CFileVersion fileVer;
+	CString myVer;
+
+//	myVer.Format("%u%u%u%u",VER_D1, VER_D2, VER_D3, VER_D4);
+	if (fileVer.Open( lpstrFile))
+	{
+		myVer = fileVer.GetProductVersion();
+		myVer.Remove( ' ');
+		myVer.Remove( ',');
+		fileVer.Close();
+	}
+	else
+		myVer.Empty();
+	return myVer;
 }
 
 static CString getMacs(SysInfo* pSysInfo, CDeviceProperties & m_ThePC) {

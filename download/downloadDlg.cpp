@@ -1,3 +1,14 @@
+
+//====================================================================================
+// Open Computer and Software Inventory
+// Copyleft Pierre LEMMER / Pascal DANEK 2006
+// Web: http://www.ocsinventory-ng.org
+
+// This code is open source and may be copied and modified as long as the source
+// code is always made freely available.
+// Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+//====================================================================================
+
 // downloadDlg.cpp : implementation file
 //
 
@@ -75,7 +86,7 @@ BOOL CDownloadDlg::OnInitDialog()
 	m_cEdit.SetWindowPos( &CWnd::wndTop, 0, 0, cr.Width() , newHeight, SWP_NOMOVE );
 	SetWindowPos( &CWnd::wndTopMost, 0, 0, win.Width() , newHeight + win.Height() - cr.Height() + 10, SWP_NOMOVE );
 
-	
+	BringWindowToTop();
 	return TRUE;  // return TRUE  unless you set the focus to a control
 }
 
@@ -180,7 +191,8 @@ void CDownloadDlg::OnTimer(UINT nIDEvent)
 		OnOK();
 	
 	char useless[255];
-	SetWindowText( "VALIDATING IN " + CString(_itoa( notifyCountdown - waited ,useless,10)) + " SECONDS" ); 
+	SetWindowText( "AUTOMATICALLY VALIDATING IN " + CString(_itoa( notifyCountdown - waited ,useless,10)) + " SECONDS" );
+	BringWindowToTop();
 	CDialog::OnTimer(nIDEvent);
 }
 

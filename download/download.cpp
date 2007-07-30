@@ -1,3 +1,14 @@
+
+//====================================================================================
+// Open Computer and Software Inventory
+// Copyleft Pierre LEMMER / Pascal DANEK 2006
+// Web: http://www.ocsinventory-ng.org
+
+// This code is open source and may be copied and modified as long as the source
+// code is always made freely available.
+// Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+//====================================================================================
+
 // download.cpp : Defines the class behaviors for the application.
 //
 
@@ -10,6 +21,7 @@
 #include <afxinet.h>
 #include "utils.h"
 #include "../include/_common/net_utils.h" 
+#include "../include/_common/FilePackageHistory.h" 
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -533,11 +545,11 @@ int CDownloadApp::download( CPackage * pP ) {
 			}
 		}
 		else{
-			AddLog("ERROR: Execute returned -1. Will not try to change drectory");
+			AddLog("ERROR: Execute returned -1. Will not try to change directory");
 		}
 
 		if( errExec )
-			pP->done();
+			pP->done( pP->Id);
 		return 0;
 	}
 	return 0;
@@ -579,7 +591,7 @@ int CPackage::execute() {
 		notifyRet = dlg.DoModal();
 		
 		if ( notifyRet == IDCANCEL) {
-			 markAsDone( ERR_ABORTED );
+			 markAsDone( ERR_ABORTED, "..\\.." );
 			return 1;
 		}
 		else if ( notifyRet == IDOK && dlg.delayed == TRUE ) {
@@ -592,19 +604,19 @@ int CPackage::execute() {
 	if( Act == "LAUNCH" ) {
 		if ( Frags )
 			if( unzip( "build.zip", "." ) ) {
-				markAsDone( ERR_UNZIP );
+				markAsDone( ERR_UNZIP, "..\\.." );
 				return 1;
 			}
 		
 		if( !Name.GetLength() ) {
 			AddLog("ERROR: No Name for a LAUNCH action");
-			markAsDone( ERR_BAD_PARAM );
+			markAsDone( ERR_BAD_PARAM, "..\\.." );
 			return 1;
 		}
 
 		if( !fileExists( "..\\..\\..\\inst32.exe" ) ) {
 			AddLog("ERROR: Cannot find launcher...execute stage aborted");
-			markAsDone( ERR_NO_LAUNCHER );
+			markAsDone( ERR_NO_LAUNCHER, "..\\.." );
 			return 1;
 		}
 
@@ -624,7 +636,7 @@ int CPackage::execute() {
 
 		if( ! CreateProcess( NULL, commandLine.GetBuffer(0), NULL, NULL, TRUE, 0, NULL, NULL, &si,&pi )) {
 			AddLog("ERROR: Error %d occured while running %s", GetLastError(), Name);
-			markAsDone( ERR_EXECUTE );
+			markAsDone( ERR_EXECUTE, "..\\.." );
 			return 1;
 		}
 		
@@ -633,22 +645,22 @@ int CPackage::execute() {
 		}
 
 		if( needDoneAction ){
-			AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
+			AfxMessageBox( needDoneActionText, MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
 		}
 		
 		DWORD exitCode;
 		if ( ! GetExitCodeProcess( pi.hProcess , &exitCode ) ) {
 			AddLog("ERROR: Cannot get the return status");
-			markAsDone( ERR_NO_INST32_CODE );
+			markAsDone( ERR_NO_INST32_CODE, "..\\.." );
 			return 1;
 		}
 		else {
 			AddLog("Launcher returned %i code", exitCode);
 			if( exitCode != INST32_OK_CODE ){
 				CString csExitCode;
-				ltoa(exitCode, csExitCode.GetBuffer(NULL), 10);
-				csExitCode.Format("%s_%s", ERR_EXECUTE, csExitCode.GetBuffer(NULL));
-				markAsDone( csExitCode );
+				ltoa(exitCode, csExitCode.GetBuffer(0), 10);
+				csExitCode.Format("%s_%s", ERR_EXECUTE, csExitCode);
+				markAsDone( csExitCode, "..\\.." );
 				return 1;
 			}
 		}
@@ -657,24 +669,25 @@ int CPackage::execute() {
 	else if( Act == "EXECUTE" ) {
 		if( !Command.GetLength() ) {
 			AddLog("ERROR: No Command for an EXECUTE action");
-			markAsDone( ERR_BAD_PARAM );
+			markAsDone( ERR_BAD_PARAM, "..\\.." );
 			return 1;
 		}
 		AddLog("EXECUTE: Executing command: %s",Command);
 		if ( Frags )
 			if( unzip( "build.zip", "." ) ) {
-				markAsDone( ERR_UNZIP );
+				markAsDone( ERR_UNZIP, "..\\.." );
 				return 1;
 			}
 		//system("..\\..\\run.bat "+Command);
-		system( Command );
+		system( Command);
+		//ShellExecute( NULL, NULL, Command );
 		
 		if( errno ) {
 			AddLog("ERROR: Error occured while running %s: %s", Name, strerror(errno));
 		}
 		
 		if( needDoneAction ){
-			AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
+			AfxMessageBox( needDoneActionText, MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
 		}
 
 	}
@@ -685,7 +698,7 @@ int CPackage::execute() {
 		
 		if( !Path.GetLength() ) {
 			AddLog("ERROR: No Path for a STORE action");
-			markAsDone( ERR_BAD_PARAM );
+			markAsDone( ERR_BAD_PARAM, "..\\.." );
 			return 1;
 		}
 
@@ -697,14 +710,14 @@ int CPackage::execute() {
 		// Windows path must begin with ..\ or x:\ , else we are copying directory in itself
 		if( Path.Left(3) != "..\\" && Path.Mid(1,2) != ":\\" ) {
 			AddLog("ERROR: Can't store in tmp folder");
-			markAsDone( ERR_BAD_PARAM );
+			markAsDone( ERR_BAD_PARAM, "..\\.." );
 			return 1;
 		}
 
 		// trying to bypass previous checkings
 		if( Path.Left(6) == "..\\tmp" ) {
 			AddLog("ERROR: Can't store in tmp folder");
-			markAsDone( ERR_BAD_PARAM );
+			markAsDone( ERR_BAD_PARAM, "..\\.." );
 			return 1;
 		}
 		
@@ -725,14 +738,14 @@ int CPackage::execute() {
 		delete token;
 		
 		if( unzip( "build.zip", Path )) {
-			markAsDone( ERR_UNZIP );
+			markAsDone( ERR_UNZIP, "..\\.." );
 			return 1;
 		}
 		if( needDoneAction ){
-			AfxMessageBox( needDoneActionText.GetBuffer( NULL ) , MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
+			AfxMessageBox( needDoneActionText, MB_OK|MB_ICONINFORMATION|MB_SYSTEMMODAL, 0);
 		}
 	}
-	markAsDone( CODE_SUCCESS );
+	markAsDone( CODE_SUCCESS, "..\\.." );
 	return 1;
 }
 
@@ -751,9 +764,9 @@ void CDownloadApp::finish() {
 // Use to create the done flag that contains the event message
 int CPackage::markAsDone( CString message, CString Path ){
 
-	CFile done;
+	CStdioFile done;
 	if( done.Open( Path + "\\" + Id + "\\done", CFile::modeCreate|CFile::modeWrite )) {
-		done.Write( message.GetBuffer(NULL), sizeof(message.GetBuffer(NULL)) );
+		done.WriteString( message);
 		done.Close();
 		return 1;
 	}
@@ -763,18 +776,20 @@ int CPackage::markAsDone( CString message, CString Path ){
 	}
 }
 
-void CPackage::done() {
+void CPackage::done( LPCTSTR lpstrFolder) {
 
 	
-	CStdioFile history, done;
+	CStdioFile done;
 	CString code;
 
-	if(done.Open("done", CFile::modeRead)){
-		if( !done.Read( code.GetBuffer(NULL), done.GetLength() ) ){
+	code.Format( _T( "%s\\done"), lpstrFolder);
+	if(done.Open( code, CFile::modeRead)){
+		if( !done.ReadString( code) ){
 			AddLog("ERROR: Cannot read done file\n");
 			CNetUtils::downloadMessage( "UNKNOWN", Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);
 			cleanPackage( Id );
 		}
+		done.Close();
 	}
 	else{
 		AddLog("ERROR: Cannot open done file\n");
@@ -782,13 +797,8 @@ void CPackage::done() {
 	}
 
 	if(code.Compare(CODE_SUCCESS)==0){
-		if (history.Open("history", CFile::modeWrite)){
-			history.SeekToEnd();
-			history.WriteString( Id + "\n" );
-			history.Close();
-		}
-		else{
-			AddLog("ERROR: Cannot open history file\n");
+		if (!CFilePackageHistory::AddPackage( "history", Id)){
+			AddLog("ERROR: Cannot add package to history file\n");
 		}
 	}
 	else{
@@ -833,7 +843,7 @@ int CPackage::buildPackage() {
 
 		if( ! curFrag.Open( Id + "\\"+ Id + "-" + itoa(i,pt,10), CFile::modeRead)) {
 			AddLog("ERROR: Can't open %s\\%s for reading", Id, Id + "-" + itoa(i,pt,10));
-			markAsDone( ERR_BUILD );
+			markAsDone( ERR_BUILD, "." );
 			return 1;
 		}
 		UINT len = curFrag.GetLength();

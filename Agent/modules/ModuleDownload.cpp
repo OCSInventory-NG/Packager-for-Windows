@@ -77,8 +77,8 @@ int CModuleDownload::response(CMarkup* pXml, CString* pRawResponse) {
 	}
 
 	/* Create history file if needed */
-	CFile history;
-	if (! history.Open("download\\history", CFile::modeCreate|CFile::modeRead|CFile::modeNoTruncate|CFile::shareExclusive) ) {
+	CFilePackageHistory cFileHistory;
+	if (! cFileHistory.Open("download\\history", FALSE, TRUE)) {
 		AddLog("ERROR: DOWNLOAD: Cannot create history file\n");
 		try{ CFile::Remove("download\\suspend"); } catch(CException *e) { e->Delete();}
 		return(1);
@@ -119,13 +119,12 @@ int CModuleDownload::response(CMarkup* pXml, CString* pRawResponse) {
 
 			pmRecup->Lookup("ID", TmpValue);
 			
-			char histBuf[100];
+			CString csTempHistBuf;
 			int nreadH = 0;
 			CString csHistBuf;
-			history.SeekToBegin();
-			while( nreadH = history.Read(histBuf,sizeof(histBuf))) {
-				histBuf[ nreadH + 1 ] = '\0';
-				csHistBuf += histBuf;
+			cFileHistory.SeekToBegin();
+			while( cFileHistory.ReadPackage( csTempHistBuf)) {
+				csHistBuf += (csTempHistBuf + _T( " "));
 			}
 							
 			if( csHistBuf.Find( TmpValue ) != -1 ) {
@@ -162,9 +161,25 @@ int CModuleDownload::response(CMarkup* pXml, CString* pRawResponse) {
 	}
 	while(pmType->GetCount()>0);
 
+	cFileHistory.Close();
+
 	CUtils::cleanCm(pmType);	
 	
 	trace();
+
+	// Cleaning file history for duplicates
+	switch (CFilePackageHistory::CleanDuplicates( _T( "download\\history")))
+	{
+	case 1:
+		AddLog( _T( "DOWNLOAD: Package history file successfully cleaned for duplicate IDs\n"));
+		break;
+	case 2:
+		AddLog( _T( "DOWNLOAD: Package history file cleaning not required\n"));
+		break;
+	default:
+		AddLog( _T( "ERROR: DOWNLOAD: Failed to clean Package history file for duplicate IDs\n"));
+		break;
+	}
 
 	int i = 0;
 	while(i < m_tPackages.GetSize())
@@ -246,6 +261,7 @@ int verify_callback(int ok, X509_STORE_CTX *store)
         X509_NAME_oneline(X509_get_subject_name(cert), data, 256);
         AddLog("ERROR: DOWNLOAD: SSL: subject  = %s\n", data);
         AddLog("ERROR: DOWNLOAD: SSL: err %i:%s\n", err, X509_verify_cert_error_string(err));
+		ERR_clear_error();
     }
  
     return ok;
@@ -284,9 +300,13 @@ SSL_CTX * COptDownloadPackage::setup_client_ctx(void)
     if (SSL_CTX_load_verify_locations(ctx, m_csCertFile.GetBuffer(0), m_csCertPath.GetBuffer(0)) != 1){
 		AddLog("ERROR: DOWNLOAD: loading CA file and/or directory\n");
 		AddLog("ERROR:%s\n", ERR_error_string(ERR_get_error() ,NULL));
+		ERR_clear_error();
 	}
     if (SSL_CTX_set_default_verify_paths(ctx) != 1)
-        AddLog("ERROR: DOWNLOAD: loading default CA file and/or directory\n");
+	{
+		AddLog("ERROR: DOWNLOAD: loading default CA file and/or directory\n");
+		ERR_clear_error();
+	}
     
     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER, verify_callback);
     SSL_CTX_set_verify_depth(ctx, VERIFY_DEPTH);
@@ -301,6 +321,7 @@ int COptDownloadPackage::sendGetRequest(SSL *ssl)
 	int err = SSL_write(ssl, getBuf.GetBuffer(0), getBuf.GetLength());
     if (err <= 0){
 		AddLog("ERROR: DOWNLOAD: Cannot get info file. Error code: %i\n", err);
+		ERR_clear_error();
 		return 0;
 	}
 
@@ -347,6 +368,7 @@ int COptDownloadPackage::readResponse(SSL *ssl) {
 			}
 			else {
 				AddLog("ERROR: DOWNLOAD: Info file SSL error %i\n", error );
+				ERR_clear_error();
 				break;
 			}			
 		}
@@ -416,6 +438,7 @@ int COptDownloadPackage::getInfoFile()
 	
 	if( init_OpenSSL(  ) ) {
 		AddLog("ERROR: DOWNLOAD: Can't init openssl\n");
+		ERR_clear_error();
 		return 1;
 	}
 	seed_prng(  );
@@ -456,11 +479,13 @@ int COptDownloadPackage::getInfoFile()
     if (!conn){
         AddLog("ERROR: DOWNLOAD: creating connection BIO\n");
 		AddLog("ERROR:%s\n", ERR_error_string(ERR_get_error() ,NULL));
+		ERR_clear_error();
 	}
  
     if (BIO_do_connect(conn) <= 0){
         AddLog("ERROR: DOWNLOAD: connecting to remote machine\n");
 		AddLog("ERROR:%s\n", ERR_error_string(ERR_get_error() ,NULL));
+		ERR_clear_error();
 	}
  
     ssl = SSL_new(ctx);
@@ -468,6 +493,7 @@ int COptDownloadPackage::getInfoFile()
 
     if (SSL_connect(ssl) <= 0) {
 		AddLog("ERROR:%s\n", ERR_error_string(ERR_get_error() ,NULL));
+		ERR_clear_error();
 	}
 	else{
 		AddLog("DOWNLOAD: SSL Connection opened...OK (pack %s)\n", m_csId);
@@ -489,16 +515,15 @@ int COptDownloadPackage::getInfoFile()
 int CModuleDownload::inventory(CMarkup *pXml, CDeviceProperties *pPc)
 {
 	//Add ocs packages to a dedicated section
-	CStdioFile	history;
-	CSoftware	cFile;
+	CFilePackageHistory	cFileHistory;
+//	CSoftware	cFile;
 
-	UINT		nMax			= 255;
 	short		errCnt			= 0;
-	LPTSTR		lpsz			= (LPTSTR)malloc(nMax); 
+	CString		csTempHist; 
 	BOOL		historyOpened	= FALSE;
 
 	while( errCnt<3 ){
-		if(history.Open("download\\history", CFile::modeRead|CFile::modeNoTruncate)){
+		if(cFileHistory.Open("download\\history")){
 			historyOpened = TRUE;
 			break;
 		}
@@ -513,17 +538,14 @@ int CModuleDownload::inventory(CMarkup *pXml, CDeviceProperties *pPc)
 	pXml->IntoElem();
 
 	if( historyOpened ){
-		while( history.ReadString( lpsz, nMax ) ){
-			// Chomp the string
-			if( !strncmp( lpsz+(strlen(lpsz)-1), "\n", 1 ) )
-				lpsz[strlen(lpsz)-1]='\0';
-			
-			AddLog("DOWNLOAD: Adding package %s to report\n", lpsz);
+		while( cFileHistory.ReadPackage( csTempHist)){
+			AddLog("DOWNLOAD: Adding package %s to report\n", csTempHist);
 			pXml->AddElem("PACKAGE");
-			pXml->AddAttrib( "ID", lpsz );
+			pXml->AddAttrib( "ID", csTempHist );
 		}
 		pXml->OutOfElem();
 		pXml->OutOfElem();
+		cFileHistory.Close();
 	}
 	else{
 		pXml->OutOfElem();
@@ -531,6 +553,5 @@ int CModuleDownload::inventory(CMarkup *pXml, CDeviceProperties *pPc)
 		AddLog("DOWNLOAD: ERROR: Cannot open history file: %i\n", GetLastError());
 		return 1;
 	}
-	free(lpsz);
 	return 0;
 }

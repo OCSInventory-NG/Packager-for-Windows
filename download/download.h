@@ -1,3 +1,14 @@
+
+//====================================================================================
+// Open Computer and Software Inventory
+// Copyleft Pierre LEMMER / Pascal DANEK 2006
+// Web: http://www.ocsinventory-ng.org
+
+// This code is open source and may be copied and modified as long as the source
+// code is always made freely available.
+// Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+//====================================================================================
+
 // download.h : main header file for the DOWNLOAD application
 //
 
@@ -106,10 +117,10 @@ public:
 	CPackage(CDownloadApp * p) { pA = p;};
 	BOOL fromXml( CMarkup* pX ); 
 	int execute();	
-	void done();
+	void done( LPCTSTR lpstrFolder = _T( "."));
 	int buildPackage();
 	int checkSignature() ;
-	int markAsDone( CString, CString Path = ".." );
+	int markAsDone( CString, CString Path = "." );
 
 };
 

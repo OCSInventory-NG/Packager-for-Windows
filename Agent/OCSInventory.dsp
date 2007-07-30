@@ -99,6 +99,10 @@ SOURCE=..\include\_common\commonDownload.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\_common\FilePackageHistory.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\zlib\flate.cpp
 # End Source File
 # Begin Source File
@@ -159,6 +163,10 @@ SOURCE="..\..\..\Program Files\Microsoft Visual Studio\VC98\MFC\Include\AFXWIN1.
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\_common\FilePackageHistory.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\modules\ModuleApi.h
 # End Source File
 # Begin Source File
@@ -196,10 +204,6 @@ SOURCE=.\StoreInteract.h
 # Begin Source File
 
 SOURCE=..\SysInfo\SysInfo.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\utils.h
 # End Source File
 # Begin Source File
 
