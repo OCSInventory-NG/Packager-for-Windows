@@ -11,6 +11,11 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+; 1026
+; Multiple file addon
+; vista programfiles path bug patched
+; inlstall log files addon
+
 !include "MUI.nsh"
 !include "WordFunc.nsh"
 !include "FileFunc.nsh"
@@ -18,7 +23,7 @@
 !insertmacro WordFind
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "1.0.2.5"
+!define Compile_version "1.0.2.6"
 !define help_file "OCS_Inventory_NG-Packager_Usage_Guide_1.02_EN.pdf"
 
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
@@ -153,7 +158,7 @@ no_help2:
    strcmp $R7 "" chemin_defaut ; si pas option alors fin
    GOTO chemin_calcule
 chemin_defaut:
-   strcpy $R7 "$PROGRAMFILES\OCS Inventory Agent"
+   strcpy $R7 "$$PROGRAMFILES\OCS Inventory Agent"
 chemin_calcule:
    strcpy  $Dest_Folder "$R7"
    ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'createdir' '$Dest_Folder' '/S=1' $1
@@ -273,7 +278,7 @@ Function ValidatecustomOCSFloc
   ; destination choice and control
    ReadINIStr $R0 "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State"
    StrCmp $R0 "" 0 ValidatecustomOCSFloc_done
-   MessageBox MB_ICONEXCLAMATION "Select a target directory."
+   MessageBox MB_ICONEXCLAMATION "Please, select a target directory."
    abort
 ValidatecustomOCSFloc_done:
    ;****************************************************

@@ -76,7 +76,7 @@ function setv
   StrCpy $OcsLogon_v "${appname}_:_Remcom options: \\$9 /user:$r4 /pwd:********$\r$\n"
   Call Write_Log
   nsexec::exec 'cmd /c RemCom.exe \\$9 /user:$r4 /pwd:$r1 "$PLUGINSDIR\instocs.exe" > remcom.log 2>&1'
-  sleep 1000
+  sleep 4000
   StrCpy $OcsLogon_v "${appname}_:_Waiting for RemCom.exe log:"
   Call Write_Log
 wait_for_log:
@@ -188,7 +188,7 @@ Function get_computer_name
 win9x:
   ReadRegStr $0 HKLM "System\CurrentControlSet\Control\ComputerName\ComputerName" "ComputerName"
   StrCpy $1 $0 4 3
-  MessageBox MB_OK "Your ComputerName : $0"
+;  MessageBox MB_OK "Your ComputerName : $0"
 done:
  push $0 
 FunctionEnd
@@ -201,9 +201,8 @@ functionend
 
 Function .onInit
   InitPluginsDir
-
-  ; Init debug log
-  Delete ${SETUP_LOG_FILE}
+  ; Init debug log$
+  Delete "${SETUP_LOG_FILE}"
   StrCpy $OcsLogon_v "${appname}_:_********************************************************$\r$\n"
   Call Write_Log
   ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
