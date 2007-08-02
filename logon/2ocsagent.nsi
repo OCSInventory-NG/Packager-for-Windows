@@ -12,7 +12,7 @@
 ;                             #  CHANGELOG  #
 ;                             ###############
 ;
-;4034
+;4035
 ; /folder: bug patched
 ; Win9x Deploy service bug patched
 ; /url: bug patched (en cours)
@@ -28,7 +28,7 @@
 ;Normal roadmapped improvments
 !include "MUI.nsh"
 !insertmacro MUI_LANGUAGE "english"
-!define Compile_version "4.0.3.4"
+!define Compile_version "4.0.3.5"
 BRANDINGTEXT "OCS Inventory NG ${Compile_version}"
 Icon "Aocs2.ico"
 ShowInstDetails hide

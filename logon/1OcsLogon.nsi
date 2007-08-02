@@ -11,7 +11,7 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
-;4034
+;4035
 ; /folder: bug patched
 ; Win9x Deploy service bug patched
 ; /url: bug patched (en cours)
@@ -40,7 +40,7 @@
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng"
 !define TimeOut "600000"
-!define Compile_version "4.0.3.4"
+!define Compile_version "4.0.3.5"
 !define hard_option ; "/debug /editlog " ; /install /url:http://0.0.0.0/deploy/"
  var url
  var version
@@ -76,15 +76,22 @@ page instfiles
 ;--------------------------------
 
 Function Write_Log
- ClearErrors
-;messagebox mb_ok $OcsLogon_v
- strcmp $OcsLogon_v "" done 0
- FileOpen $0 "$R7\OcsLogon.log" a
- FileSeek $0 END END
- IfErrors done
- FileWrite $0 "$OcsLogon_v"
- strcpy $OcsLogon_v ""
- FileClose $0
+  ClearErrors
+  Push "$CMDLINE"
+  Push " /debug"
+  Call StrStr
+  Pop $R9
+  Strlen $0 $R9
+  ;messagebox mb_ok $0
+  intcmp $0 6 +2 0 +2
+  goto done
+  strcmp $OcsLogon_v "" done 0
+  FileOpen $0 "$R7\OcsLogon.log" a
+  FileSeek $0 END END
+  IfErrors done
+  FileWrite $0 "$OcsLogon_v"
+  strcpy $OcsLogon_v ""
+  FileClose $0
 done:
 FunctionEnd
 
@@ -251,15 +258,6 @@ d_url:
    ;********************************************************************************
    ;          write install folder, server and version in log if /debug           ;*
    ; *******************************************************************************
-  Push "$CMDLINE"
-  Push " /debug"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  ;messagebox mb_ok $0
-  intcmp $0 6 verbose_server 0 verbose_server
-  goto verbose_server_end
-verbose_server:
   call Write_Log
   strcpy $OcsLogon_v "Deploy folder : $R7$\r$\n"
   call Write_Log
@@ -267,10 +265,6 @@ verbose_server:
   call Write_Log
   strcpy $OcsLogon_v "Internal Ocslogon version: ${Compile_version}$\r$\n"
   call Write_Log
-verbose_server_end:
-
-
-
   ;**********************
   ;  UNINSTALL option    ;*
   ;**********************
@@ -335,31 +329,15 @@ proxy_end:
   Push "/"
   Call StrStr
   Pop $1
-  Push "$CMDLINE"
-  Push " /debug"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  ;messagebox mb_ok $0
-  intcmp $0 6 0 no_verbose_start 0
   call Write_Log
   strcpy $OcsLogon_v "Launching : $R7\OCSInventory.exe $1 /server:$R8$\r$\n"
   call Write_Log
-no_verbose_start:
   Exec "$R7\OCSInventory.exe $1 /server:$R8"
 local_ok:
-  Push "$CMDLINE"
-  Push " /debug"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  ;messagebox mb_ok $0
-  intcmp $0 6 0 oninit_end 0
   call Write_Log
   strcpy $OcsLogon_v "Cmdline option is :$cmdline$\r$\n$OcsLogon_v $\r$\n"
   call Write_Log
-oninit_end:
-ClearErrors
+  ClearErrors
 FunctionEnd
 
 function test_installed_service
@@ -466,21 +444,12 @@ Udownload_end:
 FunctionEnd
 
 Function install
-;messagebox mb_ok "Install!"
-  Push "$CMDLINE"
-  Push " /debug"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  intcmp $0 6 0 no_verbose_start_install 0
+; messagebox mb_ok "Install!"
   call Write_Log
   strcpy $OcsLogon_v "Ocs Inventory NG ($version) was not previously installed.$\r$\nStart deploying OCS$\r$\n"
   call Write_Log
-no_verbose_start_install:
   SetOutPath "$R7"
-
 ;:::::::::::/install option
-
   Push "$CMDLINE"
   Push " /install"
   Call StrStr
@@ -522,18 +491,9 @@ download_end:
   ;*****************************************************************
   ;       install success if verbose option (/debug) ;*
   ;*****************************************************************
-  Push "$CMDLINE"
-  Push " /debug"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  intcmp $0 6 verbose_install 0 verbose_install
-  goto no_verbose_install
-verbose_install:
   call Write_Log
   strcpy $OcsLogon_v "End Deploying$\r$\n"
   call Write_Log
-no_verbose_install:
   ClearErrors
   ; SetShellVarContext all
   ; createdirectory "$SMPROGRAMS\ocs-ng"
@@ -729,21 +689,13 @@ push $r7
   IntOp $R5 $R1 & 0x0000FFFF
   StrCpy $0 "$R2$R3$R4$R5"
   strcpy $OcsLogon_v  "$OcsLogon_vTesting ocsagent.exe version:$0$\r$\n"
-
   Push "$CMDLINE"
   Push "/"
   Call StrStr
   Pop $1
-  Push "$CMDLINE"
-  Push " /debug"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  ;messagebox mb_ok $0
-  intcmp $0 6 0 no_verbose_deploy 0
   call Write_Log
   strcpy $OcsLogon_v "Launching : $R7\ocsagent.exe $1$\r$\n"
-   call Write_Log
+  call Write_Log
   ExecWAIT "$R7\ocsagent.exe $1"
   ; strcpy $OcsLogon_v "$OcsLogon_vResult: $2$\r$\n"
   ;call Write_Log
@@ -776,12 +728,9 @@ OcsSetupNG_Failed:
 call write_log
 ; end test install pending
 
-  nolaunchinstaller:
-;::::::::::::::::::::::::::::::::::::*
-
+nolaunchinstaller:
   goto no_install
-no_verbose_deploy:
-    Execwait "$R7\ocsagent.exe $1"
+  Execwait "$R7\ocsagent.exe $1"
 no_install:
   ClearErrors
 pop $R7
