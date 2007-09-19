@@ -8,3 +8,5 @@
 #include <afxpriv.h>
 #include <winsvc.h>
 #include <lmcons.h>
+#include <afxdisp.h>
+#include <afxtempl.h>

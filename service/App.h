@@ -13,7 +13,9 @@
 #define		DEFAULT_PROLOG_FREQ		10
 #define		WRITE_TTOWAIT_EACH		60
 #define		RUN_OCS					"ocsinventory.exe /debug"
-#define		OCS_SERVICE				"OCS_SERVICE"
+#ifndef OCS_SERVICE
+#define	OCS_SERVICE				_T( "OCS_SERVICE")
+#endif
 #define		OCS_INSTALL				"MISCELLANEOUS"
 #define		RAND_FILE				"rand"
 #define		PROLOG_FREQ_UNIT		3600 //sec
@@ -26,6 +28,16 @@
 
 class CMyService : public CNTService
 {
+public:	
+	BOOL Install(CString& sErrorMsg, DWORD& dwError);
+	CMyService();
+	~CMyService();
+	virtual void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
+	virtual void OnStop();
+
+protected:
+	volatile BOOL m_bWantStop;
+
 private:
 	BOOL Decrypt( CString &csCrypted, CString &csClear);
 	BOOL Encrypt( CString &csClear, CString &csCrypted);
@@ -50,7 +62,7 @@ private:
 	CString		m_csProxyUser;
 	CString		m_csProxyPwd;
 
-	BOOL runAgent();	
+	BOOL runAgent( BOOL bForce = FALSE);	
 	int generateRandNumber(int max);
 	void readIniFile( CString section=OCS_SERVICE, int* storeVar=NULL, CString toRead="", CString def="" );
 	void readIniFile( CString section, CString & storeVar, CString toRead, CString defaultVal="" );
@@ -62,16 +74,7 @@ private:
 	void closeIni();
 	void preInit();
 	CString getParamValue(LPCTSTR lpstrCommandLine, CString param);
-
-public:	
-	BOOL Install(CString& sErrorMsg, DWORD& dwError);
-	CMyService();
-	~CMyService();
-	virtual void WINAPI ServiceMain(DWORD dwArgc, LPTSTR* lpszArgv);
-	virtual void OnStop();
-
-protected:
-	volatile BOOL m_bWantStop;
+	BOOL CheckInventoryState();
 };
 
 class CApp : public CWinApp
@@ -82,7 +85,7 @@ public:
 protected:
 	//{{AFX_VIRTUAL(CApp)
 	virtual BOOL InitInstance();
-  virtual int ExitInstance();
+    virtual int ExitInstance();
 	//}}AFX_VIRTUAL
 
 	//{{AFX_MSG(CApp)

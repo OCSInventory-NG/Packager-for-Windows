@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Application" 0x0101
 
-CFG=OcsService - Win32 Debug Missing Platform SDK
+CFG=OcsService - Win32 Release
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,7 +13,7 @@ CFG=OcsService - Win32 Debug Missing Platform SDK
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "OcsService.mak" CFG="OcsService - Win32 Debug Missing Platform SDK"
+!MESSAGE NMAKE /f "OcsService.mak" CFG="OcsService - Win32 Release"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
@@ -21,10 +21,6 @@ CFG=OcsService - Win32 Debug Missing Platform SDK
 !MESSAGE "OcsService - Win32 Debug" (based on "Win32 (x86) Application")
 !MESSAGE "OcsService - Win32 Unicode Release" (based on "Win32 (x86) Application")
 !MESSAGE "OcsService - Win32 Unicode Debug" (based on "Win32 (x86) Application")
-!MESSAGE "OcsService - Win32 Unicode Debug Missing Platform SDK" (based on "Win32 (x86) Application")
-!MESSAGE "OcsService - Win32 Debug Missing Platform SDK" (based on "Win32 (x86) Application")
-!MESSAGE "OcsService - Win32 Release Missing Platform SDK" (based on "Win32 (x86) Application")
-!MESSAGE "OcsService - Win32 Unicode Release Missing Platform SDK" (based on "Win32 (x86) Application")
 !MESSAGE 
 
 # Begin Project
@@ -49,7 +45,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /MD /W3 /WX /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR /YX /FD /c
+# ADD CPP /nologo /MD /W3 /WX /GX /O2 /I "..\SysInfo" /I "..\OcsWmi" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x1809 /d "NDEBUG"
@@ -75,7 +71,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR /YX /FD /c
+# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /I "..\SysInfo" /I "..\OcsWmi" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x1809 /d "_DEBUG"
@@ -101,7 +97,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MD /W4 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W4 /GX /O2 /D "NDEBUG" /D "_UNICODE" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /D "UNICODE" /YX /FD /c
+# ADD CPP /nologo /MD /W4 /GX /O2 /I "..\SysInfo" /I "..\OcsWmi" /D "NDEBUG" /D "_UNICODE" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /D "UNICODE" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x1809 /d "NDEBUG" /d "_AFXDLL"
@@ -127,7 +123,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W4 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /D "_DEBUG" /D "_UNICODE" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /D "UNICODE" /YX /FD /c
+# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /I "..\SysInfo" /I "..\OcsWmi" /D "_DEBUG" /D "_UNICODE" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /D "UNICODE" /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x1809 /d "_DEBUG" /d "_AFXDLL"
@@ -138,114 +134,6 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386
 # ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /out:".\DebugU/OcsService.exe"
-
-!ELSEIF  "$(CFG)" == "OcsService - Win32 Unicode Debug Missing Platform SDK"
-
-# PROP BASE Use_MFC 2
-# PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir "TestSrv_"
-# PROP BASE Intermediate_Dir "TestSrv_"
-# PROP BASE Ignore_Export_Lib 0
-# PROP BASE Target_Dir ""
-# PROP Use_MFC 2
-# PROP Use_Debug_Libraries 1
-# PROP Output_Dir "DebugUPSDK"
-# PROP Intermediate_Dir "DebugUPSDK"
-# PROP Ignore_Export_Lib 0
-# PROP Target_Dir ""
-# ADD BASE CPP /nologo /MDd /W4 /Gm /GX /Zi /Od /D "_DEBUG" /D "_UNICODE" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /D "UNICODE" /YX /FD /c
-# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /D "_DEBUG" /D "_UNICODE" /D "_AFXDLL" /D "_MBCS" /D "UNICODE" /D "WIN32" /D "_WINDOWS" /D "NTSERV_DO_NEW_WINSVC_DEFINES" /YX /FD /c
-# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
-# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
-# ADD BASE RSC /l 0x1809 /d "_DEBUG" /d "_AFXDLL"
-# ADD RSC /l 0x1809 /d "_DEBUG" /d "_AFXDLL"
-BSC32=bscmake.exe
-# ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
-LINK32=link.exe
-# ADD BASE LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /out:".\DebugU/OcsService.exe"
-# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /debug /machine:I386 /out:".\DebugU/OcsService.exe"
-
-!ELSEIF  "$(CFG)" == "OcsService - Win32 Debug Missing Platform SDK"
-
-# PROP BASE Use_MFC 2
-# PROP BASE Use_Debug_Libraries 1
-# PROP BASE Output_Dir "TestSrv0"
-# PROP BASE Intermediate_Dir "TestSrv0"
-# PROP BASE Ignore_Export_Lib 0
-# PROP BASE Target_Dir ""
-# PROP Use_MFC 2
-# PROP Use_Debug_Libraries 1
-# PROP Output_Dir "DebugPSDK"
-# PROP Intermediate_Dir "DebugPSDK"
-# PROP Ignore_Export_Lib 0
-# PROP Target_Dir ""
-# ADD BASE CPP /nologo /MDd /W4 /Gm /GX /Zi /Od /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MDd /W4 /Gm /GX /ZI /Od /D "_DEBUG" /D "_AFXDLL" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "NTSERV_DO_NEW_WINSVC_DEFINES" /YX /FD /c
-# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
-# ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
-# ADD BASE RSC /l 0x1809 /d "_DEBUG" /d "_AFXDLL"
-# ADD RSC /l 0x1809 /d "_DEBUG" /d "_AFXDLL"
-BSC32=bscmake.exe
-# ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
-LINK32=link.exe
-# ADD BASE LINK32 /nologo /subsystem:windows /debug /machine:I386
-# ADD LINK32 /nologo /subsystem:windows /debug /machine:I386
-
-!ELSEIF  "$(CFG)" == "OcsService - Win32 Release Missing Platform SDK"
-
-# PROP BASE Use_MFC 2
-# PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "TestSrv1"
-# PROP BASE Intermediate_Dir "TestSrv1"
-# PROP BASE Ignore_Export_Lib 0
-# PROP BASE Target_Dir ""
-# PROP Use_MFC 2
-# PROP Use_Debug_Libraries 0
-# PROP Output_Dir "ReleasePSDK"
-# PROP Intermediate_Dir "ReleasePSDK"
-# PROP Ignore_Export_Lib 0
-# PROP Target_Dir ""
-# ADD BASE CPP /nologo /MD /W4 /GX /O2 /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MD /W4 /GX /O2 /D "NDEBUG" /D "_AFXDLL" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "NTSERV_DO_NEW_WINSVC_DEFINES" /YX /FD /c
-# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
-# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
-# ADD BASE RSC /l 0x1809 /d "NDEBUG" /d "_AFXDLL"
-# ADD RSC /l 0x1809 /d "NDEBUG" /d "_AFXDLL"
-BSC32=bscmake.exe
-# ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
-LINK32=link.exe
-# ADD BASE LINK32 /nologo /subsystem:windows /machine:I386
-# ADD LINK32 /nologo /subsystem:windows /machine:I386
-
-!ELSEIF  "$(CFG)" == "OcsService - Win32 Unicode Release Missing Platform SDK"
-
-# PROP BASE Use_MFC 2
-# PROP BASE Use_Debug_Libraries 0
-# PROP BASE Output_Dir "TestSrv2"
-# PROP BASE Intermediate_Dir "TestSrv2"
-# PROP BASE Ignore_Export_Lib 0
-# PROP BASE Target_Dir ""
-# PROP Use_MFC 2
-# PROP Use_Debug_Libraries 0
-# PROP Output_Dir "ReleaseUPSDK"
-# PROP Intermediate_Dir "ReleaseUPSDK"
-# PROP Ignore_Export_Lib 0
-# PROP Target_Dir ""
-# ADD BASE CPP /nologo /MD /W4 /GX /O2 /D "NDEBUG" /D "_UNICODE" /D "WIN32" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /D "UNICODE" /YX /FD /c
-# ADD CPP /nologo /MD /W4 /GX /O2 /D "NDEBUG" /D "_UNICODE" /D "_AFXDLL" /D "_MBCS" /D "UNICODE" /D "WIN32" /D "_WINDOWS" /D "NTSERV_DO_NEW_WINSVC_DEFINES" /YX /FD /c
-# ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
-# ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
-# ADD BASE RSC /l 0x1809 /d "NDEBUG" /d "_AFXDLL"
-# ADD RSC /l 0x1809 /d "NDEBUG" /d "_AFXDLL"
-BSC32=bscmake.exe
-# ADD BASE BSC32 /nologo
-# ADD BSC32 /nologo
-LINK32=link.exe
-# ADD BASE LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386 /out:".\ReleaseU/OcsService.exe"
-# ADD LINK32 /nologo /entry:"wWinMainCRTStartup" /subsystem:windows /machine:I386 /out:".\ReleaseU/OcsService.exe"
 
 !ENDIF 
 
@@ -255,10 +143,6 @@ LINK32=link.exe
 # Name "OcsService - Win32 Debug"
 # Name "OcsService - Win32 Unicode Release"
 # Name "OcsService - Win32 Unicode Debug"
-# Name "OcsService - Win32 Unicode Debug Missing Platform SDK"
-# Name "OcsService - Win32 Debug Missing Platform SDK"
-# Name "OcsService - Win32 Release Missing Platform SDK"
-# Name "OcsService - Win32 Unicode Release Missing Platform SDK"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90;mc"
@@ -269,6 +153,10 @@ SOURCE=.\App.cpp
 # Begin Source File
 
 SOURCE=..\include\_common\base64.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\xml\Markup.cpp
 # End Source File
 # Begin Source File
 
@@ -297,6 +185,10 @@ SOURCE=.\ntservScmService.cpp
 # Begin Source File
 
 SOURCE=.\ntservServiceControlManager.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\Agent\OCSInventoryState.cpp
 # End Source File
 # Begin Source File
 

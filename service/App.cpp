@@ -7,6 +7,8 @@
 #include <openssl/aes.h>
 #include <openssl/sha.h>
 #include "../include/_common/base64.h"
+#include "sysinfo.h"
+#include "../Agent/OCSInventoryState.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -156,8 +158,14 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 
 	while (!m_bWantStop)
 	{
-		if( m_iTToWait % (m_iWriteIniLatency?m_iWriteIniLatency:WRITE_TTOWAIT_EACH) == 0 ) 
+		if( m_iTToWait % (m_iWriteIniLatency?m_iWriteIniLatency:WRITE_TTOWAIT_EACH) == 0 )
+		{
+			// Write time to wait before next run
 			writeIniFile(& m_iTToWait, TTO_WAIT );
+			// Check inventory state for changes, and launch agent if needed
+			if (m_iTToWait > m_iWriteIniLatency)
+				CheckInventoryState();
+		}
 
 		if( m_iTToWait <= 0 ) {
 			UINT vOld = m_iOldPrologFreq;
@@ -199,11 +207,11 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 	//Pretend that closing down takes some time
 	ReportStatus( SERVICE_STOP_PENDING, 1, 1100);
 	Sleep(1000);
+	ReportStatus( SERVICE_STOPPED);
 
 	//Report to the event log that the service has stopped successfully
 	m_EventLogSource.Report( EVENTLOG_INFORMATION_TYPE, CNTS_MSG_SERVICE_STOPPED, m_sDisplayName);
 	closeHandles();
-	ReportStatus( SERVICE_STOPPED);
 }
 
 void CMyService::OnStop()
@@ -212,7 +220,7 @@ void CMyService::OnStop()
 	InterlockedExchange((LONG volatile*) &m_bWantStop, TRUE);
 }
 
-BOOL CMyService::runAgent() {
+BOOL CMyService::runAgent( BOOL bForce) {
 	//RUN inventory !
 	CString cmd,
 			csAuth;
@@ -231,7 +239,12 @@ BOOL CMyService::runAgent() {
 		csAuth.Format( _T( " /auth_user:%s /auth_pwd:%s"), csUser, csPwd);
 	}
 	//cmd.Format("%s%s /server:%s /port:%s%s", m_sCurDir, RUN_OCS, m_csServer, m_csPort, (m_iProxy?"":" /np") );
-	cmd.Format( _T( "%s%s %s %s"), m_sCurDir, RUN_OCS, m_csMisc, csAuth );
+	if (bForce)
+		// Force agent to send inventory, even if server do not request it
+		// Used for inventory state change detcted
+		cmd.Format( _T( "%s%s /FORCE %s %s"), m_sCurDir, RUN_OCS, m_csMisc, csAuth );
+	else
+		cmd.Format( _T( "%s%s %s %s"), m_sCurDir, RUN_OCS, m_csMisc, csAuth );
 	//AfxMessageBox("INVENTAIRE!");
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
@@ -507,4 +520,57 @@ BOOL CMyService::Decrypt(CString &csCrypted, CString &csClear)
 	free( szCrypt);
 	csClear = szClear;
 	return TRUE;
+}
+
+BOOL CMyService::CheckInventoryState()
+{
+	CStdioFile cFile;
+
+	try
+	{
+		CNetworkAdapterList myList;
+		SysInfo	mySysInfo;
+		CString		csBuffer,
+					csTmp;
+		COCSInventoryState myState;
+
+		csBuffer.Empty();
+		csTmp.Format( _T( "%s%s"), m_sCurDir, OCS_LAST_STATE_FILE);
+		if (cFile.Open( csTmp,CFile::modeRead, NULL))
+		{
+			while (cFile.ReadString( csTmp))
+				csBuffer+=csTmp;
+			cFile.Close();
+			// Fill Device hardware properties from string
+			if (!myState.ParseFromXML( csBuffer))
+			{
+				// XML parsing error
+				cFile.Abort();
+				return FALSE;
+			}
+		}
+		else
+		{
+			// File open error
+			return FALSE;
+		}
+		// Get network adapter infos
+		mySysInfo.getNetworkAdapters( &myList);
+		// Checking if networks changes
+		csBuffer = myList.GetHash();
+		if (csBuffer.CompareNoCase( myState.GetNetworks()) != 0)
+		{
+			// Changed, force inventory
+			m_EventLogSource.Report( EVENTLOG_INFORMATION_TYPE, MSG_INFO_OCS, _T( "Inventory state change detected, OCS Inventory NG Agent launch forced"));
+			return runAgent( TRUE);
+		}
+
+	}
+	catch( CException *pEx)
+	{
+		// Exception=> free exception, but continue
+		pEx->Delete();
+		cFile.Abort();
+	}
+	return FALSE;
 }
