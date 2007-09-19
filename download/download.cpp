@@ -293,8 +293,8 @@ void CDownloadApp::blackList( CString fName ){
 }
 
 BOOL CDownloadApp::isAN( LPCSTR st ) {
-	int i;
-	for(i=0 ; i<sizeof(st) ; i++) {
+	UINT i;
+	for(i=0 ; i<_tcslen(st) ; i++) {
 		if( st[i] < 48 || st[i] > 57 )
 			return FALSE;
 	}
