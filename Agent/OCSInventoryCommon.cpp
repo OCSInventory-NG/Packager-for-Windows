@@ -228,9 +228,10 @@ BOOL COCSInventoryApp::InitInstance()
 		}
 		
 		CString tagVal = CUtils::getParamValue(cmdL,"tag");
-		if( tagVal.GetLength()!=0 ) {
+		if(!tagVal.IsEmpty())
+		{
 			CUtils::writeParamFile("TAG",tagVal,FALSE,1);
-			AddLog("TAG FORCE: Tag forced by /tag, value:\n", tagVal ); 
+			AddLog("TAG FORCE: Tag forced by /tag, value is <%s>\n", tagVal); 
 		}
 
 		if( CUtils::IsRequired( cmdL, "np" ) ) {

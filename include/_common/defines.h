@@ -20,7 +20,9 @@
 #define OCS_AGENT_KEY			_T( "OCS Inventory Agent")
 #define OCS_MANAGER_KEY			_T( "OCS Inventory Manager")
 #define OCS_DEVICE_ID_VALUE		_T( "DeviceID")
+#ifndef OCS_SERVICE
 #define	OCS_SERVICE				_T( "OCS_SERVICE")
+#endif
 
 #define	OCS_IDENTIFICATION_FILE	_T( "ocsinventory.conf")
 #define	OCS_ACCOUNTINFO_FILE	_T( "admininfo.conf")
