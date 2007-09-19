@@ -1681,7 +1681,6 @@ void CTestSysInfoDlg::OnSysInfo()
 	remove( "c:\\TestSysInfo_trace.log");
 	OpenLog( "c:\\TestSysInfo_trace", "-DEBUG");
 	myPC.RetrieveHardwareAndOS( &mySys, _T( ""));
-	CloseLog();
 	m_List.ResetContent();
 	m_List.AddString( "------------------------------------------------------");
 	m_List.AddString( "BIOS infos");
@@ -2204,6 +2203,43 @@ void CTestSysInfoDlg::OnSysInfo()
 	str.Format( "Registered Applications Hash: %s", myPC.m_SoftwareList.GetHash());
 	m_List.AddString( str);
 
+	m_List.AddString( "");
+	m_List.AddString( "------------------------------------------------------");
+	m_List.AddString( "Checking all registry values for key HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup");
+	m_List.AddString( "------------------------------------------------------");
+	CRegistryValue myRegVal;
+	CRegistryValueList myRegList;
+	CRegistry myReg;
+	myReg.GetRegistryMultipleValues( myPC.GetDeviceID(), "Windows Setup", HKLM_TREE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup", &myRegList);
+	pos = myRegList.GetHeadPosition();
+	while (pos)
+	{
+		myRegVal = myRegList.GetNext( pos);
+		m_List.AddString( myRegVal.GetValue());
+	}
+	m_List.AddString( "");
+
+	m_List.AddString( "");
+	m_List.AddString( "------------------------------------------------------");
+	m_List.AddString( "Checking some registry value on key HKLM\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup");
+	m_List.AddString( "------------------------------------------------------");
+	CString csValue;
+	myReg.GetRegistryValue( HKLM_TREE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup", "CDInstall", csValue);
+	str.Format( "REG_DWORD CDInstall=%s", csValue);
+	m_List.AddString( str);
+	myReg.GetRegistryValue( HKLM_TREE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup", "BootDir", csValue);
+	str.Format( "REG_SZ BootDir=%s", csValue);
+	m_List.AddString( str);
+	myReg.GetRegistryValue( HKLM_TREE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup", "DriverCachePath", csValue);
+	str.Format( "REG_EXPAND_SZ DriverCachePath=%s", csValue);
+	m_List.AddString( str);
+	myReg.GetRegistryValue( HKLM_TREE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup", "Installation Sources", csValue);
+	str.Format( "REG_MULTI_SZ Installation Sources=%s", csValue);
+	m_List.AddString( str);
+	myReg.GetRegistryValue( HKLM_TREE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup", "PrivateHash", csValue);
+	str.Format( "REG_BINARY PrivateHash=%s", csValue);
+	m_List.AddString( str);
+	CloseLog();
 }
 
 void CTestSysInfoDlg::OnDestroy() 
