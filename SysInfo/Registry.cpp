@@ -6228,14 +6228,15 @@ BOOL CRegistry::GetLoggedOnUserNT(CString &csUser)
 
 BOOL CRegistry::GetRegistryValue( UINT uKeyTree, LPCTSTR lpstrSubKey, LPCTSTR lpstrValue, CString &csResult)
 {
-	TCHAR	szValue[256];
+	BYTE	bValue[4*256];
 	HKEY	hKey = NULL;
 	LONG	lResult;
 	LPCTSTR	pSZ;
-	CString csSubKey = lpstrSubKey;
+	CString csSubKey = lpstrSubKey,
+			csTemp;
 	DWORD	dwCpt,
 			dwType = REG_NONE,
-			dwSize = 255;
+			dwSize = 4*255;
 
 	csResult = NOT_AVAILABLE;
 	
@@ -6294,7 +6295,7 @@ BOOL CRegistry::GetRegistryValue( UINT uKeyTree, LPCTSTR lpstrSubKey, LPCTSTR lp
 		return FALSE;
 	}
 	// Get value
-	lResult = RegQueryValueEx( hKey, lpstrValue, NULL, &dwType, (LPBYTE) szValue, &dwSize);
+	lResult = RegQueryValueEx( hKey, lpstrValue, NULL, &dwType, (LPBYTE) bValue, &dwSize);
 	if (lResult != ERROR_SUCCESS)
 	{
 		AddLog( _T( "Failed in call to <RegQueryValueEx> function for value %s\\%s of selected hive (size exceed 255 bytes ?)!\n"),
@@ -6307,17 +6308,19 @@ BOOL CRegistry::GetRegistryValue( UINT uKeyTree, LPCTSTR lpstrSubKey, LPCTSTR lp
 	switch (dwType)
 	{
 	case REG_DWORD:
-		csResult.Format( _T( "%lu"), *szValue);
+		csResult.Format( _T( "%lu"), *bValue);
 		break;
 	case REG_SZ:
 	case REG_EXPAND_SZ:
-		szValue[dwSize]=0;
-		csResult = szValue;
+		bValue[dwSize]=0;
+		csResult = (LPCTSTR) bValue;
 		break;
 	case REG_MULTI_SZ:
-		szValue[dwSize]=0;
+		bValue[dwSize]=0;
 		// Parse multistring registry value
-		pSZ = ParseMultiSZ( szValue);
+		pSZ = ParseMultiSZ( (LPCTSTR) bValue);
+		if (pSZ != NULL)
+			csResult.Empty();
 		while (pSZ != NULL)
 		{
 			csResult += pSZ;
@@ -6326,10 +6329,14 @@ BOOL CRegistry::GetRegistryValue( UINT uKeyTree, LPCTSTR lpstrSubKey, LPCTSTR lp
 		}
 		break;
 	case REG_BINARY:
-		szValue[dwSize]=0;
+		bValue[dwSize]=0;
+		if (dwSize > 0)
+			csResult.Empty();
 		for (dwCpt=0; dwCpt<dwSize; dwCpt++)
-			if (szValue[dwCpt]==0) szValue[dwCpt]=' ';
-		csResult = szValue;
+		{
+			csTemp.Format( _T( "%.02X "), bValue[ dwCpt]);
+			csResult += csTemp;
+		}
 		break;
 	default:
 		AddLog( _T( "Failed because Registry type %lu unhandled !\n"), dwType);
@@ -7266,17 +7273,18 @@ BOOL CRegistry::ValidateComponent9X(LPCTSTR lpstrComponentKey)
 
 BOOL CRegistry::GetRegistryMultipleValues(LPCTSTR lpstrDeviceID, LPCTSTR lpstrName, UINT uKeyTree, LPCTSTR lpstrSubKey, CRegistryValueList *pMyList)
 {
-	TCHAR	szName[256],
-			szValue[256];
+	TCHAR	szName[256];
+    BYTE	bValue[4*256];
 	HKEY	hKey = NULL;
 	LONG	lResult;
 	LPCTSTR	pSZ;
 	CString csSubKey = lpstrSubKey,
-			csResult;
+			csResult,
+			csTemp;
 	DWORD	dwIndex = 0,
 			dwType = REG_NONE,
 			dwSizeName = 255,
-			dwSizeValue = 255,
+			dwSizeValue = 4*255,
 			dwCpt;
 	CRegistryValue myRegistry;
 
@@ -7330,7 +7338,7 @@ BOOL CRegistry::GetRegistryMultipleValues(LPCTSTR lpstrDeviceID, LPCTSTR lpstrNa
 				csSubKey);
 		return FALSE;
 	}
-	while ((lResult = RegEnumValue( hKey, dwIndex, szName, &dwSizeName, NULL, &dwType, (LPBYTE) szValue, &dwSizeValue)) != ERROR_NO_MORE_ITEMS)
+	while ((lResult = RegEnumValue( hKey, dwIndex, szName, &dwSizeName, NULL, &dwType, (LPBYTE) bValue, &dwSizeValue)) != ERROR_NO_MORE_ITEMS)
 	{
 		if ((lResult != ERROR_SUCCESS) && (lResult != ERROR_NO_MORE_ITEMS))
 		{
@@ -7348,24 +7356,24 @@ BOOL CRegistry::GetRegistryMultipleValues(LPCTSTR lpstrDeviceID, LPCTSTR lpstrNa
 			switch (dwType)
 			{
 			case REG_DWORD:
-				csResult.Format( _T( "%s=%lu"), szName, *szValue);
+				csResult.Format( _T( "%s=%lu"), szName, *bValue);
 				AddLog( _T("\tValue %lu: %s\n"), dwIndex, csResult);
 				myRegistry.Set( lpstrName, csResult);
 				pMyList->AddTail( myRegistry);
 				break;
 			case REG_SZ:
 			case REG_EXPAND_SZ:
-				szValue[dwSizeValue]=0;
-				csResult.Format( _T( "%s=%s"), szName, szValue);
+				bValue[dwSizeValue]=0;
+				csResult.Format( _T( "%s=%s"), szName, (LPCTSTR) bValue);
 				AddLog( _T("\tValue %lu: %s\n"), dwIndex, csResult);
 				myRegistry.Set( lpstrName, csResult);
 				pMyList->AddTail( myRegistry);
 				break;
 			case REG_MULTI_SZ:
-				szValue[dwSizeValue]=0;
+				bValue[dwSizeValue]=0;
 				csResult.Format( _T( "%s="), szName); 
 				// Parse multistring registry value
-				pSZ = ParseMultiSZ( szValue);
+				pSZ = ParseMultiSZ( (LPCTSTR) bValue);
 				while (pSZ != NULL)
 				{
 					csResult += pSZ;
@@ -7377,10 +7385,13 @@ BOOL CRegistry::GetRegistryMultipleValues(LPCTSTR lpstrDeviceID, LPCTSTR lpstrNa
 				pMyList->AddTail( myRegistry);
 				break;
 			case REG_BINARY:
-				szValue[dwSizeValue]=0;
+				bValue[dwSizeValue]=0;
+				csResult.Format( _T( "%s="), szName);
 				for (dwCpt=0; dwCpt<dwSizeValue; dwCpt++)
-					if (szValue[dwCpt]==0) szValue[dwCpt]=' ';
-				csResult.Format( _T( "%s=%s"), szName, szValue);
+				{
+					csTemp.Format( _T( "%.02X "), bValue[ dwCpt]);
+					csResult += csTemp;
+				}
 				AddLog( _T("\tValue %lu: %s\n"), dwIndex, csResult);
 				myRegistry.Set( lpstrName, csResult);
 				pMyList->AddTail( myRegistry);
@@ -7395,7 +7406,7 @@ BOOL CRegistry::GetRegistryMultipleValues(LPCTSTR lpstrDeviceID, LPCTSTR lpstrNa
 		}
 		// Next
 		dwSizeName=255;
-		dwSizeValue=255;
+		dwSizeValue=4*255;
 		dwType=REG_NONE;
 		dwIndex++;
 	}
