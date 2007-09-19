@@ -283,18 +283,19 @@ static CByteArray* fileToByte( CString filename ) {
 /**
  *	Returns TRUE if the option "option" was asked, FALSE otherwise
  */
-static BOOL IsRequired(LPCTSTR lpstrCommandLine,CString option) {
+static BOOL IsRequired( LPCTSTR lpstrCommandLine, CString csOption)
+{
 	CString	csCommand = lpstrCommandLine;
 	CString csOpt;
 	
-	option.MakeLower();
-	csOpt.Format("/%s ",option);
+	csOption.MakeLower();
+	csOpt.Format( _T( "/%s "),csOption);
 	csCommand.MakeLower();
 	int tst = 0;
 	int iRgOpt = csCommand.Find( _T(csOpt));
 	
 	if( iRgOpt == -1 ) {
-		if(  option.Compare( csCommand.Right(option.GetLength()) ) == 0 && csCommand.GetAt( csCommand.GetLength() - option.GetLength() - 1 ) == '/' ) {
+		if(  csOption.Compare( csCommand.Right(csOption.GetLength()) ) == 0 && csCommand.GetAt( csCommand.GetLength() - csOption.GetLength() - 1 ) == '/' ) {
 			return TRUE;
 		}
 	}		
@@ -302,31 +303,62 @@ static BOOL IsRequired(LPCTSTR lpstrCommandLine,CString option) {
 }
 
 
-static INTERNET_PORT getPort(LPCTSTR lpstrCommandLine) {
-	CString par = getParamValue(lpstrCommandLine,"pnum");
-	INTERNET_PORT iPort = atoi(par.GetBuffer(0)) == 0 ? DEFAULT_PORT : atoi(par.GetBuffer(0));
+static INTERNET_PORT getPort( LPCTSTR lpstrCommandLine)
+{
+	CString csPar = getParamValue( lpstrCommandLine, "pnum");
+	INTERNET_PORT iPort;
+
+	if ((iPort = _ttoi(csPar)) == 0)
+		// No option port defined, used default port
+		iPort = DEFAULT_PORT;
 	return iPort;
 }
 
 /**
  *	Returns TRUE if the option "option" was asked, FALSE otherwise
  */
-static CString getParamValue(LPCTSTR lpstrCommandLine,CString param) {
-	
-	CString	csCommand = lpstrCommandLine;
-	CString option;
+static CString getParamValue( LPCTSTR lpstrCommandLine, CString csParam)
+{
+	CString	csCommand = lpstrCommandLine,
+			csOptionName,
+			csValue,
+			csSeparator;
+	int iRngOpt,
+		iOptionNameLength,
+		iFin;
 
-	option.Format("%s:",param);
-	
-	csCommand.MakeLower();
-	int iRngOpt = csCommand.Find( _T( option));
-	if( iRngOpt == -1 ) {
-			return "";
+	// First, find option name position in command
+	// (convert command line to lower case for this test only)
+	csOptionName.Format( _T( "%s:"), csParam);
+	csOptionName.Format( _T( "%s:"), csParam);
+	csSeparator = csCommand;
+	csSeparator.MakeLower();
+	iRngOpt = csSeparator.Find( _T( csOptionName));
+	if( iRngOpt == -1 )
+	{
+		// Option name not found
+		return _T( "");
 	}
-	
-	int iFin = csCommand.Find(" ", iRngOpt) != -1 ? csCommand.Find( " ", iRngOpt) : csCommand.GetLength();
-	CString csName = csCommand.Mid( iRngOpt + option.GetLength() , iFin - iRngOpt - option.GetLength() );
-	return csName;
+	// Next, check option separator, space or "
+	if (csCommand.GetAt( iRngOpt + csOptionName.GetLength()) == '\"')
+	{
+		// Option value is between double quotes
+		csSeparator = _T( "\"");
+		iOptionNameLength = csOptionName.GetLength() + 1;
+	}
+	else
+	{
+		// Option value is not between ", so use space as separator
+		csSeparator = _T( " ");
+		iOptionNameLength = csOptionName.GetLength();
+	}
+	// Find end of value name position
+	if ((iFin = csCommand.Find( csSeparator, iRngOpt+iOptionNameLength)) == -1)
+		// Separator not found, assume end of argument value is end on command line
+		iFin = csCommand.GetLength();
+	// Extract option value from command line
+	csValue = csCommand.Mid( iRngOpt + iOptionNameLength, iFin - iRngOpt - iOptionNameLength );
+	return csValue;
 }
 
 /**
