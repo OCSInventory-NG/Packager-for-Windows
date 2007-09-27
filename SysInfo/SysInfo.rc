@@ -28,8 +28,8 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_DEFAULT
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,3,6
- PRODUCTVERSION 4,0,3,6
+ FILEVERSION 4,0,3,7
+ PRODUCTVERSION 4,0,3,7
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x9L
@@ -45,16 +45,16 @@ BEGIN
         BLOCK "040c04b0"
         BEGIN
             VALUE "Comments", "Open Computers and Software Inventory System Informations functions\0"
-            VALUE "CompanyName", " \0"
+            VALUE "CompanyName", "http://www.ocsinventory-ng.org\0"
             VALUE "FileDescription", "Open Computers and Software Inventory System Informations functions\0"
-            VALUE "FileVersion", "4, 0, 3, 6\0"
+            VALUE "FileVersion", "4, 0, 3, 7\0"
             VALUE "InternalName", "SysInfo\0"
-            VALUE "LegalCopyright", "Open Source Software under GNU General Public License\0"
-            VALUE "LegalTrademarks", "http://ocsinventory.sourceforge.net\0"
+            VALUE "LegalCopyright", "Open Source Software under GNU General Public License V2.0\0"
+            VALUE "LegalTrademarks", "http://www.ocsinventory-ng.org\0"
             VALUE "OriginalFilename", "SysInfo.dll\0"
             VALUE "PrivateBuild", "0\0"
             VALUE "ProductName", "Open Computers and Software Inventory\0"
-            VALUE "ProductVersion", "4, 0, 3, 6\0"
+            VALUE "ProductVersion", "4, 0, 3, 7\0"
             VALUE "SpecialBuild", "\0"
         END
     END

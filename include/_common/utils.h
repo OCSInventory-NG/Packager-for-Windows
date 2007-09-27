@@ -330,7 +330,6 @@ static CString getParamValue( LPCTSTR lpstrCommandLine, CString csParam)
 	// First, find option name position in command
 	// (convert command line to lower case for this test only)
 	csOptionName.Format( _T( "%s:"), csParam);
-	csOptionName.Format( _T( "%s:"), csParam);
 	csSeparator = csCommand;
 	csSeparator.MakeLower();
 	iRngOpt = csSeparator.Find( _T( csOptionName));

@@ -193,48 +193,9 @@ BOOL COCSInventoryApp::InitInstance()
 							   cmdL);	
 		}
 
-		/*****
-		 *
-		 *	Shows the tag requesting dialog, only if the "notag" option was not provided
-		 *
-		 ****/
-		if(!CUtils::IsRequired(cmdL,"notag") && ! CUtils::IsRequired(cmdL,"test"))
+
+		if( CUtils::IsRequired( cmdL, "np" ) )
 		{
-			CFile labelFile, adminFile;
-			BOOL labelOpened = FALSE;
-			BOOL adminOpened = FALSE;
-
-			if( labelFile.Open(LABEL_FILE,CFile::modeRead) ) {
-				labelOpened = TRUE;
-				labelFile.Close();
-			}
-
-			if( adminFile.Open(OCS_ACCOUNTINFO_FILE,CFile::modeRead) ) {
-				adminOpened = TRUE;
-				adminFile.Close();
-			}
-			
-			if( labelOpened && !adminOpened) {
-				CString labelText = CUtils::readParamFile("tagDialog");
-				if( labelText.GetLength()>0 ) {
-					CInputDlg d;
-					d.DoModal();
-				/*	int valCu=atoi(d.m_ValV); TODO: contraintes
-					char fin[50];
-					itoa(valCu,fin,10);*/
-					CUtils::writeParamFile("TAG",CString(d.m_ValV),FALSE,1);
-				}
-			}
-		}
-		
-		CString tagVal = CUtils::getParamValue(cmdL,"tag");
-		if(!tagVal.IsEmpty())
-		{
-			CUtils::writeParamFile("TAG",tagVal,FALSE,1);
-			AddLog("TAG FORCE: Tag forced by /tag, value is <%s>\n", tagVal); 
-		}
-
-		if( CUtils::IsRequired( cmdL, "np" ) ) {
 				iProxy = INTERNET_OPEN_TYPE_DIRECT;
 				AddLog( _T( "HTTP SERVER: Connection WITHOUT proxy\n"));
 		}
@@ -257,6 +218,69 @@ BOOL COCSInventoryApp::InitInstance()
 		iPort = CUtils::getPort( cmdL );
 		csHttpUserName = CUtils::getParamValue(cmdL,"auth_user");	
 		csHttpPassword = CUtils::getParamValue(cmdL,"auth_pwd");	
+
+		/*****
+		 *
+		 *	Shows the tag requesting dialog, only if the "notag" option was not provided
+		 *
+		 ****/
+		if(!CUtils::IsRequired(cmdL,"notag") && ! CUtils::IsRequired(cmdL,"test"))
+		{
+			CStdioFile fileLabel, fileAccountInfo;
+			CString csLabelFile, csAccountInfoFile, csLabelText;
+			BOOL labelOpened = FALSE;
+			BOOL adminOpened = FALSE;
+
+			csAccountInfoFile.Format( _T( "%s%s"), szExecutionFolder, OCS_ACCOUNTINFO_FILE);
+			csLabelFile.Format( _T( "%s%s"), szExecutionFolder, LABEL_FILE);
+			// Test if Account info file exist
+			if( fileAccountInfo.Open( csAccountInfoFile, CFile::modeRead))
+			{
+				// Account info file "admininfo.conf" already exist, TAG already asked
+				adminOpened = TRUE;
+				fileAccountInfo.Close();
+			}
+			else
+			{
+				// Account info file "admininfo.conf" do not exist (agent first run), 
+				// try to download LABEL file to ask user for TAG
+				if (!CUtils::IsRequired(cmdL,"local") &&  !CUtils::IsRequired(cmdL,"test"))
+				{
+					if (!CNetUtils::downloadLabel( csLabelFile, csServer, iPort, iProxy, csHttpUserName, csHttpPassword))
+						CFile::Remove( LABEL_FILE);
+				}
+
+			}
+			// Test if LABEL file exist
+			if(fileLabel.Open( csLabelFile, CFile::modeRead))
+			{
+				CString csBufLabel;
+
+				labelOpened = TRUE;
+				while (fileLabel.ReadString( csBufLabel))
+					csLabelText += csBufLabel;
+				fileLabel.Close();
+			}
+			// If LABEL file exist, but not Account info file, prompt user for TAG
+			if(labelOpened && !adminOpened)
+			{
+				if( !csLabelText.IsEmpty() ) {
+					CInputDlg d;
+					d.DoModal();
+				/*	int valCu=atoi(d.m_ValV); TODO: contraintes
+					char fin[50];
+					itoa(valCu,fin,10);*/
+					CUtils::writeParamFile("TAG",CString(d.m_ValV),FALSE,1);
+				}
+			}
+		}
+		
+		CString tagVal = CUtils::getParamValue(cmdL,"tag");
+		if(!tagVal.IsEmpty())
+		{
+			CUtils::writeParamFile("TAG",tagVal,FALSE,1);
+			AddLog("TAG FORCE: Tag forced by /tag, value is <%s>\n", tagVal); 
+		}
 
 ///////////////////////////////////////////////////////////////////////////////////
 // API MODULES ////////////////////////////////////////////////////////////////////
@@ -366,13 +390,14 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 		 *	Network dialog initialization
 		 *
 		 ****/
-		if( ! CUtils::IsRequired(cmdL,"local") &&  ! CUtils::IsRequired(cmdL,"test") ) {		
+		if( ! CUtils::IsRequired(cmdL,"local") &&  ! CUtils::IsRequired(cmdL,"test") )
+		{		
 			AddLog( _T( "HTTP SERVER: Creating CInternetSession to get inventory parameters..."));
 			csUserAgent.Format("%s_windows_client_v%s",USER_AGENT,csAgentVer);			
-			AddLog( _T( "OK.\n"));			
 			CUtils::trace("SESSION_OPEN",cmdL);			
 			CInternetSession sess(csUserAgent, 1, iProxy);			
 			CString reponse,contentS;		
+			AddLog( _T( "OK.\n"));			
 			
 			AddLog( _T( "HTTP SERVER: Getting HTTP Connection to server %s port %i using %s..."), 
 				csServer, iPort, ( csHttpUserName.GetLength() && csHttpPassword.GetLength() )?"authentication":"no authentication" );

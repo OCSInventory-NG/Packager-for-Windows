@@ -122,7 +122,7 @@ static CByteArray* req(CHttpConnection* pConnect,BYTE content[],int size,BOOL po
 		ULONG httpCode=0;
 
 		if (! ((CHttpFile*)pF)->QueryInfoStatusCode( httpCode ) ) {
-			AddLog("ERR: Cannot get http code\n");
+			AddLog("ERR: Cannot get HTTP status code\n");
 			throw(err);
 		}
 		else {
@@ -130,11 +130,11 @@ static CByteArray* req(CHttpConnection* pConnect,BYTE content[],int size,BOOL po
 				*pHttpCode = httpCode;
 
 			if (httpCode != 200) {
-				AddLog("ERROR: Http error: %ld\n", httpCode);
+				AddLog("ERROR: HTTP status code %ld\n", httpCode);
 				throw(err);
 			}
 			else {
-				AddLog("Http code (%ld)...OK\n", httpCode);
+				AddLog("HTTP status %ld OK\n", httpCode);
 			}
 		}	
 		
@@ -277,6 +277,90 @@ static int downloadMessage( CString mess ,CString Id, CString did, CString serve
 	if( pSess) delete pSess;
 	return 0;
 };
+
+static BOOL downloadLabel( CString csLabelFile, CString csServer, INTERNET_PORT iPort, UINT uProxy, CString csHttpUser, CString csHttpPw)
+{
+	CString csURI;
+
+	csURI.Format( _T( "http://%s:%u/ocsinventory/deploy/label"), csServer, iPort);
+	AddLog( _T( "HTTP SERVER: Opening Internet connection to download <%s>..."), csURI);
+
+	CInternetSession mySession( _T( "ocs_windows_agent"), 1, uProxy);
+	CStdioFile* pFile = NULL;
+	CFile downloadedFile;
+	DWORD	dwHttpCode;
+	BOOL	bReturn = FALSE;
+	
+	try
+	{
+		// Open Internet connection
+		if ((pFile = mySession.OpenURL( csURI)) != NULL)
+		{
+			if (!((CHttpFile*)pFile)->QueryInfoStatusCode( dwHttpCode ))
+			{
+				AddLog( _T( "ERROR: cannot read HTTP status code\n"), csURI);
+				pFile->Abort();
+				pFile = NULL;
+			}
+			else
+			{
+				if (dwHttpCode != 200)
+				{
+					AddLog(_T( "ERROR: HTTP status code %d\n"), dwHttpCode);
+					pFile->Abort();
+					pFile = NULL;
+				}
+				else 
+				{
+					AddLog(_T( "HTTP status code %d OK\n"), dwHttpCode);
+				}
+			}
+		}
+		else
+		{
+			AddLog(_T( "Unable to open Internet session\n"), csURI);
+			pFile = NULL;
+		}
+
+		if (pFile != NULL)
+		{
+			AddLog( _T( "HTTP SERVER: Downloading file <%s> to <%s>..."), csURI, csLabelFile);
+			// Open label file to store
+			if(downloadedFile.Open( csLabelFile, CFile::modeCreate|CFile::modeWrite))
+			{
+				BYTE szBuff[1024];
+				int read;
+				while( (read = pFile->Read(szBuff,sizeof(szBuff))) > 0)
+				{
+					downloadedFile.Write( szBuff, read);
+				}
+				downloadedFile.Close();
+				bReturn = TRUE;
+				AddLog( _T( "OK\n"));
+			}
+			else
+				AddLog( _T( "ERROR: cannot open file <%s> for writing\n"), csLabelFile, csURI);
+			pFile->Close();
+			delete pFile;			
+		}
+		else
+			downloadedFile.Abort();
+	}
+	catch (CException* pEx)
+	{
+		TCHAR sz[1024];
+		pEx->GetErrorMessage( sz, 1024);
+		AddLog( _T( "ERROR: Unable to download <%s>: %s\n"), csURI, sz);
+		pEx->Delete();
+		if (pFile != NULL)
+			pFile->Abort();
+		downloadedFile.Abort();
+	}
+	AddLog( _T( "HTTP SERVER: Closing HTTP connection..."));
+	mySession.Close();
+	AddLog( _T( "OK\n"));
+	return bReturn;
+}
 
 };
 
