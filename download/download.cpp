@@ -456,7 +456,7 @@ int CDownloadApp::download( CPackage * pP ) {
 		uri.Format("%s://%s/%s/%s", pP->Proto, pP->Loc, pP->Id, currentFrag);
 		
 		//assumes URL names have been initialized
-		CInternetSession session("download_session");
+		CInternetSession session("download_session", 1, m_iProxy);
 		CStdioFile* pFile = NULL;
 		CFile downloadedFile;
 		AddLog("Downloading %s to %s",uri,fragPath);
