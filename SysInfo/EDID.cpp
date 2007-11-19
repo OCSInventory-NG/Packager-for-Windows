@@ -473,6 +473,7 @@ BOOL CEdid::GetDisplayEDID(HDEVINFO hDeviceInfoSet, SP_DEVINFO_DATA *pDevInfoDat
 	HKEY	hKey;
 	LPBYTE	lpByte = NULL;
 	DWORD	dwType, dwSize = 0;
+	LONG	lErr;
 
 	if ((hKey = lpfnSetupDiOpenDevRegKey( hDeviceInfoSet, pDevInfoData, DICS_FLAG_GLOBAL, NULL, DIREG_DEV, KEY_QUERY_VALUE)) != NULL)
 	{
@@ -484,7 +485,7 @@ BOOL CEdid::GetDisplayEDID(HDEVINFO hDeviceInfoSet, SP_DEVINFO_DATA *pDevInfoDat
 			RegCloseKey( hKey);
 			return FALSE;
 		}
-		if (RegQueryValueEx( hKey, _T( "EDID"), NULL, &dwType, lpByte, &dwSize) == ERROR_SUCCESS)
+		if ((lErr = RegQueryValueEx( hKey, _T( "EDID"), NULL, &dwType, lpByte, &dwSize)) == ERROR_SUCCESS)
 		{
 			lpByte[dwSize]=0;
 			
@@ -494,7 +495,7 @@ BOOL CEdid::GetDisplayEDID(HDEVINFO hDeviceInfoSet, SP_DEVINFO_DATA *pDevInfoDat
 		}
 		else
 		{
-			AddLog( _T( "\tSetupAPI: RegQueryValueEx failed with error %ld.\n"), GetLastError());
+			AddLog( _T( "\tSetupAPI: RegQueryValueEx failed with error %ld.\n"), lErr);
 			free( lpByte);
 			RegCloseKey( hKey);
 			return FALSE;
