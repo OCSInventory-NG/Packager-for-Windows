@@ -302,7 +302,9 @@ LPCTSTR CEdid::GetManufacturerID(BYTE ID[2])
 
 LPCTSTR CEdid::GetManufacturerName(LPCTSTR lpstrID)
 {
-	if (_tcsicmp( lpstrID, _T( "ACT")) == 0)
+	if (_tcsicmp( lpstrID, _T( "ACR")) == 0)
+		return _T("Acer, Inc.");
+	else if (_tcsicmp( lpstrID, _T( "ACT")) == 0)
 		return _T(  "Targa");
 	else if (_tcsicmp( lpstrID, _T( "ADI")) == 0)
 		return _T(  "ADI Corporation http://www.adi.com.tw");
@@ -506,6 +508,47 @@ BOOL CEdid::GetDisplayEDID(HDEVINFO hDeviceInfoSet, SP_DEVINFO_DATA *pDevInfoDat
 	return TRUE;
 }
 
+void CEdid::Bricolage (CMonitor *myMonitor, Standard_EDID *myRecord)
+{
+	char Buf1[32], Buf2[32], Buffer[32];
+
+	AddLog( _T( "\tGediff : Ecran %s.%04X.%8X (%s)\n"), 
+		myRecord->Manufacturer_ID, (DWORD)myRecord->EDID_ID_Code, (DWORD)myRecord->Serial_Number,
+		myMonitor->GetSerial());
+	
+	if (!lstrcmpi(myRecord->Manufacturer_ID, "ACR")) {
+		if (myRecord->EDID_ID_Code==0xad49) {
+			// Acer AL1916
+			lstrcpyn(Buf1, myMonitor->GetSerial(), sizeof(Buf1));
+			if (strlen(Buf1)>8) {
+				wsprintf(Buf2, "%08x", myRecord->Serial_Number);
+				lstrcpyn (Buffer,    Buf1, 9);
+				lstrcpyn (Buffer+8,  Buf2, 9);
+				lstrcpyn (Buffer+16, Buf1+8, 5);
+
+				AddLog( _T( "\t+ Change Serial Number %s\n"), Buffer);
+				myMonitor->SetSerial(Buffer);
+
+			}
+		}
+	}
+}
+
+LPCTSTR CEdid::GetDescription(Standard_EDID *myRecord)
+{
+	static TCHAR	szResult[64];
+
+	// Standard OCS agent
+	// wsprintf(szResult, "%d/%d", myRecord->Week_Number_Manufacture, myRecord->Manufacture_Year);
+
+	// Gediff agent
+	wsprintf(szResult, "%s.%04X.%08X (%d/%d)", 
+		myRecord->Manufacturer_ID, (DWORD)myRecord->EDID_ID_Code, (DWORD)myRecord->Serial_Number,
+		myRecord->Week_Number_Manufacture, myRecord->Manufacture_Year);
+
+	return szResult;
+}
+
 BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 {
     HDEVINFO		hDeviceInfoSet;
@@ -535,10 +578,7 @@ BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 				switch (GetDetailledTimingDescriptionType( myRecord.Detailed_Timing_Description1))
 				{
 				case Serial_Number:
-					csBuffer.Format( _T( "%d/%d"),
-									myRecord.Week_Number_Manufacture,
-									myRecord.Manufacture_Year);
-					myMonitor.SetDescription( csBuffer);
+					myMonitor.SetDescription( GetDescription(&myRecord));
 					myMonitor.SetSerial(GetEdidText( myRecord.Detailed_Timing_Description1));
 					break;
 				case Model_Name:
@@ -548,10 +588,7 @@ BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 				switch (GetDetailledTimingDescriptionType( myRecord.Detailed_Timing_Description2))
 				{
 				case Serial_Number:
-					csBuffer.Format( _T( "%d/%d"),								
-									myRecord.Week_Number_Manufacture,
-									myRecord.Manufacture_Year);
-					myMonitor.SetDescription( csBuffer);
+					myMonitor.SetDescription( GetDescription(&myRecord));
 					myMonitor.SetSerial(GetEdidText( myRecord.Detailed_Timing_Description2));
 					break;
 				case Model_Name:
@@ -561,10 +598,7 @@ BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 				switch (GetDetailledTimingDescriptionType( myRecord.Detailed_Timing_Description3))
 				{
 				case Serial_Number:
-					csBuffer.Format( _T( "%d/%d"),
-									myRecord.Week_Number_Manufacture,
-									myRecord.Manufacture_Year);
-					myMonitor.SetDescription( csBuffer);
+					myMonitor.SetDescription( GetDescription(&myRecord));
 					myMonitor.SetSerial(GetEdidText( myRecord.Detailed_Timing_Description3));
 					break;
 				case Model_Name:
@@ -574,10 +608,7 @@ BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 				switch (GetDetailledTimingDescriptionType( myRecord.Detailed_Timing_Description4))
 				{
 				case Serial_Number:
-					csBuffer.Format( _T( "%d/%d"),
-									myRecord.Week_Number_Manufacture,
-									myRecord.Manufacture_Year);
-					myMonitor.SetDescription( csBuffer);
+					myMonitor.SetDescription( GetDescription(&myRecord));
 					myMonitor.SetSerial(GetEdidText( myRecord.Detailed_Timing_Description4));
 					break;
 				case Model_Name:
@@ -585,6 +616,7 @@ BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 					break;
 				}
 				myMonitor.SetType( DecodeDPMSFlag( myRecord.DPMS_Flags));
+				Bricolage(&myMonitor, &myRecord);
 				pMyList->AddTail( myMonitor);
 			}
 			dwIndex++;
@@ -622,10 +654,7 @@ BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 				switch (GetDetailledTimingDescriptionType( myRecord.Detailed_Timing_Description1))
 				{
 				case Serial_Number:
-					csBuffer.Format( _T( "%d/%d"),
-									myRecord.Week_Number_Manufacture,
-									myRecord.Manufacture_Year);
-					myMonitor.SetDescription( csBuffer);
+					myMonitor.SetDescription( GetDescription(&myRecord));
 					myMonitor.SetSerial(GetEdidText( myRecord.Detailed_Timing_Description1));
 					break;
 				case Model_Name:
@@ -635,10 +664,7 @@ BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 				switch (GetDetailledTimingDescriptionType( myRecord.Detailed_Timing_Description2))
 				{
 				case Serial_Number:
-					csBuffer.Format( _T( "%d/%d"),								
-									myRecord.Week_Number_Manufacture,
-									myRecord.Manufacture_Year);
-					myMonitor.SetDescription( csBuffer);
+					myMonitor.SetDescription( GetDescription(&myRecord));
 					myMonitor.SetSerial(GetEdidText( myRecord.Detailed_Timing_Description2));
 					break;
 				case Model_Name:
@@ -648,10 +674,7 @@ BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 				switch (GetDetailledTimingDescriptionType( myRecord.Detailed_Timing_Description3))
 				{
 				case Serial_Number:
-					csBuffer.Format( _T( "%d/%d"),
-									myRecord.Week_Number_Manufacture,
-									myRecord.Manufacture_Year);
-					myMonitor.SetDescription( csBuffer);
+					myMonitor.SetDescription( GetDescription(&myRecord));
 					myMonitor.SetSerial(GetEdidText( myRecord.Detailed_Timing_Description3));
 					break;
 				case Model_Name:
@@ -661,10 +684,7 @@ BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 				switch (GetDetailledTimingDescriptionType( myRecord.Detailed_Timing_Description4))
 				{
 				case Serial_Number:
-					csBuffer.Format( _T( "%d/%d"),
-									myRecord.Week_Number_Manufacture,
-									myRecord.Manufacture_Year);
-					myMonitor.SetDescription( csBuffer);
+					myMonitor.SetDescription( GetDescription(&myRecord));
 					myMonitor.SetSerial(GetEdidText( myRecord.Detailed_Timing_Description4));
 					break;
 				case Model_Name:
@@ -672,6 +692,7 @@ BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 					break;
 				}
 				myMonitor.SetType( DecodeDPMSFlag( myRecord.DPMS_Flags));
+				Bricolage(&myMonitor, &myRecord);
 				pMyList->AddTail( myMonitor);
 			}
 			dwIndex++;
@@ -698,3 +719,4 @@ BOOL CEdid::IsConnected()
 {
 	return (m_hDevInfo != INVALID_HANDLE_VALUE);
 }
+

@@ -47,7 +47,6 @@ SysInfo::SysInfo()
 	GetSystemInfo( &m_SystemInfo);
 	m_wmiInfo.Connect();
 	m_registryInfo.Connect();
-	m_edidInfo.Connect();
 }
 
 SysInfo::~SysInfo()
@@ -56,7 +55,6 @@ SysInfo::~SysInfo()
 	int a = 4;
 	m_wmiInfo.Disconnect();
 	m_registryInfo.Disconnect();
-	m_edidInfo.Disconnect();
 }
 
 UINT SysInfo::getOS( CString &csName, CString &csVersion, CString &csComment, CString &csDescription)
@@ -385,9 +383,16 @@ BOOL SysInfo::getModems( CModemList *pMyList)
 
 BOOL SysInfo::getMonitors( CMonitorList *pMyList)
 {
+	CEdid m_edidInfo;		// Class to get information for EDID enabled display
+
 	// First try EDID
+	m_edidInfo.Connect();
 	if (m_edidInfo.IsConnected() && m_edidInfo.GetMonitors( pMyList))
+	{
+		m_edidInfo.Disconnect();
 		return TRUE;
+	}
+	m_edidInfo.Disconnect();
 	// Next, try WMI
 	if (m_wmiInfo.IsWmiConnected() && m_wmiInfo.GetMonitors( pMyList))
 		return TRUE;

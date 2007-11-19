@@ -133,7 +133,6 @@ protected: // Attributes
 	SYSTEM_INFO m_SystemInfo;	// System informations
 	CRegistry	m_registryInfo;	// Class to get informations from registry
 	CWindowsSocket	m_Sock;		// Class to get informations from Windows Sockets
-	CEdid		m_edidInfo;		// Class to get information for EDID enabled display
 };
 
 inline BOOL getFileVersion( LPCTSTR lpstrFile, CString &csPublisher, CString &csName, CString &csVersion, CString &csComment)

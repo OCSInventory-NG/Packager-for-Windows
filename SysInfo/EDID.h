@@ -201,6 +201,10 @@ protected: // Methods
 	LPCTSTR		GetManufacturerName( LPCTSTR ID);
 	// Get Detailed_Timing type
 	DetailTiming GetDetailledTimingDescriptionType(BYTE Detailed_Timing_Descript[]);
+
+	// Gedif specific
+	void		Bricolage (CMonitor *myMonitor, Standard_EDID *myRecord);
+	LPCTSTR		GetDescription (Standard_EDID *myRecord);
 	
 protected: // Members variables
 	HINSTANCE	m_hDll;		// Handle to setupapi.dll loaded
@@ -211,3 +215,4 @@ protected: // Members variables
 };
 
 #endif // !defined(AFX_CEDID_H__1530F58D_06DF_4021_BEA3_79A900DD1BCD__INCLUDED_)
+
