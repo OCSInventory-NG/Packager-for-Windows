@@ -155,13 +155,8 @@ CString params = this->m_lpCmdLine;
 				pE->Delete();
 				c.Close();
 
-				try	{	
-					CFile::Remove("upd.zip");
-					AddLog("CLEAN: deleting upd.zip");
-				}
-				catch (CException * pE){
-					pE->Delete();
-				}
+				DeleteFile("upd.zip");
+				AddLog("CLEAN: deleting upd.zip");
 				
 				CloseLog();
 				return FALSE;
@@ -195,22 +190,15 @@ CString params = this->m_lpCmdLine;
 			
 		}
 		c.Close();
-		CFile::Remove("upd.zip");
+		DeleteFile("upd.zip");
 		AddLog("CLEAN: Deleting upd.zip");
 
 		// Client testing
 		//////////////////////////////////
 
 		AddLog("\nCLIENT TESTING\n");
-		try
-		{
-			CFile::Remove("ok.ok");
-			AddLog("CLEAN: Deleting ok.ok");
-		}
-		catch (CException * pE)
-		{
-			pE->Delete();
-		}
+		CDeleteFile("ok.ok");
+		AddLog("CLEAN: Deleting ok.ok");
 
 		CString cmd,fname;
 		fname.Format( _T( "ocsinventory.exe"));
@@ -238,20 +226,13 @@ CString params = this->m_lpCmdLine;
 			okTest.Close();
 
 			AddLog("The downloaded client is working well");
-			CFile::Remove("ok.ok");
+			DeleteFile("ok.ok");
 			AddLog("CLEAN: Deleting ok.ok");
 
 			for(int k=0;k<oldFiles.GetSize();k++)
 			{
 				AddLog("CLEAN: Deleting old file %s",*(CString*)oldFiles.ElementAt(k));
-				try
-				{
-					CFile::Remove(*(CString*)oldFiles.ElementAt(k));
-				}
-				catch (CException * pE)
-				{
-					pE->Delete();
-				}
+				DeleteFile(*(CString*)oldFiles.ElementAt(k));
 			}
 		}
 		else
@@ -264,7 +245,7 @@ CString params = this->m_lpCmdLine;
 				{
 					CString nomCourt=*(CString*)oldFiles.ElementAt(k);
 					nomCourt=nomCourt.Left(nomCourt.GetLength()-4);
-					CFile::Remove(nomCourt);
+					DeleteFile(nomCourt);
 					CFile::Rename(*(CString*)oldFiles.ElementAt(k),nomCourt);
 					AddLog("CLEAN: Deleting %s",nomCourt);
 					AddLog("CLEAN: Renaming %s to %s",*(CString*)oldFiles.ElementAt(k),nomCourt);

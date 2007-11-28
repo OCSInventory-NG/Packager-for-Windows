@@ -291,7 +291,7 @@ int CMyService::generateRandNumber(int max) {
 	if( ! errorOccured ) {
 		fRand.Read( randBuf, 4);
 		fRand.Close();
-		CFile::Remove(namePath);
+		DeleteFile( namePath);
 		UINT dest;
 		memcpy( &dest, randBuf, sizeof(UINT));
 		srand(dest);

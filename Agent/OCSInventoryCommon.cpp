@@ -247,7 +247,7 @@ BOOL COCSInventoryApp::InitInstance()
 				if (!CUtils::IsRequired(cmdL,"local") &&  !CUtils::IsRequired(cmdL,"test"))
 				{
 					if (!CNetUtils::downloadLabel( csLabelFile, csServer, iPort, iProxy, csHttpUserName, csHttpPassword))
-						CFile::Remove( LABEL_FILE);
+						DeleteFile( LABEL_FILE);
 				}
 
 			}
@@ -321,22 +321,12 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 				// try to read old .conf file
 				csDeviceID = CUtils::readParamFile("deviceid");
 				AddLog("DID_CHECK: Old agent (ver %u), reading from ocsinventory.conf <%s> found\n", oldAgentVer, csDeviceID);
-				try {
-					// remove it
-					CFile::Remove(OCS_IDENTIFICATION_FILE);
-					AddLog("DID_CHECK: File %s deleted\n", OCS_IDENTIFICATION_FILE);					
-				}
-				catch( CException * pE) {
-					pE->Delete();
-				}
-				try {
-					// remove it
-					CFile::Remove(VERSION_FILE);
-					AddLog("DID_CHECK: File %s deleted\n", VERSION_FILE);					
-				}
-				catch( CException * pE) {
-					pE->Delete();
-				}
+				// remove it
+				DeleteFile(OCS_IDENTIFICATION_FILE);
+				AddLog("DID_CHECK: File %s deleted\n", OCS_IDENTIFICATION_FILE);					
+				// remove it
+				DeleteFile(VERSION_FILE);
+				AddLog("DID_CHECK: File %s deleted\n", VERSION_FILE);					
 			}
 			else if( CUtils::IsRequired(cmdL,"uid")) 
 				csDeviceID.Empty();
@@ -728,13 +718,7 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 						 ****/
 						if(CUtils::IsRequired(cmdL,"test") &&0)
 						{
-							try {
-								CFile::Remove("ok.ok");
-							}
-							catch (CException * pE) {
-								pE->Delete();
-							}
-							
+							DeleteFile("ok.ok");
 							AddLog("\tTEST: Client test OK\n");
 							try {
 								CFile okFile;
@@ -772,14 +756,7 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 						
 					}
 					else if(CUtils::IsRequired(cmdL,"test")) {
-
-						try {
-							CFile::Remove("ok.ok");
-						}
-						catch (CException * pE) {
-							pE->Delete();
-						}
-
+						DeleteFile("ok.ok");
 						AddLog( _T("HTTP SERVER: UPD: ERROR: Update asked during an update test\n"));
 					}
 					else
@@ -1033,16 +1010,7 @@ BOOL COCSInventoryApp::LoadBIOS( LPCTSTR lpstrCommandLine, LPCTSTR lpstrExecutio
 			// Yes, it is
 			pPC.SetDeviceType( WINDOWS_NOTEBOOK);
 		// delete XML file
-		try
-		{
-			// Delete imported file
-			CFile::Remove( csFilename);
-		}
-		catch( CFileException *pFileEx)
-		{
-			// Ignore exception when removing files
-			pFileEx->Delete();
-		}
+		DeleteFile( csFilename);
 		return TRUE;
 	}
 	else

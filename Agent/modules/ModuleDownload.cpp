@@ -72,7 +72,7 @@ int CModuleDownload::response(CMarkup* pXml, CString* pRawResponse) {
 	CFile lock;
 	if (! lock.Open("download\\lock", CFile::modeCreate|CFile::modeNoTruncate|CFile::shareExclusive) ) {
 		AddLog("ERROR: DOWNLOAD: Cannot create/open lock file (%i)\n", GetLastError());	
-		try{ CFile::Remove("download\\suspend"); } catch(CException *e) { e->Delete();}
+		DeleteFile("download\\suspend");
 		return(1);
 	}
 
@@ -80,7 +80,7 @@ int CModuleDownload::response(CMarkup* pXml, CString* pRawResponse) {
 	CFilePackageHistory cFileHistory;
 	if (! cFileHistory.Open("download\\history", FALSE, TRUE)) {
 		AddLog("ERROR: DOWNLOAD: Cannot create history file\n");
-		try{ CFile::Remove("download\\suspend"); } catch(CException *e) { e->Delete();}
+		DeleteFile("download\\suspend");
 		return(1);
 	}
 
@@ -190,13 +190,7 @@ int CModuleDownload::response(CMarkup* pXml, CString* pRawResponse) {
 		i++;
 	}
 	
-	try { 
-		CFile::Remove("download\\suspend"); 
-	} 
-	catch(CException *e) { 
-		e->Delete();
-	}
-
+	DeleteFile( "download\\suspend"); 
 	return 0;
 }
 

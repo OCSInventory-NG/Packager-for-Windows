@@ -51,13 +51,7 @@ static CString getDir(int dir=0) {
  *	writes in OCS_ACCOUNTINFO_FILE every accountinfo in xml
  */
 static void	parseAccountParams(CMarkup xml) {
-	try {
-		CFile::Remove(getDir(1));
-	}
-	catch (CException * pE) {
-		pE->Delete();
-	}
-	
+	DeleteFile(getDir(1));
 	xml.ResetPos();
 	xml.FindElem("REPLY");
 	xml.IntoElem();

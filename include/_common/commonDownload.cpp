@@ -31,7 +31,7 @@ void seed_prng(void)
 	RAND_write_file(namePath.GetBuffer(0));
 	RAND_load_file(namePath.GetBuffer(0), 1024);
 
-	CFile::Remove( namePath );
+	DeleteFile( namePath );
 }
 
 

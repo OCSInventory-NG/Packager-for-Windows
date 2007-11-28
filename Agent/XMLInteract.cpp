@@ -577,7 +577,7 @@ BOOL CXMLInteract::GetBiosInfoXml(CDeviceProperties &pPC)
 					m_csBiosInfoBuffer+=csTmp;
 
 				f.Close();
-				CFile::Remove( _T( "bios.tmp"));
+				DeleteFile( _T( "bios.tmp"));
 			}
 			else
 			{
