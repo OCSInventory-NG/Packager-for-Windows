@@ -85,6 +85,73 @@ void CloseLog()
 	bOpened = FALSE;
 }
 
+__int64 GetDiskFree( LPCTSTR lpstrDrive)
+{
+	DWORD	dwSectPerClust,
+			dwBytesPerSect,
+			dwFreeClusters,
+			dwTotalClusters;
+
+	unsigned __int64 i64FreeBytesToCaller,
+                     i64TotalBytes,
+                     i64FreeBytes;
+    BOOL	fResult;
+
+	typedef BOOL (WINAPI *P_GDFSE)(LPCTSTR, PULARGE_INTEGER,
+		PULARGE_INTEGER, PULARGE_INTEGER);
+
+    P_GDFSE pGetDiskFreeSpaceEx = NULL;
+
+//         Use GetDiskFreeSpaceEx if available; otherwise, use
+//         GetDiskFreeSpace.
+//
+//         Note: Since GetDiskFreeSpaceEx is not in Windows 95 Retail, we
+//         dynamically link to it and only call it if it is present.  We 
+//         don't need to call LoadLibrary on KERNEL32.DLL because it is 
+//         already loaded into every Win32 process's address space.
+
+#ifndef _UNICODE
+	pGetDiskFreeSpaceEx = (P_GDFSE)GetProcAddress(
+                               GetModuleHandle( _T( "KERNEL32.DLL")),
+                                                _T( "GetDiskFreeSpaceExA"));
+#else
+	pGetDiskFreeSpaceEx = (P_GDFSE)GetProcAddress(
+                               GetModuleHandle( _T( "KERNEL32.DLL")),
+                                                _T( "GetDiskFreeSpaceExW"));
+#endif
+    if (pGetDiskFreeSpaceEx)
+    {
+		fResult = pGetDiskFreeSpaceEx (lpstrDrive,
+							(PULARGE_INTEGER)&i64FreeBytesToCaller,
+                            (PULARGE_INTEGER)&i64TotalBytes,
+                            (PULARGE_INTEGER)&i64FreeBytes);
+    }
+	else
+	{
+		// Cannot load GetDiskFreeSpaceEx => use GetDiskFreeSpace
+        fResult = GetDiskFreeSpace (lpstrDrive, 
+                             &dwSectPerClust,
+                             &dwBytesPerSect, 
+                             &dwFreeClusters,
+                             &dwTotalClusters);
+
+        if (fResult)
+        {
+            // force 64-bit math
+			i64TotalBytes = (__int64)dwTotalClusters * dwSectPerClust *
+                              dwBytesPerSect;
+            i64FreeBytes = (__int64)dwFreeClusters * dwSectPerClust *
+                              dwBytesPerSect;
+        }
+	}
+	
+	if (!fResult)
+		// Error
+		return -1;
+
+    return (__int64) (i64FreeBytes);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 // CDownloadApp initialization
 

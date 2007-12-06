@@ -779,34 +779,36 @@ int CPackage::markAsDone( CString message, CString Path ){
 void CPackage::done( LPCTSTR lpstrFolder) {
 
 	
-	CStdioFile done;
-	CString code;
+	CStdioFile cfDone;
+	CString csFilename,
+			csCode = ERR_DONE_FAILED;
 
-	code.Format( _T( "%s\\done"), lpstrFolder);
-	if(done.Open( code, CFile::modeRead)){
-		if( !done.ReadString( code) ){
-			AddLog("ERROR: Cannot read done file\n");
-			CNetUtils::downloadMessage( "UNKNOWN", Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);
+	csFilename.Format( _T( "%s\\done"), lpstrFolder);
+	if(cfDone.Open( csFilename, CFile::modeRead))
+	{
+		if( !cfDone.ReadString( csCode) ){
+			AddLog("ERROR: Cannot read done file");
+			CNetUtils::downloadMessage( csCode, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);
 			cleanPackage( Id );
 		}
-		done.Close();
+		cfDone.Close();
 	}
 	else{
-		AddLog("ERROR: Cannot open done file\n");
+		AddLog("ERROR: Cannot open done file");
 		cleanPackage( Id );
 	}
 
-	if(code.Compare(CODE_SUCCESS)==0){
+	if(csCode.Compare(CODE_SUCCESS)==0){
 		if (!CFilePackageHistory::AddPackage( "history", Id)){
-			AddLog("ERROR: Cannot add package to history file\n");
+			AddLog("ERROR: Cannot add package to history file");
 		}
 	}
 	else{
-		AddLog("ERROR: Will not register this package in history: not a success\n");
+		AddLog("ERROR: Will not register this package in history: result %s not a success", csCode);
 	}
 	
 	AddLog("Package %s done, sending message", Id);
-	if( ! CNetUtils::downloadMessage( code, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w)) {
+	if( ! CNetUtils::downloadMessage( csCode, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w)) {
 		cleanPackage( Id );
 	}
 	else {
@@ -815,7 +817,33 @@ void CPackage::done( LPCTSTR lpstrFolder) {
 	}
 }
 
-int CPackage::buildPackage() {
+int CPackage::buildPackage()
+{
+	CString csFragFile;
+	CFileStatus cfStatus;
+	__int64	i64BuildSize = 0;
+	UINT	i;
+
+	AddLog("Checking disk space for package %s", Id);
+	for( i = 1; i <= Frags; i++ )
+	{
+		csFragFile.Format( _T( "%s\\%s-%d"), Id, Id, i);
+		if (!CFile::GetStatus( csFragFile, cfStatus))
+		{
+			AddLog("ERROR: Fragment file %s is missing or unreadable", csFragFile);
+			markAsDone( ERR_BUILD, "." );
+			return 1;
+		}
+		i64BuildSize += cfStatus.m_size;
+	}
+	GetCurrentDirectory( 4*_MAX_PATH, csFragFile.GetBuffer( 4*_MAX_PATH));
+	csFragFile.ReleaseBuffer();
+	if (GetDiskFree( csFragFile) < (5*i64BuildSize))
+	{
+		AddLog("ERROR: Free disk space missing for package %s (required at least %I64d bytes)", Id, 5*i64BuildSize);
+		markAsDone( ERR_OUT_OF_SPACE, "." );
+		return 1;
+	}
 	AddLog("Building package %s", Id);
 	CString tmpPath;
 	tmpPath.Format("%s\\tmp", Id);
@@ -831,37 +859,51 @@ int CPackage::buildPackage() {
 	if( ! Frags )
 		return 0;
 
-	CFile zipArchive, curFrag;
-	char pt[10];
-	zipArchive.Open(tmpPath + "\\build.zip", CFile::modeWrite|CFile::modeCreate);
-	for( UINT i = 1; i <= Frags; i++ ) {
-		if( ! fileExists( Id + "-" + itoa(i,pt,10), Id )) {
-			AddLog("ERROR: File %s\\%s is missing", Id, Id + "-" + itoa(i,pt,10));
-			markAsDone( ERR_BUILD, "." );
-			return 1;
-		}
 
-		if( ! curFrag.Open( Id + "\\"+ Id + "-" + itoa(i,pt,10), CFile::modeRead)) {
-			AddLog("ERROR: Can't open %s\\%s for reading", Id, Id + "-" + itoa(i,pt,10));
-			markAsDone( ERR_BUILD, "." );
-			return 1;
+	CFile zipArchive, curFrag;
+	try {
+		zipArchive.Open(tmpPath + "\\build.zip", CFile::modeWrite|CFile::modeCreate);
+		for( i = 1; i <= Frags; i++ )
+		{
+			csFragFile.Format( _T( "%s\\%s-%d"), Id, Id, i);
+			if( ! curFrag.Open( csFragFile, CFile::modeRead))
+			{
+				AddLog("ERROR: Can't open Fragment file %s for reading", csFragFile);
+				markAsDone( ERR_BUILD, "." );
+				return 1;
+			}
+			UINT len;
+			BYTE buf[1024];
+			BOOL bContinue = TRUE;
+			while (bContinue)
+			{
+				// Read data in frag file
+				len = curFrag.Read( buf, 1024);
+				// Write it in zip filz
+				zipArchive.Write( buf, len );
+				// Stop if read less than 1024 bytes
+				if (len < 1024)
+					bContinue = FALSE;
+			}
+			curFrag.Close();
 		}
-		UINT len = curFrag.GetLength();
-		BYTE * buf = new BYTE[ len ];
-		curFrag.Read( buf, len );
-		zipArchive.Write( buf, len );
-		curFrag.Close();
-		delete [] buf;
+		
+		zipArchive.Close();	
 	}
-	
-	zipArchive.Close();	
+	catch (CException *pEx)
+	{
+		AddLog("ERROR: Can't create build.zip from fragment files ", Id);
+		markAsDone( ERR_BUILD, "." );
+		pEx->Delete();
+		return 1;
+	}
 
 	if( checkSignature() ) {
 		markAsDone( ERR_BAD_DIGEST, "." );
 		return 1;
 	}
 	
-	AddLog("Building of %s OK", Id);
+	AddLog("Building of package %s OK", Id);
 	return 0;
 }
 

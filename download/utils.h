@@ -18,6 +18,7 @@ CString print_hex (unsigned char *bs, unsigned int n);
 /* A helper function for base64 encoding */
 CString base64_encode (unsigned char *buf, unsigned int len);
 int unzip(CString file, CString path);
+__int64 GetDiskFree( LPCTSTR lpstrDrive);
 
 
 

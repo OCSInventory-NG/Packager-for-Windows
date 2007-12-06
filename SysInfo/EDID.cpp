@@ -513,7 +513,7 @@ void CEdid::Bricolage (CMonitor *myMonitor, Standard_EDID *myRecord)
 {
 	char Buf1[32], Buf2[32], Buffer[32];
 
-	AddLog( _T( "\tGediff : Ecran %s.%04X.%8X (%s)\n"), 
+	AddLog( _T( "\tEDID : Monitor %s.%04X.%8X (%s)\n"), 
 		myRecord->Manufacturer_ID, (DWORD)myRecord->EDID_ID_Code, (DWORD)myRecord->Serial_Number,
 		myMonitor->GetSerial());
 	
@@ -527,7 +527,7 @@ void CEdid::Bricolage (CMonitor *myMonitor, Standard_EDID *myRecord)
 				lstrcpyn (Buffer+8,  Buf2, 9);
 				lstrcpyn (Buffer+16, Buf1+8, 5);
 
-				AddLog( _T( "\t+ Change Serial Number %s\n"), Buffer);
+				AddLog( _T( "\tEDID Fix: Change Serial Number to %s\n"), Buffer);
 				myMonitor->SetSerial(Buffer);
 
 			}
