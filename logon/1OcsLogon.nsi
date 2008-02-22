@@ -11,6 +11,8 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;4042
+; new compress method
 ;4040
 ; new service testing
 ; new parse method
@@ -38,6 +40,7 @@
 ; Normal roadmapped improvments
 ;
 ;###############################################################################
+setcompressor /SOLID lzma
 !include "MUI.nsh"
 ;!include "WinMessages.nsh"
 !insertmacro MUI_LANGUAGE "english"
