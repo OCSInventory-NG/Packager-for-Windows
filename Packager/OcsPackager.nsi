@@ -1,6 +1,6 @@
 ################################################################################
 ##OCSInventory Version NG 1.01 Production
-##Copyleft Emmanuel GUILLORY 2006
+##Copyleft Emmanuel GUILLORY 2008
 ##Web : http://ocsinventory.sourceforge.net
 ##
 ##This code is open source and may be copied and modified as long as the source
@@ -24,7 +24,7 @@
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
 !define Compile_version "1.0.2.6"
-!define help_file "OCS_Inventory_NG-Packager_Usage_Guide_1.02_EN.pdf"
+!define help_file "OCS_Inventory_NG-Packager_Usage_Guide_1.03_EN.pdf"
 
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
 !define COL_FILE "col.txt"
@@ -63,7 +63,7 @@ Function .onInit
  File /oname=$PLUGINSDIR\upack.ico "upack.ico"
  File /oname=$PLUGINSDIR\instocs.exe "instocs.exe"
  File /oname=$PLUGINSDIR\uninsocs.exe "uninsocs.exe"
- File /oname=$PLUGINSDIR\${help_file} "${help_file}"
+ File /oname=$PLUGINSDIR\${help_file} ${help_file}
  File /oname=$PLUGINSDIR\ListBox.exe "ListBox.exe"
 FunctionEnd
 
