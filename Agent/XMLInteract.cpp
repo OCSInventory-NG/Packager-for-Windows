@@ -1026,6 +1026,13 @@ BOOL CXMLInteract::UpdateSoftwares(CDeviceProperties &pPC)
 
 	try
 	{
+		// Check for switch on command line nosoft
+		if( CUtils::IsRequired(m_csCmdL, "nosoft") )
+		{
+			// do not report installed softwares
+			return TRUE;
+		}
+
 		AddLog( _T( "\tXML Update Softwares...\n"));
 		// Insert new object records from List
 		pos = pPC.m_SoftwareList.GetHeadPosition();

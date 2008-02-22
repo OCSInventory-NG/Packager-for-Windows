@@ -42,7 +42,7 @@ private:
 	BOOL Decrypt( CString &csCrypted, CString &csClear);
 	BOOL Encrypt( CString &csClear, CString &csCrypted);
 	HANDLE		m_hMutexOneInstance;
-	BOOL		m_bkillMe;
+//	BOOL		m_bkillMe;
 	CFile		m_fServiceIni;
 	int			m_iTToWait;
 	int			m_iOldPrologFreq;
@@ -50,17 +50,17 @@ private:
 	CString		m_sServIni;
 	CString		m_sCurDir;
 	CObArray	m_tHandles;
-	CString		m_csServer;
-	int			m_iProxy;
-	CString		m_csPort;
+//	CString		m_csServer;
+//	int			m_iProxy;
+//	CString		m_csPort;
 	CString		m_csMisc;
 	int			m_iWriteIniLatency;
 	CString		m_csAuthUser;
 	CString		m_csAuthPwd;
-	CString		m_csProxyHost;
-	CString		m_csProxyPort;
-	CString		m_csProxyUser;
-	CString		m_csProxyPwd;
+//	CString		m_csProxyHost;
+//	CString		m_csProxyPort;
+//	CString		m_csProxyUser;
+//	CString		m_csProxyPwd;
 
 	BOOL runAgent( BOOL bForce = FALSE);	
 	int generateRandNumber(int max);

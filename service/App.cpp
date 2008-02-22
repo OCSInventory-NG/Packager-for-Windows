@@ -167,7 +167,8 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 				CheckInventoryState();
 		}
 
-		if( m_iTToWait <= 0 ) {
+		if( m_iTToWait <= 0 )
+		{
 			UINT vOld = m_iOldPrologFreq;
 			closeHandles();
 			//closeIni();
@@ -323,18 +324,18 @@ void CMyService::readIniFile( CString section, int* storeVar, CString toRead, CS
 		readIniFile( OCS_SERVICE, & m_iOldPrologFreq, OLD_PROLOG_FREQ, "0" );
 		readIniFile( OCS_SERVICE, & m_iTToWait, TTO_WAIT, "-1" );
 
-		readIniFile( OCS_SERVICE, m_csServer, _T( "SERVER"), _T( "ocsinventory-ng"));
+/*		readIniFile( OCS_SERVICE, m_csServer, _T( "SERVER"), _T( "ocsinventory-ng"));
 		readIniFile( OCS_SERVICE, & m_iProxy, _T( "NOPROXY"), _T( "0"));
 		readIniFile( OCS_SERVICE, m_csPort, _T( "port"), _T( "80") );
-		readIniFile( OCS_SERVICE, m_csMisc, _T( "MISCELLANEOUS"), _T( "") );
+*/		readIniFile( OCS_SERVICE, m_csMisc, _T( "MISCELLANEOUS"), _T( "") );
 		readIniFile( OCS_SERVICE, & m_iWriteIniLatency, _T( "WRITE_INI_LATENCY"), WRITE_TTOWAIT_EACH );
 		readIniFile( OCS_SERVICE, m_csAuthUser, AUTH_USER, _T( ""));
 		readIniFile( OCS_SERVICE, m_csAuthPwd, AUTH_PWD, _T( ""));
-		readIniFile( OCS_SERVICE, m_csProxyHost, PROXY_HOST, _T( "") );
+/*		readIniFile( OCS_SERVICE, m_csProxyHost, PROXY_HOST, _T( "") );
 		readIniFile( OCS_SERVICE, m_csProxyPort, PROXY_PORT, _T( "") );
 		readIniFile( OCS_SERVICE, m_csProxyUser, PROXY_USER, _T( "") );
 		readIniFile( OCS_SERVICE, m_csProxyPwd, PROXY_PWD, _T( "") );
-	}	
+*/	}	
 }
 
 void CMyService::readIniFile( CString section, CString & storeVar, CString toRead, CString defaultVal ) {

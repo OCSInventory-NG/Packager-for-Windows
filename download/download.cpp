@@ -790,28 +790,36 @@ void CPackage::done( LPCTSTR lpstrFolder) {
 			AddLog("ERROR: Cannot read done file");
 			CNetUtils::downloadMessage( csCode, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w);
 			cleanPackage( Id );
+			cfDone.Close();
+			return;
 		}
 		cfDone.Close();
 	}
 	else{
 		AddLog("ERROR: Cannot open done file");
 		cleanPackage( Id );
+		return;
 	}
 
-	if(csCode.Compare(CODE_SUCCESS)==0){
-		if (!CFilePackageHistory::AddPackage( "history", Id)){
+	if(csCode.Compare(CODE_SUCCESS)==0)
+	{
+		if (!CFilePackageHistory::AddPackage( "history", Id))
+		{
 			AddLog("ERROR: Cannot add package to history file");
 		}
 	}
-	else{
+	else
+	{
 		AddLog("ERROR: Will not register this package in history: result %s not a success", csCode);
 	}
 	
 	AddLog("Package %s done, sending message", Id);
-	if( ! CNetUtils::downloadMessage( csCode, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w)) {
+	if( ! CNetUtils::downloadMessage( csCode, Id ,pA->m_csDeviceId, pA->m_csServer, pA->m_iPort, pA->m_iProxy, pA->m_csHttp_u, pA->m_csHttp_w))
+	{
 		cleanPackage( Id );
 	}
-	else {
+	else
+	{
 		AddLog("Cannot send event message for %s. Will retry later", Id);
 		theApp.blackList(Id);
 	}

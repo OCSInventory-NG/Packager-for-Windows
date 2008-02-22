@@ -497,8 +497,8 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 			AddLog( _T( "TEST MODE actived by /test argument\n"));
 			bInventoryNeeded = FALSE;
 		}
-		else if( CUtils::IsRequired(cmdL,"force") )
-		// Inventory forced if /force option is provided		
+		else if (bServerUp && CUtils::IsRequired(cmdL,"force"))
+		// Inventory forced if /force option is provided and server reachable		
 		{
 			AddLog( _T( "INVENTORY forced by /force option\n"));
 			bInventoryNeeded = TRUE;
