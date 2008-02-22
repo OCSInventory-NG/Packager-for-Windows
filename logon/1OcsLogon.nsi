@@ -43,7 +43,7 @@
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng"
 !define TimeOut "600000"
-!define Compile_version "4.0.4.0"
+!define Compile_version "4.0.4.2"
 !define hard_option "" ; i.e. "/debug /deploy:4040 /install /url:http://MyOCSserverFQDNorIP/deploy/"
  var url
  var version

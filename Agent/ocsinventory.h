@@ -30,6 +30,13 @@
 //
 #include "DeviceProperties.h" // XML
 
+// Application exit codes
+#define OCS_APP_NO_ERROR				0
+#define OCS_APP_GENERIC_ERROR			1
+#define OCS_APP_ALREADY_RUNNING_ERROR	2
+#define OCS_APP_INVENTORY_ERROR			3
+#define OCS_APP_NETWORK_ERROR			4
+
 class COCSInventoryApp : public CWinApp
 {
 public:
@@ -92,6 +99,7 @@ protected: // Attributes
 	BOOL			m_bNeedUpdate;		// Agent need to be updated if true
 	CDeviceProperties m_ThePC;			// Device properties
 	COCSInventoryState m_State;			// Inventory state for detecting changes
+	int				m_nAppExitCode;		// Application exit code (0 no error, 1 network error, 2 generic failure)
 };
 
 class CInputDlg : public CDialog

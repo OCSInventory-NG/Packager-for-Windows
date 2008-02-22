@@ -53,6 +53,7 @@ END_MESSAGE_MAP()
 COCSInventoryApp::COCSInventoryApp()
 {
 	m_pTheDB = NULL;
+	m_nAppExitCode = OCS_APP_NO_ERROR;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -71,14 +72,11 @@ BOOL COCSInventoryApp::InitInstance()
 	 *	already running.
 	 *
 	 ****/
-    bool AlreadyRunning;
+    HANDLE hMutexOneInstance = ::CreateMutex( NULL, TRUE, _T("OCSINVENTORY-088FA840-B10D-11D3-BC36-006067709674"));
 
-    HANDLE hMutexOneInstance = ::CreateMutex( NULL, TRUE,
-	 _T("OCSINVENTORY-088FA840-B10D-11D3-BC36-006067709674"));
-
-    AlreadyRunning = (GetLastError() == ERROR_ALREADY_EXISTS);
-
-    if ( AlreadyRunning ) {
+    if (GetLastError() == ERROR_ALREADY_EXISTS)
+	{
+		m_nAppExitCode = OCS_APP_ALREADY_RUNNING_ERROR;
 	    return FALSE; // terminates the application
 	}
 
@@ -141,6 +139,7 @@ BOOL COCSInventoryApp::InitInstance()
 		if (GetModuleFileName( AfxGetInstanceHandle(), szExecutionFolder, _MAX_PATH) == 0)
 		{
 			//AfxMessageBox( IDS_ERROR_INIT_FAILED, MB_ICONSTOP);
+			m_nAppExitCode = OCS_APP_GENERIC_ERROR;
 			return FALSE;
 		}
 
@@ -162,6 +161,7 @@ BOOL COCSInventoryApp::InitInstance()
 		if (!GetComputerName( szDeviceName, &ulBufferLength))
 		{
 			//AfxMessageBox( IDS_ERROR_INIT_FAILED, MB_ICONSTOP);
+			m_nAppExitCode = OCS_APP_GENERIC_ERROR;
 			return FALSE;
 		}
 		
@@ -410,7 +410,8 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 				xmlResp = CNetUtils::sendXml(pConnect,&myMarkup);
 
 				CString ret;
-				if( xmlResp.GetDoc() != "" ) {			
+				if( xmlResp.GetDoc() != "" )
+				{			
 					AddLog( _T( "OK.\n"));
 					// Prolog network response
 					AddLog( _T( "HTTP SERVER: Receiving prolog response..."));
@@ -459,10 +460,14 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 					{
 						AddLog( _T("HTTP SERVER: INV : ERROR : Communication problem\n"));
 						bServerUp=FALSE;
+						m_nAppExitCode = OCS_APP_NETWORK_ERROR;
 					}
 				}
 				else
+				{
 					bServerUp=FALSE;
+					m_nAppExitCode = OCS_APP_NETWORK_ERROR;
+				}
 			}
 			catch (CInternetException* pEx)
 			{
@@ -471,6 +476,7 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 				AddLog( _T( "HTTP SERVER: Network initialization block: %s\n"), sz);
 				pEx->Delete();
 				bServerUp=FALSE;
+				m_nAppExitCode = OCS_APP_NETWORK_ERROR;
 			}
 			AddLog( _T( "HTTP SERVER: Closing HTTP connection\n"));
 			if(pConnect!=NULL)
@@ -509,13 +515,15 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 		 *	Main inventory function
 		 *
 		 ****/
-		if( bInventoryNeeded ) {
+		if( bInventoryNeeded )
+		{
 			CUtils::trace("INVENTORY",cmdL);
 			// Get Device info
 			AddLog( _T( "Retrieving Device informations...\n"));			
 			if (!m_ThePC.RetrieveHardwareAndOS(pSysInfo, cmdL)) {
 				// Can't get Device hardware and os => stop !
 				AddLog( _T( "CANNOT RETRIEVE DEVICE INFORMATIONS !\nExiting\n\n\n"));
+				m_nAppExitCode = OCS_APP_INVENTORY_ERROR;
 				return FALSE;
 			}
 
@@ -684,6 +692,7 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 					{
 						AddLog( _T( "HTTP SERVER: INV : ERROR : No server answer concerning the account update\n"));
 						bServerUp=FALSE;
+						m_nAppExitCode = OCS_APP_NETWORK_ERROR;
 					}
 				}					
 				
@@ -781,6 +790,7 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 				pEx->GetErrorMessage(sz, 1024);
 				AddLog("HTTP ERROR: BASE: %s\n", sz);
 				pEx->Delete();
+				m_nAppExitCode = OCS_APP_NETWORK_ERROR;
 			}
 		}	
 		
@@ -842,7 +852,7 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 			delete m_pTheDB;
 			m_pTheDB = NULL;
 		}
-
+		m_nAppExitCode = OCS_APP_GENERIC_ERROR;
 		return FALSE;
 	}	
 	
@@ -1122,7 +1132,9 @@ int COCSInventoryApp::ExitInstance()
 		si.wShowWindow=SW_HIDE;
 		CreateProcess( NULL, cmd.GetBuffer(0), NULL, NULL, FALSE, 0, NULL, NULL, &si,&pi );
 	}
-	return CWinApp::ExitInstance();
+	if (CWinApp::ExitInstance() != 0)
+		m_nAppExitCode = OCS_APP_GENERIC_ERROR;
+	return m_nAppExitCode;
 }
 
 CInputDlg::CInputDlg(CWnd* pParent /*=NULL*/)

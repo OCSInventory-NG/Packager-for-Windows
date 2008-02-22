@@ -140,7 +140,9 @@ void CMyService::preInit() {
 
 void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 {	
-	//Pretend that starting up takes some time
+	BOOL bForceInventory = FALSE;
+
+	// Pretend that starting up takes some time
 	ReportStatus(SERVICE_START_PENDING, 1, 1100);
 	Sleep(1000);
 	ReportStatus(SERVICE_RUNNING);
@@ -164,7 +166,15 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 			writeIniFile(& m_iTToWait, TTO_WAIT );
 			// Check inventory state for changes, and launch agent if needed
 			if (m_iTToWait > m_iWriteIniLatency)
-				CheckInventoryState();
+			{
+				if (!bForceInventory && CheckInventoryState())
+				{
+					// Inventory state changed, force inventory immediatly
+					m_EventLogSource.Report( EVENTLOG_INFORMATION_TYPE, MSG_INFO_OCS, _T( "Inventory state change detected, OCS Inventory NG Agent launch forced"));
+					m_iTToWait = 0;
+					bForceInventory = TRUE;
+				}
+			}
 		}
 
 		if( m_iTToWait <= 0 )
@@ -172,7 +182,7 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 			UINT vOld = m_iOldPrologFreq;
 			closeHandles();
 			//closeIni();
-			if (!runAgent())
+			if (!runAgent( bForceInventory))
 			{
 				// Agent launch failed
 				if (nLatencyAgentLaunch < (m_iPrologFreq*PROLOG_FREQ_UNIT))
@@ -182,6 +192,7 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 			}
 			else
 			{
+				bForceInventory = FALSE;
 				// Agent launch successful, restore initial latency
 				nLatencyAgentLaunch = m_iWriteIniLatency ? m_iWriteIniLatency : WRITE_TTOWAIT_EACH;
 				// Read new parameters
@@ -221,12 +232,15 @@ void CMyService::OnStop()
 	InterlockedExchange((LONG volatile*) &m_bWantStop, TRUE);
 }
 
-BOOL CMyService::runAgent( BOOL bForce) {
+BOOL CMyService::runAgent( BOOL bForce)
+{
 	//RUN inventory !
-	CString cmd,
-			csAuth;
-	BOOL	bReturn;
-	
+	CString csCmd,
+			csAuth,
+			csMessage;
+	BOOL	bReturn = FALSE;
+	DWORD	dwExitCode;
+
 	Sleep( generateRandNumber( m_iWriteIniLatency ? m_iWriteIniLatency : WRITE_TTOWAIT_EACH) );
 
 	// Check if Basic authentication required
@@ -241,12 +255,12 @@ BOOL CMyService::runAgent( BOOL bForce) {
 	}
 	//cmd.Format("%s%s /server:%s /port:%s%s", m_sCurDir, RUN_OCS, m_csServer, m_csPort, (m_iProxy?"":" /np") );
 	if (bForce)
-		// Force agent to send inventory, even if server do not request it
-		// Used for inventory state change detcted
-		cmd.Format( _T( "%s%s /FORCE %s %s"), m_sCurDir, RUN_OCS, m_csMisc, csAuth );
+		// Force agent to send inventory, even if server does not request it
+		// Used when inventory state change detected
+		csCmd.Format( _T( "%s%s /FORCE %s %s"), m_sCurDir, RUN_OCS, m_csMisc, csAuth );
 	else
-		cmd.Format( _T( "%s%s %s %s"), m_sCurDir, RUN_OCS, m_csMisc, csAuth );
-	//AfxMessageBox("INVENTAIRE!");
+		csCmd.Format( _T( "%s%s %s %s"), m_sCurDir, RUN_OCS, m_csMisc, csAuth );
+
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 
@@ -257,16 +271,32 @@ BOOL CMyService::runAgent( BOOL bForce) {
 	si.dwFlags=STARTF_USESHOWWINDOW;
 	si.wShowWindow=SW_SHOW;
 	DWORD waitRet;
-	if( !(bReturn = CreateProcess( NULL, cmd.GetBuffer(0), NULL, NULL, FALSE,0/*CREATE_DEFAULT_ERROR_MODE|IDLE_PRIORITY_CLASS*/, NULL, NULL, &si,&pi ))) {
-		CString errString;
-		errString.Format( _T( "Cant't launch OCS Inventory NG Agent, error:%d"),GetLastError());
-		m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, errString);
+	if( !CreateProcess( NULL, csCmd.GetBuffer(0), NULL, NULL, FALSE,0/*CREATE_DEFAULT_ERROR_MODE|IDLE_PRIORITY_CLASS*/, NULL, NULL, &si,&pi ))
+	{
+		csMessage.Format( _T( "Cant't launch OCS Inventory NG Agent, error:%d"),GetLastError());
+		m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, csMessage);
 	}
-	/*else if( (waitRet = WaitForSingleObject( pi.hProcess, 30000 )) == WAIT_TIMEOUT ) {
-		m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, "OCS Inventory NG agent timeout !");
-	}*/
-	//waitRet = WaitForMultipleObjects(1, &pi.hProcess,TRUE, 30000 );
-	waitRet = WaitForSingleObject( pi.hProcess, INFINITE );
+	else
+	{
+		// Process launched, wait for termination to get exit code
+		waitRet = WaitForSingleObject( pi.hProcess, INFINITE );
+		if (!GetExitCodeProcess( pi.hProcess, &dwExitCode))
+		{
+			csMessage.Format( _T( "Cant't get OCS Inventory NG Agent exit code, error:%d"), GetLastError());
+			m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, csMessage);
+		}
+		else
+		{
+			if (dwExitCode != 0)
+			{
+				csMessage.Format( _T( "OCS Inventory NG Agent encounter an error, exit code is %lu"), dwExitCode);
+				m_EventLogSource.Report(EVENTLOG_ERROR_TYPE, MSG_ERROR_OCS, csMessage);
+			}
+			else
+				// Success
+				bReturn = TRUE;
+		}
+	}
 	return bReturn;
 }
 
@@ -560,12 +590,8 @@ BOOL CMyService::CheckInventoryState()
 		// Checking if networks changes
 		csBuffer = myList.GetHash();
 		if (csBuffer.CompareNoCase( myState.GetNetworks()) != 0)
-		{
-			// Changed, force inventory
-			m_EventLogSource.Report( EVENTLOG_INFORMATION_TYPE, MSG_INFO_OCS, _T( "Inventory state change detected, OCS Inventory NG Agent launch forced"));
-			return runAgent( TRUE);
-		}
-
+			// Changed, ask forced inventory
+			return TRUE;
 	}
 	catch( CException *pEx)
 	{

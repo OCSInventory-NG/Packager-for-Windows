@@ -12,7 +12,7 @@
 #define		SERVICE_EXT				"ini"
 #define		DEFAULT_PROLOG_FREQ		10
 #define		WRITE_TTOWAIT_EACH		60
-#define		RUN_OCS					"ocsinventory.exe /debug"
+#define		RUN_OCS					"ocsinventory.exe"
 #ifndef OCS_SERVICE
 #define	OCS_SERVICE				_T( "OCS_SERVICE")
 #endif
