@@ -1,6 +1,6 @@
 ################################################################################
-##OCSInventory Version NG 1.01 Production
-##Copyleft Emmanuel GUILLORY 2006
+##OCSInventory Version NG 1.02 Production
+##Copyleft Emmanuel GUILLORY 2008
 ##Web : http://ocsinventory.sourceforge.net
 ##
 ##This code is open source and may be copied and modified as long as the source
@@ -14,7 +14,8 @@
 ;
 ;
 ;
-; 4042
+;4042
+; New compress method
 ;4040
 ; agent bug when no link to OCS server Patched
 ;4038
