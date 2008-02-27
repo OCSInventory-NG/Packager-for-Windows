@@ -14,8 +14,10 @@
 ;
 ;
 ;
+;4044
+; Cleaning /upgrade when used
 ;4042
-; New compress method
+; New compressor method
 ;4040
 ; agent bug when no link to OCS server Patched
 ;4038
@@ -46,7 +48,7 @@
 setcompressor /SOLID lzma
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory Agent"
-!define PRODUCT_VERSION "4.0.4.2"
+!define PRODUCT_VERSION "4.0.4.4"
 !define PRODUCT_PUBLISHER "OCS Inventory NG Team"
 !define PRODUCT_WEB_SITE "http://ocsinventory.sourceforge.net"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"
@@ -470,6 +472,8 @@ ParseCmd_NoUpgrade:
 ParseCmd_Upgrade_end:
   ; Remove parsed arg from command line
   ${WordReplace} "$9" "/NOSPLASH" "" "+" $R1
+  StrCpy $9 $R1
+  ${WordReplace} "$9" "/UPGRADE" "" "+" $R1
   StrCpy $9 $R1
   ; Miscellaneous options
   WriteINIStr "$PLUGINSDIR\options.ini" "Field 10" "State" "$9"
