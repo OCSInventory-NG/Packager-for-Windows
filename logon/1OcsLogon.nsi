@@ -11,8 +11,11 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;4044
+; do not try to download agent if /local option
+; give cmdline with /folder: tranformed to /D= to ocsagent.exe when No /install option
 ;4042
-; new compress method
+; new compressor method
 ;4040
 ; new service testing
 ; new parse method
@@ -29,30 +32,31 @@
 ; /folder popup issue patched
 ; Added /UNINSTALL
 ; Added /URL:[url]
-; Added /install (so try downloading OcsPackage.exe) ---> Fait
-; no longer label download-------------------------------------> Fait
+; Added /install (so try downloading OcsPackage.exe)
+; no longer label download
 ;4026
-; Added /folder: ---------------------------------------------> Fait
-; /RegRun option eventually ----------------------------------> Reported
-; Added /
-; Replaced "NSISdl::download" by "NSISdl::download_quiet" ----> Fait
+; Added /folder:
+; Replaced "NSISdl::download" by "NSISdl::download_quiet" 
 ;4004-4014
 ; Normal roadmapped improvments
 ;
-;###############################################################################
+;
 setcompressor /SOLID lzma
 !include "MUI.nsh"
 ;!include "WinMessages.nsh"
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng"
-!define TimeOut "600000"
-!define Compile_version "4.0.4.2"
-!define hard_option "" ; i.e. "/debug /deploy:4040 /install /url:http://MyOCSserverFQDNorIP/deploy/"
+!define TimeOut "60000"
+!define Compile_version "4.0.4.4"
+!define hard_option "" ; i.e. "/debug /deploy:4044 /install /url:http://MyOCSserverFQDNorIP/deploy/"
+!include "WordFunc.nsh"
+!insertmacro WordReplace
  var url
  var version
  var OcsLogon_v ; to complete the debug option
  var http_port_number ;it means what it says
  var /GLOBAL AgentExeName
+ var CmdLineOption
 # /debug = debug option
 # /np = No proxy use
 # /pnum:[POTR NUMBER] = http port number (only for the deploy)
@@ -62,12 +66,10 @@ setcompressor /SOLID lzma
 
 BRANDINGTEXT "OCS Inventory NG ${Compile_version}"
 Icon "ocs.ico"
-;ShowInstDetails hide
+;ShowInstDetails hide  ; not compatible with /local....
 Name "OcsLogon"
 OutFile "OcsLogon.exe"
 ;$R7 became the install folder
-SilentInstall silent
-; Page instfiles
 Page custom customOCSFloc ValidatecustomOCSFloc ""
 page instfiles
 ;--------------------------------
@@ -83,460 +85,436 @@ page instfiles
 ;--------------------------------
 
 Function Write_Log
-  ClearErrors
-  Push "$CMDLINE"
-  Push " /debug"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  ;messagebox mb_ok $0
-  intcmp $0 6 +2 0 +2
-  goto done
-  strcmp $OcsLogon_v "" done 0
-  FileOpen $0 "$R7\OcsLogon.log" a
-  FileSeek $0 END END
-  IfErrors done
-  FileWrite $0 "$OcsLogon_v"
-  strcpy $OcsLogon_v ""
-  FileClose $0
+   ClearErrors
+   Push "$CMDLINE"
+   Push " /debug"
+   Call StrStr
+   Pop $R9
+   Strlen $0 $R9
+   intcmp $0 6 +2 0 +2
+   goto done
+   strcmp $OcsLogon_v "" done 0
+   FileOpen $0 "$R7\OcsLogon.log" a
+   FileSeek $0 END END
+   IfErrors done
+   FileWrite $0 "$OcsLogon_v"
+   strcpy $OcsLogon_v ""
+   FileClose $0
 done:
 FunctionEnd
 
 Function .onInit
-  InitPluginsDir
-  File /oname=$PLUGINSDIR\OCSFloc.ini "OCSFloc.ini"
-  strcpy $CMDLINE "$CMDLINE ${hard_option}"
-; Prevent Multiple Instances
-  System::Call 'kernel32::CreateMutexA(i 0, i 0, t "OcsLogonNG") i .r1 ?e'
-  Pop $R0
-  StrCmp $R0 0 not_running
-  strcpy $OcsLogon_v "OcsLogon.exe is already running!$\r$\n"
-  call Write_Log
-  Abort
+   InitPluginsDir
+   File /oname=$PLUGINSDIR\OCSFloc.ini "OCSFloc.ini"
+   strcpy $CMDLINE "$CMDLINE ${hard_option}"
+   ; Prevent Multiple Instances
+   System::Call 'kernel32::CreateMutexA(i 0, i 0, t "OcsLogonNG") i .r1 ?e'
+   Pop $R0
+   StrCmp $R0 0 not_running
+   strcpy $OcsLogon_v "OcsLogon.exe is already running!$\r$\n"
+   call Write_Log
+   Abort
 not_running:
-; :url option here!
-  Push "/url:"
-  Push ""   ; push a default value onto the stack
-  Call GetParameterValue
-  Pop $R0
-  strcpy $URL $R0
-; VRIFYING IF NOT NT
-; ClearErrors
-; ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
-; IfErrors 0 lbl_winnt
-; writeregstr HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Run" "OCS Inventory NG" "$cmdline"
-; lbl_winnt:
-  call test-folder
-  SetOutPath "$R7"
-  delete "$R7\OcsLogon.log"
-  StrCpy $R8 ${OCSserver}
-  ; test exe Name
-  ; if exeName <> OcsLogon.exe then OCSserver variable = exeName
-  System::Call 'kernel32::GetModuleFileNameA(i 0, t .R0, i 1024) i r1'
-  ;$R0 will contain the installer filename
-  pop $R0
-  Strlen $0 $exedir
-  intop $0 $0 + 1
-  StrCpy $R0 $R0 -4 $0 ; $RO is the exeName without "\" and ".exe"
-  strcmp "OcsLogon" $R0 no_server_change 0
-  StrCpy $R8 $R0
+   ;**********************
+   ; :url option here!
+   ;**********************
+   Push "/url:"
+   Push ""   ; push a default value onto the stack
+   Call GetParameterValue
+   Pop $R0
+   strcpy $URL $R0
+   call test-folder
+   SetOutPath "$R7"
+   delete "$R7\OcsLogon.log"
+   StrCpy $R8 ${OCSserver}
+  
+   ;**************************************************************
+   ; test exe Name
+   ; if exeName <> OcsLogon.exe then OCSserver variable = exeName
+   ;**************************************************************
+   System::Call 'kernel32::GetModuleFileNameA(i 0, t .R0, i 1024) i r1'
+   ;$R0 will contain the installer filename
+   pop $R0
+   Strlen $0 $exedir
+   intop $0 $0 + 1
+   StrCpy $R0 $R0 -4 $0 ; $RO is the exeName without "\" and ".exe"
+   strcmp "OcsLogon" $R0 no_server_change 0
+   StrCpy $R8 $R0
 no_server_change:
-  strcmp "ocslocal" $R0  0 no_add_local_option
-  StrCpy $cmdline '$cmdline /local'
+   strcmp "ocslocal" $R0  0 no_add_local_option
+   StrCpy $cmdline '$cmdline /local'
 no_add_local_option:
 
- ;****************************************
- ; Force deploying version number option ;*
- ;****************************************
-  Push "/deploy:"
-  Push ""   ;push a default value onto the stack
-  Call GetParameterValue
-  Pop $R9
- ; be shure only numbers...
-  intop $R9 $R9 + 0
-  strcpy $version $R9
- ;****************************
- ;  Port Number option ;*
- ;****************************
-  Push "/pnum:"
-  Push "80"   ;push a default value onto the stack
-  Call GetParameterValue
-  Pop $R9
-  intop $R9 $R9 + 0
-  strcpy $OcsLogon_v  "$OcsLogon_vCmd Line: $CMDLINE $\r$\n"
-  strcpy $http_port_number $R9
-  strcpy $OcsLogon_v  "$OcsLogon_vOCS server port number: $R9"
+  ;****************************************
+  ; Force deploying version number option ;*
+  ;****************************************
+   Push "/deploy:"
+   Push ""   ;push a default value onto the stack
+   Call GetParameterValue
+   Pop $R9
+  ; be shure only numbers...
+   intop $R9 $R9 + 0
+   strcpy $version $R9
+  
+  ;****************************
+  ;  Port Number option ;*
+  ;****************************
+   Push "/pnum:"
+   Push "80"   ;push a default value onto the stack
+   Call GetParameterValue
+   Pop $R9
+   intop $R9 $R9 + 0
+   strcpy $OcsLogon_v  "$OcsLogon_vCmd Line: $CMDLINE $\r$\n"
+   strcpy $http_port_number $R9
+   strcpy $OcsLogon_v  "$OcsLogon_vOCS server port number: $R9"
 
- ;*******************************
- ;     Build the url string
- ;*******************************
-  strcpy $OcsLogon_v  "$OcsLogon_v$\r$\n"
-  strcmp $url "" 0 c_url
-  strcpy $url "http://$R8:$http_port_number/ocsinventory/deploy/"
-  goto d_url
+  ;*******************************
+  ;     Build the url string for NSISDL
+  ;*******************************
+   strcpy $OcsLogon_v  "$OcsLogon_v$\r$\n"
+   strcmp $url "" 0 c_url
+   strcpy $url "http://$R8:$http_port_number/ocsinventory/deploy/"
+   goto d_url
 c_url:
-  strcpy $OcsLogon_v  "$OcsLogon_v URL used : $url$\r$\n"
+   strcpy $OcsLogon_v  "$OcsLogon_v URL used : $url$\r$\n"
 d_url:
 
- ;***************************************************************************
- ;      write install folder, server and version in log if /debug
- ;***************************************************************************
-  call Write_Log
-  strcpy $OcsLogon_v "Deploy folder : $R7$\r$\n"
-  call Write_Log
-  strcpy $OcsLogon_v "OCSserver is set to:  $R8$\r$\n"
-  call Write_Log
-  strcpy $OcsLogon_v "Internal Ocslogon version: ${Compile_version}$\r$\n"
-  call Write_Log
-  ;**********************
-  ;  UNINSTALL option   ;*
-  ;**********************
-  Push "$CMDLINE"
-  Push " /UNinstall"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  intcmp $0 10 0 noUNinstall_requested 0
-  strcpy $OcsLogon_v "$OcsLogon_vUNinstall Requested.$\r$\n"
-  call UNinstall
-  ABORT
+  ;***************************************************************************
+  ;      write install folder, server and version in log if /debug
+  ;***************************************************************************
+   call Write_Log
+   strcpy $OcsLogon_v "Deploy folder : $R7$\r$\n"
+   call Write_Log
+   strcpy $OcsLogon_v "OCSserver is set to:  $R8$\r$\n"
+   call Write_Log
+   strcpy $OcsLogon_v "Internal Ocslogon version: ${Compile_version}$\r$\n"
+   call Write_Log
+   ;**********************
+   ;  UNINSTALL option   ;*
+   ;**********************
+   Push "$CMDLINE"
+   Push " /UNinstall"
+   Call StrStr
+   Pop $R9
+   Strlen $0 $R9
+   intcmp $0 10 0 noUNinstall_requested 0
+   strcpy $OcsLogon_v "$OcsLogon_vUNinstall Requested.$\r$\n"
+   call UNinstall
+   ABORT
 noUNinstall_requested:
 
-  ;**********************
-  ;  Install option     ;*
-  ;**********************
-  call test_install
-  ;**********************
-  ;  No proxy option   ;*
-  ;**********************
-  Push "$CMDLINE"
-  Push " /np"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  intcmp $0 3 0 proxy_use 0
-  StrCpy $OcsLogon_v "$OcsLogon_v No proxy use.$\r$\n"
-  goto proxy_end
+   ;**********************
+   ;  Install option     ;*
+   ;**********************
+   call test_install
+   ;**********************
+   ;  No proxy option   ;*
+   ;**********************
+   Push "$CMDLINE"
+   Push " /np"
+   Call StrStr
+   Pop $R9
+   Strlen $0 $R9
+   intcmp $0 3 0 proxy_use 0
+   StrCpy $OcsLogon_v "$OcsLogon_v No proxy use.$\r$\n"
+   goto proxy_end
 proxy_use:
-  StrCpy $OcsLogon_v "$OcsLogon_v Proxy use.$\r$\n"
+   StrCpy $OcsLogon_v "$OcsLogon_v Proxy use.$\r$\n"
 proxy_end:
- call Write_Log
- Push "$CMDLINE"
-  Push " /local"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  intcmp $0 6 local_ok 0 local_ok
-  call test_installed_service
-;*************************
-;  BUG WITH /LOCAL not the right place for the 2 folowing lines
-;  call test_install
-;  SetOutPath "$R7"
-; ***********************
-  Push "$CMDLINE"
-  Push "/"
-  Call StrStr
-  Pop $1
-  call Write_Log
-  strcpy $OcsLogon_v "Launching : $R7\OCSInventory.exe $1 /server:$R8$\r$\n"
-  call Write_Log
-  Exec "$R7\OCSInventory.exe $1 /server:$R8"
+   call Write_Log
+   Push "$CMDLINE"
+   Push " /local"
+   Call StrStr
+   Pop $R9
+   Strlen $0 $R9
+   intcmp $0 6 local_ok 0 local_ok
+   call test_installed_service
+   Push "$CmdLineOption"
+   Push "/"
+   Call StrStr
+   Pop $1
+   call Write_Log
+   strcpy $OcsLogon_v "Launching : $R7\OCSInventory.exe $1 /server:$R8$\r$\n"
+   call Write_Log
+   Exec "$R7\OCSInventory.exe $1 /server:$R8"
 local_ok:
-  call Write_Log
-  strcpy $OcsLogon_v "Cmdline option is :$cmdline$\r$\n$OcsLogon_v $\r$\n"
-  call Write_Log
-  ClearErrors
+   call Write_Log
+   strcpy $OcsLogon_v "Cmdline option is :$cmdline$\r$\n$OcsLogon_v $\r$\n"
+   call Write_Log
+   ClearErrors
 FunctionEnd
 
 function test_installed_service
- ; Si /install ok
- ;tESTER SI LE service est ok, si oui, on quitte
- ;messagebox mb_ok "test_installed_service"
-  strcpy $OcsLogon_v "$OcsLogon_vTesting Service...$\r$\n"
-  services::GetServiceNameFromDisplayName 'OCS INVENTORY'
-  Pop $R0
-  ;ReadRegStr $R0 HKLM "SYSTEM\CurrentControlSet\Services\OCS INVENTORY" "start"
-  strcmp $R0 "1" 0 lbl_test98
-  strcpy $OcsLogon_v "$OcsLogon_vService is installed.$\r$\n" ;"Exiting OcsLogon.$\r$\n"
-  services::IsServiceRunning 'OCS INVENTORY'
-  Pop $R0
-  strcpy $OcsLogon_v "$OcsLogon_vIs Service Running : $R0$\r$\n" ;"Exiting OcsLogon.$\r$\n"
-  strcmp $R0 "Yes" normal_ending 0
-  ;WriteRegDword HKLM "SYSTEM\CurrentControlSet\Services\OCS INVENTORY" "start" "2"
-  ;WriteRegDword HKLM "SYSTEM\ControlSet001\Services\OCS INVENTORY" "start" "2"
-  services::SendServiceCommand 'start' 'OCS INVENTORY'
-  Pop $R0
-  strcpy $OcsLogon_v "$OcsLogon_vTry start service : $R0$\r$\n"
-  strcmp $R0 "Ok" normal_ending 0
-  strcpy $OcsLogon_v "$OcsLogon_vERROR WITH service : $R0$\r$\n PLEASE CHECK CONFIGURATION...$\r$\n"
+   ;*******************************************
+   ; test 'OCS INVENTORY' service
+   ;*******************************************
+   strcpy $OcsLogon_v "$OcsLogon_vTesting Service...$\r$\n"
+   services::GetServiceNameFromDisplayName 'OCS INVENTORY'
+   Pop $R0
+   strcmp $R0 "1" 0 lbl_test98
+   strcpy $OcsLogon_v "$OcsLogon_vService is installed.$\r$\n"
+   services::IsServiceRunning 'OCS INVENTORY'
+   Pop $R0
+   strcpy $OcsLogon_v "$OcsLogon_vIs Service Running : $R0$\r$\n"
+   strcmp $R0 "Yes" normal_ending 0
+   services::SendServiceCommand 'start' 'OCS INVENTORY'
+   Pop $R0
+   strcpy $OcsLogon_v "$OcsLogon_vTry to start service : $R0$\r$\n"
+   strcmp $R0 "Ok" normal_ending 0
+   strcpy $OcsLogon_v "$OcsLogon_vService ERROR: $R0$\r$\n PLEASE CHECK CONFIGURATION...$\r$\n"
 normal_ending:
-  strcpy $OcsLogon_v "$OcsLogon_vExiting OcsLogon.$\r$\n"
-  call Write_Log
-  call showlog
-abort
+   strcpy $OcsLogon_v "$OcsLogon_vExiting OcsLogon.$\r$\n"
+   call Write_Log
+   call showlog
+   abort
 lbl_test98:
-  ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices" "OCS Inventory NG"
-  strlen $0 $R0
-  ;messagebox mb_ok "clé =$0 --- $R0"
-  intcmp $0 21 lbl_fintestservice lbl_fintestservice 0
-  strcpy $OcsLogon_v "$OcsLogon_vService installed on Widows 9x.$\r$\nExiting OcsLogon.$\r$\n"
-  call Write_Log
-  call showlog
-abort
-
+   ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices" "OCS Inventory NG"
+   strlen $0 $R0
+   intcmp $0 21 lbl_fintestservice lbl_fintestservice 0
+   strcpy $OcsLogon_v "$OcsLogon_vService installed on Widows 9x.$\r$\nExiting OcsLogon.$\r$\n"
+   call Write_Log
+   call showlog
+   ABORT
 lbl_fintestservice:
- strcpy $OcsLogon_v "$OcsLogon_vService missing "
- call Write_Log
+   strcpy $OcsLogon_v "$OcsLogon_vService missing "
+   call Write_Log
 FunctionEnd
 
 Function StrStr
-  Exch $R1 ; st=haystack,old$R1, $R1=needle
-  Exch    ; st=old$R1,haystack
-  Exch $R2 ; st=old$R1,old$R2, $R2=haystack
-  Push $R3
-  Push $R4
-  Push $R5
-  StrLen $R3 $R1
-  StrCpy $R4 0
-  ; $R1=needle
-  ; $R2=haystack
-  ; $R3=len(needle)
-  ; $R4=cnt
-  ; $R5=tmp
+   Exch $R1 ; st=haystack,old$R1, $R1=needle
+   Exch    ; st=old$R1,haystack
+   Exch $R2 ; st=old$R1,old$R2, $R2=haystack
+   Push $R3
+   Push $R4
+   Push $R5
+   StrLen $R3 $R1
+   StrCpy $R4 0
+   ; $R1=needle
+   ; $R2=haystack
+   ; $R3=len(needle)
+   ; $R4=cnt
+   ; $R5=tmp
 loop:
-  StrCpy $R5 $R2 $R3 $R4
-  StrCmp $R5 $R1 done
-  StrCmp $R5 "" done
-  IntOp $R4 $R4 + 1
-  Goto loop
+   StrCpy $R5 $R2 $R3 $R4
+   StrCmp $R5 $R1 done
+   StrCmp $R5 "" done
+   IntOp $R4 $R4 + 1
+   Goto loop
 done:
-  StrCpy $R1 $R2 "" $R4
-  Pop $R5
-  Pop $R4
-  Pop $R3
-  Pop $R2
-  Exch $R1
+   StrCpy $R1 $R2 "" $R4
+   Pop $R5
+   Pop $R4
+   Pop $R3
+   Pop $R2
+   Exch $R1
 FunctionEnd
 
 Function donwnload
-  pop $1
-  pop $2
-  NSISdl::download_quiet /TIMEOUT=600000 "$2" "$1.new"
-  pop $0
-  strcmp $0 "success" 0 snorm
-  delete "$1"
-  rename "$1.new" "$1"
- snorm:
-  strcpy $OcsLogon_v "$OcsLogon_v$2 : $0$\r$\n"
+   pop $1
+   pop $2
+   NSISdl::download_quiet /TIMEOUT=${TimeOut} "$2" "$1.new"
+   pop $0
+   strcmp $0 "success" 0 snorm
+   delete "$1"
+   rename "$1.new" "$1"
+snorm:
+   strcpy $OcsLogon_v "$OcsLogon_v$2 : $0$\r$\n"
 FunctionEnd
 
 Function donwnloadnp
-  pop $1
-  pop $2
-  NSISdl::download_quiet /TIMEOUT=600000 /NOIEPROXY "$2" "$1.new"
-  pop $0
-  strcmp $0 "success" 0 snormnp
-  delete "$1"
-  rename "$1.new" "$1"
+   pop $1
+   pop $2
+   NSISdl::download_quiet /TIMEOUT=${TimeOut} /NOIEPROXY "$2" "$1.new"
+   pop $0
+   strcmp $0 "success" 0 snormnp
+   delete "$1"
+   rename "$1.new" "$1"
 snormnp:
-  strcpy $OcsLogon_v "$OcsLogon_v$2 : $0$\r$\n"
+   strcpy $OcsLogon_v "$OcsLogon_v$2 : $0$\r$\n"
 FunctionEnd
 
 
 Function UNinstall
-  strcpy $1 "ocsuninstall.exe"
-  Push "$CMDLINE"
-  Push " /np"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  intcmp $0 3 0 Udownload_withProxy 0
-  push "$url$1"
-  push "$R7\ocsuninstall.exe"
-  call donwnloadnp
-  goto Udownload_end
+   strcpy $1 "ocsuninstall.exe"
+   Push "$CMDLINE"
+   Push " /np"
+   Call StrStr
+   Pop $R9
+   Strlen $0 $R9
+   intcmp $0 3 0 Udownload_withProxy 0
+   push "$url$1"
+   push "$R7\ocsuninstall.exe"
+   call donwnloadnp
+   goto Udownload_end
 Udownload_withProxy:
-  push "$url$1"
-  push "$R7\ocsuninstall.exe"
-  call donwnload
+   push "$url$1"
+   push "$R7\ocsuninstall.exe"
+   call donwnload
 Udownload_end:
-  call Write_Log
-  execwait "$R7\ocsuninstall.exe"
+   call Write_Log
+   execwait "$R7\ocsuninstall.exe"
 FunctionEnd
 
 Function install
-; messagebox mb_ok "Install!"
-  call Write_Log
-  strcpy $OcsLogon_v "Ocs Inventory NG ($version) was not previously installed.$\r$\nStart deploying OCS$\r$\n"
-  call Write_Log
-  SetOutPath "$R7"
-;:::::::::::/install option
-  Push "$CMDLINE"
-  Push " /install"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  intcmp $0 8 0 set_install 0
-  strcpy $AgentExeName "ocspackage.exe"
-  goto telech
-  set_install:
-  strcpy $AgentExeName "ocsagent.exe"
+   call Write_Log
+   strcpy $OcsLogon_v "Ocs Inventory NG ($version) was not previously installed.$\r$\nStart deploying OCS$\r$\n"
+   call Write_Log
+   SetOutPath "$R7"
+   ;***************************************************
+   ; Will download "ocspackage.exe" if /install is used
+   ;***************************************************
+   Push "$CMDLINE"
+   Push " /install"
+   Call StrStr
+   Pop $R9
+   Strlen $0 $R9
+   intcmp $0 8 0 set_install 0
+   strcpy $AgentExeName "ocspackage.exe" ;  Because of /install
+   goto telech
+   set_install:
+   strcpy $AgentExeName "ocsagent.exe"   ; Other cases
 telech:
-; messagebox mb_ok $R9
-;:::::::::::::::::::::::: End /install option
-  Push "$CMDLINE"
-  Push " /np"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  intcmp $0 3 0 download_withProxy 0
-  push "$url$AgentExeName"
-  push "$R7\ocsagent.exe"
-  call donwnloadnp
+   Push "$CMDLINE"
+   Push " /np"
+   Call StrStr
+   Pop $R9
+   Strlen $0 $R9
+   intcmp $0 3 0 download_withProxy 0
+   push "$url$AgentExeName"
+   push "$R7\ocsagent.exe"
+   call donwnloadnp
   ; push "http://$R8$http_port_number/ocsinventory/deploy/label"
-  ;push "$R7\label"
-  ;call donwnloadnp
-  goto download_end
+  ; push "$R7\label"
+  ; call donwnloadnp
+   goto download_end
 download_withProxy:
-  push "$url$AgentExeName"
-  push "$R7\ocsagent.exe"
-  call donwnload
- ; push "http://$R8$http_port_number/ocsinventory/deploy/label"
- ; push "$R7\label"
- ; call donwnload
+   push "$url$AgentExeName"
+   push "$R7\ocsagent.exe"
+   call donwnload
+  ; push "http://$R8$http_port_number/ocsinventory/deploy/label"
+  ; push "$R7\label"
+  ; call donwnload
 download_end:
-;::::::::::::::::::::::::::::::::::::*
-
-  ;strcpy $R6 "$R6$\r$\n$OcsLogon_v"
   ;*****************************************************************
   ;       install success if verbose option (/debug) ;*
   ;*****************************************************************
-  call Write_Log
-  strcpy $OcsLogon_v "End Deploying$\r$\n"
-  call Write_Log
-  ClearErrors
-  ; SetShellVarContext all
-  ; createdirectory "$SMPROGRAMS\ocs-ng"
-  ; CreateShortCut "$SMPROGRAMS\OCS-NG\OCS-NG.lnk" "$PROGRAMFILES\ocs-ng\OcsLogon.exe" "/local" '' 0 SW_SHOWNORMAL ALT|CONTROL|i "Lancement de OCS-NG en local."
-  SetShellVarContext current
-  ; SetShellVarContext all
-  ; createdirectory "$SMPROGRAMS\ocs-ng"
-  ; CreateShortCut "$R7 local.lnk" "$R7\OcsLogon.exe" "/local" '' 0 SW_SHOWNORMAL ALT|CONTROL|i "Lancement de OCS-NG en local."
+   call Write_Log
+   strcpy $OcsLogon_v "End Deploying$\r$\n"
+   call Write_Log
+   ClearErrors
 FunctionEnd
 
 Function test-folder
- ; *************************************
- ;  if /local do not calculate exedir  *
- ; *************************************
-  Push "$CMDLINE"
-  Push " /local"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  intcmp $0 6 0 no_local 0
-  strcpy $R7 $exedir
-goto suite
+    ; *************************************
+    ;  if /local do not calculate exedir  *
+    ; *************************************
+    Push "$CMDLINE"
+    Push " /local"
+    Call StrStr
+    Pop $R9
+    Strlen $0 $R9
+    intcmp $0 6 0 no_local 0
+    strcpy $R7 $exedir
+    goto suite
 no_local:
- ; *****************************
- ;  giving the good directory  *
- ; *****************************
-  strcpy $R7 $WINDIR 2
-  strcpy $R7 "$R7\ocs-ng"
-  Push "/folder:"
-  Push ""   ;push a default value onto the stack
-  Call GetParameterValue
-  Pop $R9
-;  testing /folder: option
-  intcmp $0 3 folder_use 0 folder_use
-  goto folder_end
+    ; *****************************
+    ;  giving the good directory  *
+    ; *****************************
+    strcpy $R7 $WINDIR 2
+    strcpy $R7 "$R7\ocs-ng"
+    Push "/folder:"
+    Push ""   ;push a default value onto the stack
+    Call GetParameterValue
+    Pop $R0
+    strlen $0 $R0
+    ;  testing /folder: option
+    intcmp $0 3 folder_use 0 folder_use
+    goto folder_end
 folder_use:
-  delete $R7 ; Just if it is a file ;)
-  createdirectory "$R7"
-  goto suite
+    strcpy $R7 $R0
+    delete $R7 ; Just if it is a file ;)
+    createdirectory "$R7"
+    strcpy $CmdLineOption $CMDLINE
+    ; Remove /folder: from command line
+    ${WordReplace} "$CmdLineOption" "/folder:$R7" "" "+" $R1
+    strcpy $CmdLineOption '$R1 /D=$R7'
+    goto suite
 folder_end:
-  ; end testing /folder option
-  ; test deploy foldr
-  delete $R7 ; Just if it is a file ;)
-  createdirectory "$R7"
-  FileOpen $1 "$R7\file.dat" w
-  FileWrite $1 "OCS_NG"
-  Fileclose $1
-  FileOpen $0 "$R7\file.dat" r
-  FileRead $0 $1
- ; Tested the entered vallue
-  FileClose $0
-  strcmp $1 "OCS_NG"  0    PB
- ; Writing OK so $R7 = c:\ocs-ng
-  SetFileAttributes "$R7\file.dat" NORMAL
-  delete "$R7\file.dat"
-;  goto suite
-;PB: ; Can not Write so giving $R7 the user temp value
-  IfFileExists "$R7\ocsagent.exe" 0 et1
-  delete "$R7\ocsagent.new"
-  IfFileExists "$R7\ocsagent.new" PB 0
-  rename "$R7\ocsagent.exe" "$R7\ocsagent.old"
-  IfFileExists "$R7\ocsagent.old" 0 PB
-  delete "$R7\ocsagent.old"
+    ; end testing /folder option
+    ; test deploy foldr
+    delete $R7 ; Just if it is a file ;)
+    createdirectory "$R7"
+    FileOpen $1 "$R7\file.dat" w
+    FileWrite $1 "OCS_NG"
+    Fileclose $1
+    FileOpen $0 "$R7\file.dat" r
+    FileRead $0 $1
+    ; Tested the entered vallue
+    FileClose $0
+    strcmp $1 "OCS_NG"  0    PB
+    ; Writing OK so $R7 = c:\ocs-ng
+    SetFileAttributes "$R7\file.dat" NORMAL
+    delete "$R7\file.dat"
+    ;PB: ; Can not Write so giving $R7 the user temp value
+    IfFileExists "$R7\ocsagent.exe" 0 et1
+    delete "$R7\ocsagent.new"
+    IfFileExists "$R7\ocsagent.new" PB 0
+    rename "$R7\ocsagent.exe" "$R7\ocsagent.old"
+    IfFileExists "$R7\ocsagent.old" 0 PB
+    delete "$R7\ocsagent.old"
 et1:
-  IfFileExists "$R7\ocsinventory.exe" 0 suite
-  rename "$R7\ocsinventory.exe" "$R7\ocsinventory.old"
-  IfFileExists "$R7\ocsinventory.old" 0 PB
-  IfFileExists "$R7\ocsinventory.exe" PB 0
-  rename "$R7\ocsinventory.old" "$R7\ocsinventory.exe"
-  goto suite
+    IfFileExists "$R7\ocsinventory.exe" 0 suite
+    rename "$R7\ocsinventory.exe" "$R7\ocsinventory.old"
+    IfFileExists "$R7\ocsinventory.old" 0 PB
+    IfFileExists "$R7\ocsinventory.exe" PB 0
+    rename "$R7\ocsinventory.old" "$R7\ocsinventory.exe"
+    goto suite
 PB:
-  strcpy $R7 "$TEMP"
-  ;messagebox mb_ok $R7
-  createdirectory "$R7\ocs-ng"
-  strcpy $R7 "$R7\ocs-ng"
-  FileOpen $1 "$R7\file.dat" w
-  FileWrite $1 "OCS_NG"
-  Fileclose $1
-  FileOpen $0 "$R7\file.dat" r
-  FileRead $0 $1
-  ; Tested the entered vallue
-  ; messagebox mb_ok 3--$1
-  FileClose  $0
-  strcmp $1 "OCS_NG"  PASPBt PBt
+    strcpy $R7 "$TEMP"
+    createdirectory "$R7\ocs-ng"
+    strcpy $R7 "$R7\ocs-ng"
+    FileOpen $1 "$R7\file.dat" w
+    FileWrite $1 "OCS_NG"
+    Fileclose $1
+    FileOpen $0 "$R7\file.dat" r
+    FileRead $0 $1
+    ; Test the entered vallue
+    FileClose  $0
+    strcmp $1 "OCS_NG"  PASPBt PBt
 PASPBt:  ; Can Write so temp user
-  ;messagebox mb_ok "$1  ok sur temp"
-  delete "$R7\file.dat"
-  goto suite
-PBt: ; Can not Write so exit and try to alert server
- ; messagebox mb_ok "$R8"
-  NSISdl::download_quiet /TIMEOUT=600000 /NOIEPROXY "http://$R8$http_port_number/ocsinventory/deploy/nodeploy" "$R7\nodeploy"
-  abort
+    delete "$R7\file.dat"
+    goto suite
+PBt:    ; Cannot Write so exit and try to alert server
+    NSISdl::download_quiet /TIMEOUT=${TimeOut} /NOIEPROXY "http://$R8$http_port_number/ocsinventory/deploy/nodeploy" "$R7\nodeploy"
+    abort
 suite:
+    StrCpy $9 $R1
 FunctionEnd
 
 Function test_install
-  ; Test all files.
-  ; if one is missing then dowload all
-push $R7
-; VRIFYING IF NOT NT
+   ; Test all files.
+   ; if one is missing then dowload all
+   push $R7
+   ; VRIFYING IF NOT NT
    ClearErrors
    ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows NT\CurrentVersion" CurrentVersion
    IfErrors 0 lbl_winnt
-;  NOT NT SO WIN9X
+   ;  NOT NT SO WIN9X
    ReadRegStr $0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices" "OCS Inventory NG"
    strlen $1 $0
-   ;messagebox mb_ok "longueur clé runservices :$1 $0"
    intop $1 $1 - 22
    strcpy $0 $0 $1 0
-   ;messagebox mb_ok "reste $0"
    strcmp $0 "" normalop 0
    strcpy $OcsLogon_v  "$OcsLogon_v Service Win9x is installed on: $0$\r$\n"
    strcpy $R7 $0
    ;messagebox MB_ok "$OcsLogon_v Service Win9x is installed on: $0$\r$\n"
    goto normalop
-;/////////////////////////////////////////////////
 lbl_winnt:
    ClearErrors
    ReadRegStr $0 HKLM "SYSTEM\CurrentControlSet\Services\OCS INVENTORY" "imagepath"
    strlen $1 $0
    intop $1 $1 - 17
    strcpy $0 $0 $1 1
-   ;messagebox MB_ok $0
    strcmp $0 "" normalop 0
    strcpy $OcsLogon_v  "$OcsLogon_v Service is installed on: $0$\r$\n"
    strcpy $R7 $0
@@ -546,9 +524,7 @@ normalop:
    Push " /install"
    Call StrStr
    Pop $R9
-  ;messagebox mb_ok x$R9
    Strlen $0 $R9
-  ;messagebox mb_ok $0
    intcmp $0 8 set_install normalop1 set_install
 normalop1:
    strcpy $OcsLogon_v  "$OcsLogon_vTesting: $R7\BIOSINFO.EXE$\r$\n"
@@ -561,7 +537,9 @@ normalop1:
    IfFileExists "$R7\SysInfo.dll" 0 set_install
     strcpy $OcsLogon_v  "$OcsLogon_vTesting: $R7\MFC42.DLL$\r$\n"
    IfFileExists "$R7\MFC42.DLL" 0 set_install
+   ;*********************************
    ; veriying potenial corrupted dll
+   ;*********************************
    GetDllVersion "$R7\MFC42.DLL" $R0 $R1
    IntOp $R2 $R0 / 0x00010000
    IntOp $R3 $R0 & 0x0000FFFF
@@ -581,7 +559,20 @@ normalop1:
 set_install:
    pop $R7
    push $r7
+  ;***************************************
+  ; do not call install if /local is used
+  ;***************************************
+   Push "$CMDLINE"
+   Push " /local"
+   Call StrStr
+   Pop $R9
+   Strlen $0 $R9
+   intcmp $0 7 Skip_call_install 0 Skip_call_install
    call install
+Skip_call_install:
+  ;***************************************
+  ; TESTING ocsagent.exe VERSION
+  ;***************************************
    GetDllVersion "$R7\ocsagent.exe" $R0 $R1
    IntOp $R2 $R0 / 0x00010000
    IntOp $R3 $R0 & 0x0000FFFF
@@ -597,7 +588,7 @@ err_download:
    abort
 No_err_download:
    strcpy $OcsLogon_v  "$OcsLogon_vTesting ocsagent.exe version:$0$\r$\n"
-   Push "$CMDLINE"
+   Push "$CmdLineOption"
    Push "/"
    Call StrStr
    Pop $1
@@ -616,32 +607,32 @@ No_err_download:
    Pop $R9
    Strlen $0 $R9
    intcmp $0 8 0 NOlaunchinstaller 0
-  ;exec "$R7\ocsagent.exe"
-  ; strcpy $OcsLogon_v "$OcsLogon_vStarting OCS Installer: $R7\ocsagent.exe$\r$\n"
-  ;*********************
-  ; TEST install pending
-  ;********************
-  strcpy $R9 "1"
+   ;exec "$R7\ocsagent.exe"
+   ; strcpy $OcsLogon_v "$OcsLogon_vStarting OCS Installer: $R7\ocsagent.exe$\r$\n"
+   ;*********************
+   ; TEST install pending
+   ;********************
+   strcpy $R9 "1"
 start_install:
-  intcmp $R9 120 OcsSetupNG_Failed 0
-  sleep 900
-  call test_installed_service
-  IntOp $R9 $R9 + 1
-  strcpy $OcsLogon_v  "$OcsLogon_v Install pending $R9$\r$\n"
- ; messagebox mb_ok $R0
-  strcmp $R0 "2" 0 start_install
- ;messagebox mb_ok "Must never arrive here!"
+   intcmp $R9 120 OcsSetupNG_Failed 0
+   sleep 900
+   call test_installed_service
+   IntOp $R9 $R9 + 1
+   strcpy $OcsLogon_v  "$OcsLogon_v Install pending $R9$\r$\n"
+   ;  messagebox mb_ok $R0
+   strcmp $R0 "2" 0 start_install
+   ;messagebox mb_ok "Must never arrive here!"
 OcsSetupNG_Failed:
-  strcpy $OcsLogon_v  "$OcsLogon_v Failed to install Service. Try Classic process...$\r$\n"
-  call write_log
-; end test install pending
+   strcpy $OcsLogon_v  "$OcsLogon_v Failed to install Service. Try Classic process...$\r$\n"
+   call write_log
+  ; end test install pending
 
 nolaunchinstaller:
-  goto no_install
-  Execwait "$R7\ocsagent.exe $1"
+   goto no_install
+   Execwait "$R7\ocsagent.exe $1"
 no_install:
-  ClearErrors
-pop $R7
+   ClearErrors
+   pop $R7
 FunctionEnd
 
 #####################################################################
@@ -789,27 +780,23 @@ done:
   Exch $R0 ; put the value in $R0 at the top of the stack
 FunctionEnd
 
-
-
 Function customOCSFloc
    ;****************************************************
    ;          popup to export the .ocs file           ;*
    ; ***************************************************
- Push "$CMDLINE"
- Push " /local"
- Call StrStr
- Pop $R9
- ;strcmp " /local" $R9 local_ok 0
- Strlen $0 $R9
- ;messagebox mb_ok $0
- intcmp $0 6 0 customOCSFloc_endprocess 0
-   !insertmacro MUI_HEADER_TEXT "Local inventory" "Inventory target:"
- InstallOptions::dialog "$PLUGINSDIR\OCSFloc.ini"
- customOCSFloc_endprocess:
+   Push "$CMDLINE"
+   Push " /local"
+   Call StrStr
+   Pop $R9
+   Strlen $0 $R9
+   intcmp $0 6 0 customOCSFloc_endprocess 0
+     !insertmacro MUI_HEADER_TEXT "Local inventory" "Inventory target:"
+   InstallOptions::dialog "$PLUGINSDIR\OCSFloc.ini"
+   customOCSFloc_endprocess:
 FunctionEnd
 
 Function ValidatecustomOCSFloc
-  ; destination choice and control
+   ; destination choice and control
    ReadINIStr $R0 "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State"
    StrCmp $R0 "" 0 ValidatecustomOCSFloc_done
    MessageBox MB_ICONEXCLAMATION "Select a target directory."
@@ -826,7 +813,6 @@ ValidatecustomOCSFloc_done:
    FileOpen $1 "$R0\file.dat" w
    FileWrite $1 "OK$\r$\n"
    Fileclose $1
-;MessageBox MB_ICONEXCLAMATION "$R0\file.dat"
    IfFileExists "$R0\file.dat" ValidatecustomOCSFloc_ok ValidatecustomOCSFloc_err
 ValidatecustomOCSFloc_err:
    MessageBox MB_iconstop "Target directory not writable!"
@@ -836,7 +822,6 @@ ValidatecustomOCSFloc_ok:
    ;*************************
    ;* For local option only *
    ;*************************
-   ;messagebox mb_iconexclamation "EXPORT ..."
    # read  DESTINATION in the ini file
    ReadINIStr $R0 "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State"
    Strlen $0 $R0
@@ -844,11 +829,12 @@ ValidatecustomOCSFloc_ok:
    StrCpy $R0 $R0 2
    SetOutPath "$R7"
    delete "$R7\*.ocs"
-   Push "$CMDLINE"
+   Push "$CmdLine"
    Push "/"
    Call StrStr
    Pop $1
    Execwait "$R7\OCSInventory.exe $1"
+   
    ClearErrors
    CopyFiles "*.ocs" "$R0\"
    IfErrors bad_copy good_copy
@@ -865,20 +851,18 @@ Section
 SectionEnd
 
 function showlog
-  Push $CMDLINE
-  Push "/editlog"
-  Call StrStr
-  Pop $R9
-  Strlen $0 $R9
-  ;MESSAGEBOX MB_ok "$0 edit OK :$R9"
-  intcmp $0 8 editlog 0 editlog
-  goto editlogend
+   Push $CMDLINE
+   Push "/editlog"
+   Call StrStr
+   Pop $R9
+   Strlen $0 $R9
+   intcmp $0 8 editlog 0 editlog
+   goto editlogend
 editlog:
-  Execshell open "$R7\ocslogon.log"
+   Execshell open "$R7\ocslogon.log"
 editlogend:
-;***************FIN
 functionend
 
 Section -Post
-  call showlog
+   call showlog
 SectionEnd
