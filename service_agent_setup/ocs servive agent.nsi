@@ -927,6 +927,9 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+  ; write auth_user and auth_pwd to prevent warning event
+  WriteINIStr "$INSTDIR\uninst.exe" "OCS_SERVICE"  "auth_user" ""
+  WriteINIStr "$INSTDIR\uninst.exe" "OCS_SERVICE"  "auth_pwd" ""
   ; Write deployement status file if required
   StrCmp "$OcsUpgrade" "TRUE" 0 Post_end
   ; WRITE ../done
