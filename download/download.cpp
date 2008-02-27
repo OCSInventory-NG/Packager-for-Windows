@@ -385,7 +385,7 @@ void CDownloadApp::period( CObArray * pC ) {
 				// highest priority package
 				if( rt.GetSize() ) {
 					if( fileExists("done", pP->Id ) > 0 ) {
-						pP->done();
+						pP->done( pP->Id);
 						AddLog("Now pausing for fragment latency(%s secs)", m_csFragLatency);
 						Sleep( atoi(m_csFragLatency) * 1000 );
 						continue;
@@ -405,7 +405,7 @@ void CDownloadApp::period( CObArray * pC ) {
 					continue;
 			//regular priority package
 			if( fileExists("done", pP->Id ) > 0 ) {
-				pP->done();
+				pP->done( pP->Id);
 				AddLog("Now pausing for fragment latency(%s secs)", m_csFragLatency);
 				Sleep( atoi(m_csFragLatency) * 1000 );
 				continue;
