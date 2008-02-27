@@ -13,6 +13,8 @@
 ;                             #  CHANGELOG  #
 ;                             ###############
 ;
+; 4044
+; Default folder is $exedir
 ;---------------------------------------------------------------
 ; 4037
 ; Complete rewrite
@@ -36,7 +38,7 @@
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory NG Standalone Agent"
-!define PRODUCT_VERSION "4.0.4.2"
+!define PRODUCT_VERSION "4.0.4.4"
 !define PRODUCT_PUBLISHER "OCS Inventory NG Team"
 !define PRODUCT_WEB_SITE "http://www.ocsinventory-ng.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"
@@ -59,7 +61,7 @@
     ShowInstDetails HIDE
     AutoCloseWindow TRUE
     Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
-    InstallDir "C:\ocs-ng"
+    InstallDir "$exedir"
     OutFile "ocsagent.exe"
 
     ;--------------------------------
