@@ -490,6 +490,7 @@ Function StopService
    Push $R0
    ; Stop service
   nsExec::Exec 'net stop "OCS INVENTORY"'
+  sleep 3000
   ; KillProcDLL ©2003 by DITMan, based upon the KILL_PROC_BY_NAME function programmed by Ravi, reach him at: http://www.physiology.wisc.edu/ravi/
   ;* 0 = Process was successfully terminated
   ;* 603 = Process was not currently running
@@ -538,6 +539,7 @@ Function un.StopService
    Push $R0
    ; Stop service
    nsExec::Exec 'net stop "OCS INVENTORY"'
+   sleep 3000
   ; KillProcDLL ©2003 by DITMan, based upon the KILL_PROC_BY_NAME function programmed by Ravi, reach him at: http://www.physiology.wisc.edu/ravi/
   ;* 0 = Process was successfully terminated
   ;* 603 = Process was not currently running
