@@ -14,6 +14,8 @@
 ;
 ;
 ;
+; bug (sometimes ocsservice.dll is not writable after an upgrage)
+; by a robust servces check
 ;4044
 ; Cleaning /upgrade when used
 ;4042
@@ -56,8 +58,6 @@ setcompressor /SOLID lzma
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 !include "FileFunc.nsh"
 !include "WordFunc.nsh"
-;!insertmacro GetOptionsS
-;!insertmacro GetOptions
 !insertmacro GetTime
 !insertmacro WordReplace
 
@@ -70,29 +70,21 @@ ICON "aocs2.ico"
 ;!define MUI_HEADERIMAGE_BITMAP "banner-ocs.bmp"
 !define MUI_HEADERIMAGE_BITMAP "lOCS-ng-48.bmp" ; optional
 ;!define MUI_WELCOMEFINISHPAGE_BITMAP "lOCS-ng-48-2.bmp"
-
 !define MUI_AbortWARNING
 !define MUI_ICON "aocs2.ico"
 !define MUI_UNICON "uocs2.ico"
-
 ; Welcome page
 !insertmacro MUI_PAGE_WELCOME
 ; License page
 !insertmacro MUI_PAGE_LICENSE "license.txt"
 ;!insertmacro MUI_PAGE_COMPONENTS
-
 ; Directory page
 Page custom customOCSFloc ValidatecustomOCSFloc ""
 
 !insertmacro MUI_PAGE_DIRECTORY
-; Instfiles page
 !insertmacro MUI_PAGE_INSTFILES
-; Finish page
 !insertmacro MUI_PAGE_FINISH
-
-; Uninstaller pages
 !insertmacro MUI_UNPAGE_INSTFILES
-
 ; Language files
 !insertmacro MUI_LANGUAGE "English"
 !insertmacro MUI_LANGUAGE "French"
@@ -109,6 +101,8 @@ Page custom customOCSFloc ValidatecustomOCSFloc ""
 
 ; Setup log file
 !define SETUP_LOG_FILE "$exedir\OcsAgentSetup.log"
+!define Service_Time_Out "10"
+
 
 ; MUI end ------
   VIProductVersion "${PRODUCT_VERSION}"
@@ -488,9 +482,31 @@ FunctionEnd
 Function StopService
    ; Save used register
    Push $R0
-   ; Stop service
-  nsExec::Exec 'net stop "OCS INVENTORY"'
-  sleep 3000
+   services::IsServiceRunning 'OCS INVENTORY'
+   pop $0
+   StrCpy $OcsLogon_v "IsServiceRunning: $0$\r$\n"
+   Call Write_Log
+  ; Stop service
+  ; services::SendServiceCommand 'stop' 'OCS INVENTORY'
+   Exec "$INSTDIR\ocsservice -stop"  ;$R0
+  ; nsExec::Exec 'net stop "OCS INVENTORY"'
+   StrCpy $OcsLogon_v "Try to stop service: $R0$\r$\n"
+   Call Write_Log
+   strcpy $1 0
+boucle_stop_service:
+   intop $1 $1 + 1
+   strcmp ${Service_Time_Out} $1 Err_time_out_reached 0 
+   sleep 950
+   services::IsServiceRunning 'OCS INVENTORY'
+   pop $0
+   StrCpy $OcsLogon_v "IsServiceRunning: $0 waiting service $1 second(s) $\r$\n"
+   Call Write_Log
+   strcmp $0 "YES" boucle_stop_service fin_boucle_stop_service
+Err_time_out_reached:
+   StrCpy $OcsLogon_v "Err_time_out_reached!$\r$\n"
+   StrCpy $OcsLogon_v "Will try to kill processes..$\r$\n"
+   Call Write_Log
+fin_boucle_stop_service:
   ; KillProcDLL ©2003 by DITMan, based upon the KILL_PROC_BY_NAME function programmed by Ravi, reach him at: http://www.physiology.wisc.edu/ravi/
   ;* 0 = Process was successfully terminated
   ;* 603 = Process was not currently running
@@ -505,28 +521,19 @@ Function StopService
   ;* 702 = Unable to load KERNEL32.DLL
   ;* 703 = Unable to get procedure address from KERNEL32.DLL
   ;* 704 = CreateToolhelp32Snapshot failed
-  KillProcDLL::KillProc "OCSInventory.exe"
-  Pop $R0
-  IntCmp $R0 603 0 StopService_download StopService_download
-  StrCpy $R0 "0"
-StopService_download:
-  SetErrorLevel $R0
-  KillProcDLL::KillProc "download.exe"
-  Pop $R0
-  IntCmp $R0 603 0 StopService_inst32 StopService_inst32
-  StrCpy $R0 "0"
-StopService_inst32:
+  KillProcDLL::KillProc "OCSInventory.exe" ; $R0
+  StrCpy $OcsLogon_v "Termiate OCSInventory.exe : $R0$\r$\n"
+  Call Write_Log
+  KillProcDLL::KillProc "download.exe" ;$R0
+  StrCpy $OcsLogon_v "Termiate download.exe     : $R0$\r$\n"
+  Call Write_Log
   KillProcDLL::KillProc "inst32.exe"
-  Pop $R0
-  IntCmp $R0 603 0 StopService_OcsService StopService_OcsService
-  StrCpy $R0 "0"
-StopService_OcsService:
+  StrCpy $OcsLogon_v "Termiate inst32.exe       : $R0$\r$\n"
+  Call Write_Log
   KillProcDLL::KillProc "OcsService.exe"
-  Pop $R0
-  IntCmp $R0 603 0 StopService_end StopService_end
-  StrCpy $R0 "0"
-StopService_end:
-  SetErrorLevel $R0
+  StrCpy $OcsLogon_v "Termiate OcsService.exe   : $R0$\r$\n"
+  Call Write_Log
+  sleep 1000
   ; Restore used register
   Pop $R0
 FunctionEnd
@@ -537,9 +544,31 @@ FunctionEnd
 Function un.StopService
    ; Save used register
    Push $R0
-   ; Stop service
-   nsExec::Exec 'net stop "OCS INVENTORY"'
-   sleep 3000
+   services::IsServiceRunning 'OCS INVENTORY'
+   pop $0
+   StrCpy $OcsLogon_v "IsServiceRunning: $0$\r$\n"
+   Call un.Write_Log
+  ; Stop service
+  ; services::SendServiceCommand 'stop' 'OCS INVENTORY'
+   Exec "$INSTDIR\ocsservice -stop"  ;$R0
+  ; nsExec::Exec 'net stop "OCS INVENTORY"'
+   StrCpy $OcsLogon_v "Try to stop service: $R0$\r$\n"
+   Call un.Write_Log
+   strcpy $1 0
+boucle_stop_service:
+   intop $1 $1 + 1
+   strcmp ${Service_Time_Out} $1 Err_time_out_reached 0
+   sleep 950
+   services::IsServiceRunning 'OCS INVENTORY'
+   pop $0
+   StrCpy $OcsLogon_v "IsServiceRunning: $0 waiting service $1 second(s) $\r$\n"
+   Call un.Write_Log
+   strcmp $0 "YES" boucle_stop_service fin_boucle_stop_service
+Err_time_out_reached:
+   StrCpy $OcsLogon_v "Err_time_out_reached!$\r$\n"
+   StrCpy $OcsLogon_v "Will try to kill processes..$\r$\n"
+   Call un.Write_Log
+fin_boucle_stop_service:
   ; KillProcDLL ©2003 by DITMan, based upon the KILL_PROC_BY_NAME function programmed by Ravi, reach him at: http://www.physiology.wisc.edu/ravi/
   ;* 0 = Process was successfully terminated
   ;* 603 = Process was not currently running
@@ -554,28 +583,19 @@ Function un.StopService
   ;* 702 = Unable to load KERNEL32.DLL
   ;* 703 = Unable to get procedure address from KERNEL32.DLL
   ;* 704 = CreateToolhelp32Snapshot failed
-  KillProcDLL::KillProc "OCSInventory.exe"
-  Pop $R0
-  IntCmp $R0 603 0 unStopService_download unStopService_download
-  StrCpy $R0 "0"
-unStopService_download:
-  SetErrorLevel $R0
-  KillProcDLL::KillProc "download.exe"
-  Pop $R0
-  IntCmp $R0 603 0 unStopService_inst32 unStopService_inst32
-  StrCpy $R0 "0"
-unStopService_inst32:
+  KillProcDLL::KillProc "OCSInventory.exe" ; $R0
+  StrCpy $OcsLogon_v "Termiate OCSInventory.exe : $R0$\r$\n"
+  Call un.Write_Log
+  KillProcDLL::KillProc "download.exe" ;$R0
+  StrCpy $OcsLogon_v "Termiate download.exe     : $R0$\r$\n"
+  Call un.Write_Log
   KillProcDLL::KillProc "inst32.exe"
-  Pop $R0
-  IntCmp $R0 603 0 unStopService_OcsService unStopService_OcsService
-  StrCpy $R0 "0"
-unStopService_OcsService:
+  StrCpy $OcsLogon_v "Termiate inst32.exe       : $R0$\r$\n"
+  Call un.Write_Log
   KillProcDLL::KillProc "OcsService.exe"
-  Pop $R0
-  IntCmp $R0 603 0 unStopService_end unStopService_end
-  StrCpy $R0 "0"
-unStopService_end:
-  SetErrorLevel $R0
+  StrCpy $OcsLogon_v "Termiate OcsService.exe   : $R0$\r$\n"
+  Call un.Write_Log
+  sleep 1000
   ; Restore used register
   Pop $R0
 FunctionEnd
@@ -708,10 +728,10 @@ TestInstall_No_Service:
   Call Write_Log
 TestInstall_end:
 ; If yes, stop it and kill processes
-  StrCpy $OcsLogon_v "Trying to stop service and kill processes..."
+  StrCpy $OcsLogon_v "--$\r$\nTrying to stop service and kill processes...$\r$\n"
   Call Write_Log
   Call StopService
-  StrCpy $OcsLogon_v "OK$\r$\n"
+  StrCpy $OcsLogon_v "--$\r$\n"
   Call Write_Log
   ; Restore used register
   Pop $R0
@@ -753,6 +773,15 @@ WriteServiceIni_debug:
 WriteServiceIni_debug_end:
   ; Write miscellaneous
   WriteINIStr "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous" "$R0"
+; write and preserve auth_user and auth_pwd to prevent warning event
+  readinistr $0 "$INSTDIR\service.ini" "OCS_SERVICE" "auth_user"
+  strcmp $0 "" 0 preserve_auth_user
+  WriteINIStr "$INSTDIR\service.ini" "OCS_SERVICE"  "auth_user" "none"
+preserve_auth_user:
+  readinistr $0 "$INSTDIR\service.ini" "OCS_SERVICE"  "auth_pwd"
+  strcmp $0 "" 0 preserve_auth_pwd
+  WriteINIStr "$INSTDIR\service.ini" "OCS_SERVICE"  "auth_pwd" "none"
+preserve_auth_pwd:
   Sleep 1000
   ; Restore used register
   Pop $R1
@@ -771,6 +800,27 @@ Function Write_Log
   StrCmp $OcsLogon_v "" WriteLog_end
   ; Open log file
   FileOpen $R0 ${SETUP_LOG_FILE} a
+  ; Seek to end
+  FileSeek $R0 END END
+  IfErrors WriteLog_end
+  ; Write
+  FileWrite $R0 "$OcsLogon_v"
+  StrCpy $OcsLogon_v ""
+  ; Close file
+  FileClose $R0
+WriteLog_end:
+  ; Restore used register
+  Pop $R0
+FunctionEnd
+
+Function un.Write_Log
+  ; Save used register
+  Push $R0
+  ClearErrors
+  ; Is there something to write ?
+  StrCmp $OcsLogon_v "" WriteLog_end
+  ; Open log file
+  FileOpen $R0 "$INSTDIR\uninst.log" a
   ; Seek to end
   FileSeek $R0 END END
   IfErrors WriteLog_end
@@ -903,13 +953,13 @@ Section "OCS Inventory Agent" SEC01
   File "..\_Release\PSAPI.DLL"
   File "..\_Release\zlib.dll"
   ; Create service configuration file
-  StrCpy $OcsLogon_v "OK$\r$\nUpdating service configuration..."
+  StrCpy $OcsLogon_v "OK$\r$\nUpdating service configuration (service.ini)..."
   Call Write_Log
   Call WriteServiceIni
   ; Install service
   StrCpy $OcsLogon_v "OK$\r$\nTrying to install and/or start service..."
   Call Write_Log
-  call StartSvc
+  Call StartSvc
   StrCpy $OcsLogon_v "OK$\r$\n"
   Call Write_Log
 SectionEnd
@@ -927,9 +977,6 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
-  ; write auth_user and auth_pwd to prevent warning event
-  WriteINIStr "$INSTDIR\uninst.exe" "OCS_SERVICE"  "auth_user" ""
-  WriteINIStr "$INSTDIR\uninst.exe" "OCS_SERVICE"  "auth_pwd" ""
   ; Write deployement status file if required
   StrCmp "$OcsUpgrade" "TRUE" 0 Post_end
   ; WRITE ../done
@@ -944,7 +991,8 @@ SectionEnd
 # This function writes install status into log file when sucessfull install
 #####################################################################
 Function .onInstSuccess
-  StrCpy $OcsLogon_v "SUCESS: ${PRODUCT_NAME} ${PRODUCT_VERSION} successfuly installed ;-)$\r$\n"
+  ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+  StrCpy $OcsLogon_v "SUCESS: ${PRODUCT_NAME} ${PRODUCT_VERSION} successfuly installed on $0/$1/$2 at $4:$5:$6$\r$\n;-)$\r$\n "
   Call Write_Log
 FunctionEnd
 
@@ -977,6 +1025,8 @@ FunctionEnd
 # This section stop service, uninstall service and remove files
 #####################################################################
 Section Uninstall
+  StrCpy $OcsLogon_v "Sarting ${PRODUCT_NAME} ${PRODUCT_VERSION} UNISTALL...$\r$\n"
+  Call un.Write_Log
   call un.StopService
   ; Verifying if not Windows NT
   ClearErrors
@@ -1027,4 +1077,7 @@ Function un.onUninstSuccess
   IntCmp $0 2 unOnUninstSuccess_silent 0 unOnUninstSuccess_silent
   MessageBox MB_OK|MB_ICONEXCLAMATION "${PRODUCT_NAME} ${PRODUCT_VERSION} was successfully uninstalled.$\r$\nUnder Windows NT 4.0, restart of your computer is needed to complete uninstall process."
 unOnUninstSuccess_silent:
+  StrCpy $OcsLogon_v "${PRODUCT_NAME} ${PRODUCT_VERSION} was successfully uninstalled.$\r$\nUnder Windows NT 4.0, restart of your computer is needed to complete uninstall process."
+  Call un.Write_Log
+
 FunctionEnd
