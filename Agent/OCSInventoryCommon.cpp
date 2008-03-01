@@ -128,7 +128,8 @@ BOOL COCSInventoryApp::InitInstance()
 		BOOL				bOldFlag = FALSE;
 		CObArray			modules;
 		int					modCount;
-		BOOL				bWriteState = FALSE;
+		BOOL				bWriteState = FALSE,
+							bNotify = FALSE;
 
 		cStartTime = CTime::GetCurrentTime();
 		CString cmdL = this->m_lpCmdLine;
@@ -448,17 +449,29 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 
 					if( !rep.CompareNoCase("stop") )
 					{
-						AddLog( _T("HTTP SERVER: INV : No inventory needed\n"));
-						bInventoryNeeded=FALSE;
+						// Check if agent launched in notify mode when inventory changes detected
+						if (CUtils::IsRequired(cmdL,"notify"))
+						{
+							// Yes, so inventory changes detected, force inventory in notify mode
+							AddLog( _T("HTTP SERVER: No inventory needed, but changes detected, so running NOTIFY inventory\n"));
+							bInventoryNeeded=TRUE;
+							bNotify=TRUE;
+						}
+						else
+						{
+							// No, so follow server directive to not run inventory
+							AddLog( _T("HTTP SERVER: No inventory needed\n"));
+							bInventoryNeeded=FALSE;
+						}
 					}
 					else if( !rep.CompareNoCase("send") )
 					{
-						AddLog( _T("HTTP SERVER: INV : Inventory requested by server\n"));
+						AddLog( _T("HTTP SERVER: Inventory requested by server\n"));
 						bInventoryNeeded=TRUE;					
 					}
 					else
 					{
-						AddLog( _T("HTTP SERVER: INV : ERROR : Communication problem\n"));
+						AddLog( _T("HTTP SERVER: ERROR : Communication problem\n"));
 						bServerUp=FALSE;
 						m_nAppExitCode = OCS_APP_NETWORK_ERROR;
 					}
@@ -668,31 +681,79 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 				pConnect = sess2.GetHttpConnection(csServer, iPort, csHttpUserName, csHttpPassword);
 				AddLog( _T( "OK\n"));
 				
-				if(bServerUp && ! CUtils::IsRequired(cmdL,"test") && bInventoryNeeded ) {				
+				if(bServerUp && ! CUtils::IsRequired(cmdL,"test") && bInventoryNeeded )
+				{				
 					CUtils::trace("SEND_INVENTORY",cmdL);
 					AddLog( _T( "HTTP SERVER: INV : SEND received, sending inventory..."));
-					xmlResp=CNetUtils::sendXml(pConnect,pXml);
-					AddLog( _T( "OK.\n"));
-					bWriteState = TRUE;
-					// Inventory sent, writing down new deviceid
-					if( bOldFlag )
-						CUtils::writeMacDeviceid( m_ThePC.GetDeviceID(), csActualMac, cmdL);
+					if (bNotify)
+					{
+						// Only send NOTIFY message, not complete inventory
+						CMarkup xmlNotify;
+						xmlNotify.SetDoc(XML_HEADERS);
+						xmlNotify.AddElem("REQUEST");
+						xmlNotify.IntoElem();
 
-					CString rep2=CUtils::getResponse(xmlResp);				
-					if(!rep2.CompareNoCase("account_update"))
-					{
-						AddLog( _T( "HTTP SERVER: INV : account info update needed\n"));
-						CUtils::parseAccountParams(xmlResp);
-					}
-					else if(!rep2.CompareNoCase("no_account_update"))
-					{
-						AddLog( _T( "HTTP SERVER: INV : no account info update\n"));
+						pXml->ResetPos();
+						pXml->FindElem( "REQUEST");
+						pXml->IntoElem();
+						pXml->FindElem( "DEVICEID");
+						xmlNotify.AddElemNV( "DEVICEID", pXml->GetData());
+
+						xmlNotify.AddElemNV("QUERY","NOTIFY");
+						xmlNotify.AddElemNV("TYPE","IP");
+						pXml->FindElem( "CONTENT");
+						pXml->IntoElem();
+						while(pXml->FindElem("NETWORKS"))
+						{
+							xmlNotify.AddElem( "IFACE");
+							xmlNotify.IntoElem();
+							pXml->FindChildElem("MACADDR");
+							xmlNotify.AddElemNV( "MAC", pXml->GetChildData());
+							pXml->ResetChildPos();
+
+							pXml->FindChildElem("IPADDRESS");
+							xmlNotify.AddElemNV( "IP", pXml->GetChildData());
+							pXml->ResetChildPos();
+
+							pXml->FindChildElem("IPMASK");
+							xmlNotify.AddElemNV( "MASK", pXml->GetChildData());
+							pXml->ResetChildPos();
+
+							xmlNotify.OutOfElem();
+						}
+						xmlResp=CNetUtils::sendXml( pConnect, &xmlNotify);
 					}
 					else
 					{
-						AddLog( _T( "HTTP SERVER: INV : ERROR : No server answer concerning the account update\n"));
-						bServerUp=FALSE;
-						m_nAppExitCode = OCS_APP_NETWORK_ERROR;
+						// Send complete inventory
+						xmlResp=CNetUtils::sendXml(pConnect,pXml);
+					}
+					bWriteState = TRUE;
+					AddLog( _T( "OK.\n"));
+					// Inventory sent, writing down new deviceid
+					if( bOldFlag )
+						CUtils::writeMacDeviceid( m_ThePC.GetDeviceID(), csActualMac, cmdL);
+					
+					// In NOTIFY mode, server only answer HTTP code, no account update
+					if (!bNotify)
+					{
+						// Not in NOTIFY mode, parse server answer
+						CString rep2=CUtils::getResponse(xmlResp);				
+						if(!rep2.CompareNoCase("account_update"))
+						{
+							AddLog( _T( "HTTP SERVER: INV : account info update needed\n"));
+							CUtils::parseAccountParams(xmlResp);
+						}
+						else if(!rep2.CompareNoCase("no_account_update"))
+						{
+							AddLog( _T( "HTTP SERVER: INV : no account info update\n"));
+						}
+						else
+						{
+							AddLog( _T( "HTTP SERVER: INV : ERROR : No server answer concerning the account update\n"));
+							bServerUp=FALSE;
+							m_nAppExitCode = OCS_APP_NETWORK_ERROR;
+						}
 					}
 				}					
 				
@@ -800,12 +861,17 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 		}
 		
 		// Write inventory state
-		AddLog( _T( "Writing last inventory state file...\n"));
 		csMessage.Format( _T( "%s%s"), szExecutionFolder, OCS_LAST_STATE_FILE);
 		if (bWriteState)
-			m_pTheDB->WriteLastInventoryState( csMessage, m_State);
+		{
+			AddLog( _T( "Writing last inventory state file...\n"));
+			if (bNotify)
+				m_pTheDB->NotifyInventoryState( csMessage, m_State);
+			else
+				m_pTheDB->WriteLastInventoryState( csMessage, m_State);
+		}
 		else
-			AddLog( _T( "\tWriting last inventory state not required.\n"));
+			AddLog( _T( "Writing last inventory state not required.\n"));
 
 		// Closing database (XML)
 		if(bInventoryNeeded ) {

@@ -104,6 +104,7 @@ public: // Methods
 	void SetCmdL(LPCSTR cmdL); 
 	virtual BOOL ReadLastInventoryState( LPCTSTR lpstrFilename, COCSInventoryState &myState);
 	virtual BOOL WriteLastInventoryState( LPCTSTR lpstrFilename, COCSInventoryState &myState);
+	virtual	BOOL NotifyInventoryState( LPCTSTR lpstrFilename, COCSInventoryState &myState);
 
 public: // Enums
 	BOOL IsSearchDiskEnabled();

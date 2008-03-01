@@ -100,6 +100,7 @@ public: // Methods
 	BOOL launchBiosInfo( CDeviceProperties &pPC );
 	BOOL ReadLastInventoryState( LPCTSTR lpstrFilename, COCSInventoryState &myState);
 	BOOL WriteLastInventoryState( LPCTSTR lpstrFilename, COCSInventoryState &myState);
+	BOOL NotifyInventoryState( LPCTSTR lpstrFilename, COCSInventoryState &myState);
 
 protected: // Methods
 

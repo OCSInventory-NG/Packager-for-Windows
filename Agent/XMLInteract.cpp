@@ -1027,7 +1027,7 @@ BOOL CXMLInteract::UpdateSoftwares(CDeviceProperties &pPC)
 	try
 	{
 		// Check for switch on command line nosoft
-		if( CUtils::IsRequired(m_csCmdL, "nosoft") )
+		if( CUtils::IsRequired(m_csCmdL, "nosoftware") )
 		{
 			// do not report installed softwares
 			return TRUE;
@@ -1508,5 +1508,26 @@ BOOL CXMLInteract::WriteLastInventoryState(LPCTSTR lpstrFilename, COCSInventoryS
 		pEx->Delete();
 		return FALSE;
 	}
+	return TRUE;
+}
+
+BOOL CXMLInteract::NotifyInventoryState(LPCTSTR lpstrFilename, COCSInventoryState &myState)
+{
+	COCSInventoryState oldState;
+
+	AddLog( _T( "\tXML Notify new inventory state to file <%s>...\n\t"), lpstrFilename);
+	if (!ReadLastInventoryState( lpstrFilename, oldState))
+	{
+		AddLog( _T( "\tXML Notify new inventory state FAILED\n"));
+		return FALSE;
+	}
+	oldState.SetNetworks( myState.GetNetworks());
+	AddLog( _T( "\t"));
+	if (!WriteLastInventoryState( lpstrFilename, oldState))
+	{
+		AddLog( _T( "\tXML Notify new inventory state FAILED\n"));
+		return FALSE;
+	}
+	AddLog( _T( "\tXML Notify new inventory state successful...\n"));
 	return TRUE;
 }

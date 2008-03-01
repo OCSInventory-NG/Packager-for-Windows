@@ -219,3 +219,8 @@ BOOL CStoreInteract::WriteLastInventoryState(LPCTSTR lpstrFilename, COCSInventor
 {
 	return FALSE;
 }
+
+BOOL CStoreInteract::NotifyInventoryState(LPCTSTR lpstrFilename, COCSInventoryState &myState)
+{
+	return FALSE;
+}
