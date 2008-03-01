@@ -147,7 +147,7 @@ Severity=Informational
 Facility=Application
 SymbolicName=MSG_INFO_OCS
 Language=English
-Information: %1.
+%1.
 .
 
 MessageID=20

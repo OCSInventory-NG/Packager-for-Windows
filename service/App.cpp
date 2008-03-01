@@ -139,8 +139,9 @@ void CMyService::preInit() {
 }
 
 void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
-{	
-	BOOL bForceInventory = FALSE;
+{
+	// To use agent in NOTIFY mode when inventory state chanage detected
+	BOOL bNotifyInventory = FALSE;
 
 	// Pretend that starting up takes some time
 	ReportStatus(SERVICE_START_PENDING, 1, 1100);
@@ -167,12 +168,12 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 			// Check inventory state for changes, and launch agent if needed
 			if (m_iTToWait > m_iWriteIniLatency)
 			{
-				if (!bForceInventory && CheckInventoryState())
+				if (!bNotifyInventory && CheckInventoryState())
 				{
 					// Inventory state changed, force inventory immediatly
-					m_EventLogSource.Report( EVENTLOG_INFORMATION_TYPE, MSG_INFO_OCS, _T( "Inventory state change detected, OCS Inventory NG Agent launch forced"));
+					m_EventLogSource.Report( EVENTLOG_INFORMATION_TYPE, MSG_INFO_OCS, _T( "Inventory state change detected, OCS Inventory NG Agent launched in NOTIFY mode"));
 					m_iTToWait = 0;
-					bForceInventory = TRUE;
+					bNotifyInventory = TRUE;
 				}
 			}
 		}
@@ -182,7 +183,7 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 			UINT vOld = m_iOldPrologFreq;
 			closeHandles();
 			//closeIni();
-			if (!runAgent( bForceInventory))
+			if (!runAgent( bNotifyInventory))
 			{
 				// Agent launch failed
 				if (nLatencyAgentLaunch < (m_iPrologFreq*PROLOG_FREQ_UNIT))
@@ -192,7 +193,7 @@ void CMyService::ServiceMain(DWORD /*dwArgc*/, LPTSTR* /*lpszArgv*/)
 			}
 			else
 			{
-				bForceInventory = FALSE;
+				bNotifyInventory = FALSE;
 				// Agent launch successful, restore initial latency
 				nLatencyAgentLaunch = m_iWriteIniLatency ? m_iWriteIniLatency : WRITE_TTOWAIT_EACH;
 				// Read new parameters
@@ -232,7 +233,7 @@ void CMyService::OnStop()
 	InterlockedExchange((LONG volatile*) &m_bWantStop, TRUE);
 }
 
-BOOL CMyService::runAgent( BOOL bForce)
+BOOL CMyService::runAgent( BOOL bNotify)
 {
 	//RUN inventory !
 	CString csCmd,
@@ -254,10 +255,10 @@ BOOL CMyService::runAgent( BOOL bForce)
 		csAuth.Format( _T( " /auth_user:%s /auth_pwd:%s"), csUser, csPwd);
 	}
 	//cmd.Format("%s%s /server:%s /port:%s%s", m_sCurDir, RUN_OCS, m_csServer, m_csPort, (m_iProxy?"":" /np") );
-	if (bForce)
-		// Force agent to send inventory, even if server does not request it
+	if (bNotify)
+		// Force agent to notify inventory, even if server does not request it
 		// Used when inventory state change detected
-		csCmd.Format( _T( "%s%s /FORCE %s %s"), m_sCurDir, RUN_OCS, m_csMisc, csAuth );
+		csCmd.Format( _T( "%s%s /NOTIFY %s %s"), m_sCurDir, RUN_OCS, m_csMisc, csAuth );
 	else
 		csCmd.Format( _T( "%s%s %s %s"), m_sCurDir, RUN_OCS, m_csMisc, csAuth );
 

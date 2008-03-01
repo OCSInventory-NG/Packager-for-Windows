@@ -212,6 +212,14 @@ SOURCE=..\include\_common\base64.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\_common\defines.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\xml\Markup.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\ntserv.h
 # End Source File
 # Begin Source File
@@ -257,6 +265,10 @@ SOURCE=.\service_utils.h
 # Begin Source File
 
 SOURCE=.\stdafx.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\SysInfo\SysInfo.h
 # End Source File
 # Begin Source File
 
