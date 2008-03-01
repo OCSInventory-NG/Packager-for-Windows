@@ -756,84 +756,88 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 						}
 					}
 				}					
-				
-				if(bServerUp) 
-				{					
-					CUtils::trace("SENDING_UPDATE",cmdL);
-					myMarkup.SetDoc(XML_HEADERS);
-					myMarkup.AddElem("REQUEST");
-					myMarkup.IntoElem();
-					myMarkup.AddElem("QUERY","UPDATE");
-					myMarkup.AddElem("PLATFORM",PLATFORM_NAME);
-					myMarkup.AddElem("AGENT",csAgentVer);
+/**********************************************************************************************/
+/* NO MORE AGENT UPDATE USED, NOW REPLACED BY DEPLOYEMENT FEATURE
+/*				
+/*				if(bServerUp) 
+/*				{					
+/*					CUtils::trace("SENDING_UPDATE",cmdL);
+/*					myMarkup.SetDoc(XML_HEADERS);
+/*					myMarkup.AddElem("REQUEST");
+/*					myMarkup.IntoElem();
+/*					myMarkup.AddElem("QUERY","UPDATE");
+/*					myMarkup.AddElem("PLATFORM",PLATFORM_NAME);
+/*					myMarkup.AddElem("AGENT",csAgentVer);
+/*
+/*					// Asks wether an update is needed
+/*					AddLog( _T( "HTTP SERVER: UPD : Sending update query..."));
+/*					xmlResp=CNetUtils::sendXml(pConnect,&myMarkup);
+/*					AddLog( _T( "OK.\n"));
+/*					AddLog( _T( "HTTP SERVER: UPD : Receiving update response..."));
+/*					CString rep3=CUtils::getResponse(xmlResp);
+/*					AddLog( _T( "OK.\n"));
+/*
+/*					if(!rep3.CompareNoCase("no_update") ||1)
+/*					{
+/*						//AddLog( _T( "HTTP SERVER: UPD : No update needed\n"));
+/*						m_bNeedUpdate=FALSE;
+/*
+/*						/*****
+/*						 *
+/*						 *	TEST mode used to test a newly downloaded client version
+/*						 *	 only if the "test" option was provided
+/*						 *
+/*						 ****/
+/*						if(CUtils::IsRequired(cmdL,"test") &&0)
+/*						{
+/*							DeleteFile("ok.ok");
+/*							AddLog("\tTEST: Client test OK\n");
+/*							try {
+/*								CFile okFile;
+/*								okFile.Open("ok.ok",CFile::modeCreate|CFile::modeWrite);
+/*								okFile.Close();
+/*							}
+/*							catch(CException * pEf) {
+/*								pEf->Delete();
+/*								AddLog("\tTEST: ERROR: Can't write ok.ok, update canceled\n");
+/*							}
+/*						}
+/*					}
+/*					else if(!rep3.CompareNoCase("update")&&!CUtils::IsRequired(cmdL,"test"))
+/*					{
+/*						CUtils::trace("UPDATING",cmdL);
+/*						m_bNeedUpdate=TRUE;
+/*						xmlResp.ResetPos();
+/*						xmlResp.FindElem("REPLY");
+/*						xmlResp.FindChildElem("AGENT");
+/*						CString agent=xmlResp.GetChildData();
+/*						
+/*						CString url;
+/*						url.Format("%s/update/windows/agent/%s",URL_SUFFIX,agent);
+/*						AddLog( _T( "HTTP SERVER: UPD : Update requested, getting file <%s>..."),url);
+/*						
+/*						CByteArray* reponseCompresse = CNetUtils::req(pConnect,NULL,0,FALSE,url);
+/*						AddLog( _T( "OK.\n"));
+/*						AddLog( _T( "HTTP SERVER: UPD : Uncompressing files..."));
+/*						CByteArray* reponseDecompresse = CNetUtils::deCompressBin(reponseCompresse);	
+/*						AddLog( _T( "OK.\n"));
+/*						CUtils::byteToFile(reponseDecompresse,"upd.zip");					
+/*						if(reponseCompresse!=NULL)	delete reponseCompresse;
+/*						if(reponseDecompresse!=NULL) delete reponseDecompresse;
+/*						AddLog( _T( "HTTP SERVER: UPD : File download\n"));
+/*						
+/*					}
+/*					else if(CUtils::IsRequired(cmdL,"test")) {
+/*						DeleteFile("ok.ok");
+/*						AddLog( _T("HTTP SERVER: UPD: ERROR: Update asked during an update test\n"));
+/*					}
+/*					else
+/*					{
+/*						AddLog( _T( "HTTP SERVER: UPD : ERROR : Update server answer not understood:\n"));
+/*					}
+/*				}
+/**********************************************************************************************/
 
-					// Asks wether an update is needed
-					AddLog( _T( "HTTP SERVER: UPD : Sending update query..."));
-					xmlResp=CNetUtils::sendXml(pConnect,&myMarkup);
-					AddLog( _T( "OK.\n"));
-					AddLog( _T( "HTTP SERVER: UPD : Receiving update response..."));
-					CString rep3=CUtils::getResponse(xmlResp);
-					AddLog( _T( "OK.\n"));
-
-					if(!rep3.CompareNoCase("no_update") ||1)
-					{
-						//AddLog( _T( "HTTP SERVER: UPD : No update needed\n"));
-						m_bNeedUpdate=FALSE;
-
-						/*****
-						 *
-						 *	TEST mode used to test a newly downloaded client version
-						 *	 only if the "test" option was provided
-						 *
-						 ****/
-						if(CUtils::IsRequired(cmdL,"test") &&0)
-						{
-							DeleteFile("ok.ok");
-							AddLog("\tTEST: Client test OK\n");
-							try {
-								CFile okFile;
-								okFile.Open("ok.ok",CFile::modeCreate|CFile::modeWrite);
-								okFile.Close();
-							}
-							catch(CException * pEf) {
-								pEf->Delete();
-								AddLog("\tTEST: ERROR: Can't write ok.ok, update canceled\n");
-							}
-						}
-					}
-					else if(!rep3.CompareNoCase("update")&&!CUtils::IsRequired(cmdL,"test"))
-					{
-						CUtils::trace("UPDATING",cmdL);
-						m_bNeedUpdate=TRUE;
-						xmlResp.ResetPos();
-						xmlResp.FindElem("REPLY");
-						xmlResp.FindChildElem("AGENT");
-						CString agent=xmlResp.GetChildData();
-						
-						CString url;
-						url.Format("%s/update/windows/agent/%s",URL_SUFFIX,agent);
-						AddLog( _T( "HTTP SERVER: UPD : Update requested, getting file <%s>..."),url);
-						
-						CByteArray* reponseCompresse = CNetUtils::req(pConnect,NULL,0,FALSE,url);
-						AddLog( _T( "OK.\n"));
-						AddLog( _T( "HTTP SERVER: UPD : Uncompressing files..."));
-						CByteArray* reponseDecompresse = CNetUtils::deCompressBin(reponseCompresse);	
-						AddLog( _T( "OK.\n"));
-						CUtils::byteToFile(reponseDecompresse,"upd.zip");					
-						if(reponseCompresse!=NULL)	delete reponseCompresse;
-						if(reponseDecompresse!=NULL) delete reponseDecompresse;
-						AddLog( _T( "HTTP SERVER: UPD : File download\n"));
-						
-					}
-					else if(CUtils::IsRequired(cmdL,"test")) {
-						DeleteFile("ok.ok");
-						AddLog( _T("HTTP SERVER: UPD: ERROR: Update asked during an update test\n"));
-					}
-					else
-					{
-						AddLog( _T( "HTTP SERVER: UPD : ERROR : Update server answer not understood:\n"));
-					}
-				}
 				AddLog( _T( "HTTP SERVER: Closing HTTP connection...."));
 				if(pConnect!=NULL)
 				{
