@@ -143,6 +143,10 @@ SOURCE=..\include\_common\commonDownload.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\_common\defines.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\download.h
 # End Source File
 # Begin Source File
@@ -151,7 +155,19 @@ SOURCE=.\downloadDlg.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\include\fileoperations\FileOperations.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\include\_common\FilePackageHistory.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\xml\Markup.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\include\_common\net_utils.h
 # End Source File
 # Begin Source File
 

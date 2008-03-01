@@ -254,6 +254,9 @@ BOOL CDownloadApp::InitInstance()
 				if( ! task_done.Open(taskDonePath, CFile::modeCreate|CFile::modeWrite ) ){
 					AddLog("\tERROR: Can't create task_done file (%s)", taskDonePath);
 					task_done.Close();
+					// Thanks manuell (elchinese)
+					delete pPack;
+					//
 					continue;
 				}
 				task_done.Close();
@@ -735,7 +738,8 @@ int CPackage::execute() {
 			concat += CString("\\") + token ;
 		}
 
-		delete token;
+		// Thanks manuell (elchinese)
+		// delete token;
 		
 		if( unzip( "build.zip", Path )) {
 			markAsDone( ERR_UNZIP, "..\\.." );
