@@ -13,9 +13,9 @@
 ;                             ###############
 ;
 ;
-;
+;4046
 ; bug (sometimes ocsservice.dll is not writable after an upgrage)
-; by a robust servces check
+; patched by a robust servces check
 ;4044
 ; Cleaning /upgrade when used
 ;4042
@@ -50,7 +50,7 @@
 setcompressor /SOLID lzma
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory Agent"
-!define PRODUCT_VERSION "4.0.4.4"
+!define PRODUCT_VERSION "4.0.4.6"
 !define PRODUCT_PUBLISHER "OCS Inventory NG Team"
 !define PRODUCT_WEB_SITE "http://ocsinventory.sourceforge.net"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"
@@ -482,15 +482,23 @@ FunctionEnd
 Function StopService
    ; Save used register
    Push $R0
+   ; Verifying if not Windows NT
+   ClearErrors
+   ReadRegStr $R0 HKLM "${WIN_NT_KEY}" "${WIN_NT_VALUE}"
+   IfErrors 0 StopSvc_nt
+   StrCpy $OcsLogon_v "$OcsLogon_vNo services on Win9x. So just Kill Ocs Process.$\r$\n"
+   Call Write_Log
+   goto fin_boucle_stop_service
+StopSvc_nt:
    services::IsServiceRunning 'OCS INVENTORY'
    pop $0
    StrCpy $OcsLogon_v "IsServiceRunning: $0$\r$\n"
    Call Write_Log
   ; Stop service
-  ; services::SendServiceCommand 'stop' 'OCS INVENTORY'
-   Exec "$INSTDIR\ocsservice -stop"  ;$R0
-  ; nsExec::Exec 'net stop "OCS INVENTORY"'
-   StrCpy $OcsLogon_v "Try to stop service: $R0$\r$\n"
+   services::SendServiceCommand 'stop' 'OCS INVENTORY' ; This command dies silently on Win9x
+   pop $0
+  ; Exec "$INSTDIR\ocsservice -stop"  ;$R0   ; This command Makes a service error on Win9X
+   StrCpy $OcsLogon_v "Try to stop service: $0$\r$\n"
    Call Write_Log
    strcpy $1 0
 boucle_stop_service:
@@ -499,7 +507,7 @@ boucle_stop_service:
    sleep 950
    services::IsServiceRunning 'OCS INVENTORY'
    pop $0
-   StrCpy $OcsLogon_v "IsServiceRunning: $0 waiting service $1 second(s) $\r$\n"
+   StrCpy $OcsLogon_v "IsServiceRunning: $0  - waiting service $1 second(s) $\r$\n"
    Call Write_Log
    strcmp $0 "YES" boucle_stop_service fin_boucle_stop_service
 Err_time_out_reached:
@@ -521,17 +529,20 @@ fin_boucle_stop_service:
   ;* 702 = Unable to load KERNEL32.DLL
   ;* 703 = Unable to get procedure address from KERNEL32.DLL
   ;* 704 = CreateToolhelp32Snapshot failed
-  KillProcDLL::KillProc "OCSInventory.exe" ; $R0
-  StrCpy $OcsLogon_v "Termiate OCSInventory.exe : $R0$\r$\n"
-  Call Write_Log
-  KillProcDLL::KillProc "download.exe" ;$R0
-  StrCpy $OcsLogon_v "Termiate download.exe     : $R0$\r$\n"
-  Call Write_Log
-  KillProcDLL::KillProc "inst32.exe"
-  StrCpy $OcsLogon_v "Termiate inst32.exe       : $R0$\r$\n"
-  Call Write_Log
   KillProcDLL::KillProc "OcsService.exe"
-  StrCpy $OcsLogon_v "Termiate OcsService.exe   : $R0$\r$\n"
+  StrCpy $OcsLogon_v "Terminate OcsService.exe   : $R0$\r$\n"
+  Call Write_Log
+  sleep 1000
+  KillProcDLL::KillProc "OCSInventory.exe" ; $R0
+  StrCpy $OcsLogon_v "Terminate OCSInventory.exe : $R0$\r$\n"
+  Call Write_Log
+  sleep 1000
+  KillProcDLL::KillProc "download.exe" ;$R0
+  StrCpy $OcsLogon_v "Terminate download.exe     : $R0$\r$\n"
+  Call Write_Log
+  sleep 1000
+  KillProcDLL::KillProc "inst32.exe"
+  StrCpy $OcsLogon_v "Terminate inst32.exe       : $R0$\r$\n"
   Call Write_Log
   sleep 1000
   ; Restore used register
@@ -544,15 +555,23 @@ FunctionEnd
 Function un.StopService
    ; Save used register
    Push $R0
+   ; Verifying if not Windows NT
+   ClearErrors
+   ReadRegStr $R0 HKLM "${WIN_NT_KEY}" "${WIN_NT_VALUE}"
+   IfErrors 0 StopSvc_nt
+   StrCpy $OcsLogon_v "$OcsLogon_vNo services on Win9x. So just Kill Ocs Process.$\r$\n"
+   Call un.Write_Log
+   goto fin_boucle_stop_service
+StopSvc_nt:
    services::IsServiceRunning 'OCS INVENTORY'
    pop $0
    StrCpy $OcsLogon_v "IsServiceRunning: $0$\r$\n"
    Call un.Write_Log
   ; Stop service
-  ; services::SendServiceCommand 'stop' 'OCS INVENTORY'
-   Exec "$INSTDIR\ocsservice -stop"  ;$R0
-  ; nsExec::Exec 'net stop "OCS INVENTORY"'
-   StrCpy $OcsLogon_v "Try to stop service: $R0$\r$\n"
+   services::SendServiceCommand 'stop' 'OCS INVENTORY' ; This command dies silently on Win9x
+   pop $0
+  ; Exec "$INSTDIR\ocsservice -stop"  ;$R0   ; This command Makes a service error on Win9X
+   StrCpy $OcsLogon_v "Try to stop service: $0$\r$\n"
    Call un.Write_Log
    strcpy $1 0
 boucle_stop_service:
@@ -561,7 +580,7 @@ boucle_stop_service:
    sleep 950
    services::IsServiceRunning 'OCS INVENTORY'
    pop $0
-   StrCpy $OcsLogon_v "IsServiceRunning: $0 waiting service $1 second(s) $\r$\n"
+   StrCpy $OcsLogon_v "IsServiceRunning: $0  - waiting service $1 second(s) $\r$\n"
    Call un.Write_Log
    strcmp $0 "YES" boucle_stop_service fin_boucle_stop_service
 Err_time_out_reached:
@@ -583,17 +602,20 @@ fin_boucle_stop_service:
   ;* 702 = Unable to load KERNEL32.DLL
   ;* 703 = Unable to get procedure address from KERNEL32.DLL
   ;* 704 = CreateToolhelp32Snapshot failed
-  KillProcDLL::KillProc "OCSInventory.exe" ; $R0
-  StrCpy $OcsLogon_v "Termiate OCSInventory.exe : $R0$\r$\n"
-  Call un.Write_Log
-  KillProcDLL::KillProc "download.exe" ;$R0
-  StrCpy $OcsLogon_v "Termiate download.exe     : $R0$\r$\n"
-  Call un.Write_Log
-  KillProcDLL::KillProc "inst32.exe"
-  StrCpy $OcsLogon_v "Termiate inst32.exe       : $R0$\r$\n"
-  Call un.Write_Log
   KillProcDLL::KillProc "OcsService.exe"
-  StrCpy $OcsLogon_v "Termiate OcsService.exe   : $R0$\r$\n"
+  StrCpy $OcsLogon_v "Terminate OcsService.exe   : $R0$\r$\n"
+  Call un.Write_Log
+  sleep 1000
+  KillProcDLL::KillProc "OCSInventory.exe" ; $R0
+  StrCpy $OcsLogon_v "Terminate OCSInventory.exe : $R0$\r$\n"
+  Call un.Write_Log
+  sleep 1000
+  KillProcDLL::KillProc "download.exe" ;$R0
+  StrCpy $OcsLogon_v "Terminate download.exe     : $R0$\r$\n"
+  Call un.Write_Log
+  sleep 1000
+  KillProcDLL::KillProc "inst32.exe"
+  StrCpy $OcsLogon_v "Terminate inst32.exe       : $R0$\r$\n"
   Call un.Write_Log
   sleep 1000
   ; Restore used register
@@ -611,11 +633,15 @@ Function StartSvc
   StrCpy $R0 $WINDIR 2
   IfFileExists "$R0\ocs-ng\ocsconv.dat" StartSvc_NoConv
   IfFileExists "$R0\ocs-ng\ocsinventory.dat" 0 StartSvc_NoDat
+  StrCpy $OcsLogon_v "Recover old <ocsinventory.dat> file.$\r$\n"
+  Call Write_Log
   CopyFiles "$R0\ocs-ng\ocsinventory.dat" "$INSTDIR\ocsinventory.dat"
   Rename "$R0\ocs-ng\ocsinventory.dat" "$R0\ocs-ng\ocsconv.dat"
   Goto StartSvc_NoConv
 StartSvc_NoDat:
   IfFileExists "$R0\ocs-ng\ocsinventory.conf" 0 StartSvc_NoConv
+  StrCpy $OcsLogon_v "Recover old <ocsinventory.conf> file.$\r$\n"
+  Call Write_Log
   CopyFiles "$R0\ocs-ng\ocsinventory.conf" "$INSTDIR\ocsinventory.conf"
   Rename "$R0\ocs-ng\ocsinventory.conf" "$R0\ocs-ng\ocsconv.dat"
 StartSvc_NoConv:
@@ -624,6 +650,8 @@ StartSvc_NoConv:
   ReadRegStr $R0 HKLM "${WIN_NT_KEY}" "${WIN_NT_VALUE}"
   IfErrors StartSvc_9x StartSvc_nt
 StartSvc_9x:
+  StrCpy $OcsLogon_v "Launching <$INSTDIR\ocsservice.exe -debug>... Only for Win9x.$\r$\n"
+  Call Write_Log
   ; Install 9X service
   WriteRegStr HKLM "${WIN_9X_SERVICE_KEY}" "${WIN_9X_SERVICE_VALUE}" "$INSTDIR\ocsservice.exe -debug"
   ; Start 9X service
@@ -633,9 +661,13 @@ StartSvc_nt:
   ; check if NT service was previously installed
   StrCmp "$OcsService" "TRUE" StartSvc_nt_skip_install 0
   ; NT service not installed, first install it
+  StrCpy $OcsLogon_v "Installing service on NT like OS.$\r$\n"
+  Call Write_Log
   ExecWait "$INSTDIR\ocsservice -install" $R0
 StartSvc_nt_skip_install:
   ; Start NT service
+  StrCpy $OcsLogon_v "Starting service on NT like OS.$\r$\n"
+  Call Write_Log
   ExecWait "$INSTDIR\ocsservice -start" $R0
 StartSvc_end:
   ; Read Launch [/now]
@@ -643,6 +675,8 @@ StartSvc_end:
   ; launch
   StrCmp "$R0" "1" ocsinventory_launch ocsinventory_launch_end
 ocsinventory_launch:
+  StrCpy $OcsLogon_v "Forcing a fisrt inventory.$\r$\n"
+  Call Write_Log
   ReadINIStr $R0 "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous"
   ExecWait "$INSTDIR\ocsinventory.exe $R0 /force" $R0
 ocsinventory_launch_end:
@@ -953,15 +987,13 @@ Section "OCS Inventory Agent" SEC01
   File "..\_Release\PSAPI.DLL"
   File "..\_Release\zlib.dll"
   ; Create service configuration file
-  StrCpy $OcsLogon_v "OK$\r$\nUpdating service configuration (service.ini)..."
+  StrCpy $OcsLogon_v "OK$\r$\nUpdating service configuration (service.ini)...$\r$\n"
   Call Write_Log
   Call WriteServiceIni
   ; Install service
-  StrCpy $OcsLogon_v "OK$\r$\nTrying to install and/or start service..."
+  StrCpy $OcsLogon_v "Trying to install and/or start service...$\r$\n"
   Call Write_Log
   Call StartSvc
-  StrCpy $OcsLogon_v "OK$\r$\n"
-  Call Write_Log
 SectionEnd
 
 
