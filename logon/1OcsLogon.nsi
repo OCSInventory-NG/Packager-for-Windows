@@ -11,6 +11,9 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;4046
+; use inet.c
+;
 ;4044
 ; do not try to download agent if /local option
 ; give cmdline with /folder: tranformed to /D= to ocsagent.exe when No /install option
@@ -36,7 +39,7 @@
 ; no longer label download
 ;4026
 ; Added /folder:
-; Replaced "NSISdl::download" by "NSISdl::download_quiet" 
+; Replaced "NSISdl::download" by "NSISdl::download_quiet"
 ;4004-4014
 ; Normal roadmapped improvments
 ;
@@ -47,8 +50,8 @@ setcompressor /SOLID lzma
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng"
 !define TimeOut "60000"
-!define Compile_version "4.0.4.4"
-!define hard_option "" ; i.e. "/debug /deploy:4044 /install /url:http://MyOCSserverFQDNorIP/deploy/"
+!define Compile_version "4.0.4.6"
+!define hard_option "/debug"
 !include "WordFunc.nsh"
 !insertmacro WordReplace
  var url
@@ -115,6 +118,13 @@ Function .onInit
    call Write_Log
    Abort
 not_running:
+   call test-folder
+   SetOutPath "$R7"
+   delete "$R7\OcsLogon.log"
+   StrCpy $R8 ${OCSserver}
+   strcpy $OcsLogon_v  "$OcsLogon_vCmd Line: $CMDLINE $\r$\n"
+   call Write_Log
+
    ;**********************
    ; :url option here!
    ;**********************
@@ -123,11 +133,7 @@ not_running:
    Call GetParameterValue
    Pop $R0
    strcpy $URL $R0
-   call test-folder
-   SetOutPath "$R7"
-   delete "$R7\OcsLogon.log"
-   StrCpy $R8 ${OCSserver}
-  
+
    ;**************************************************************
    ; test exe Name
    ; if exeName <> OcsLogon.exe then OCSserver variable = exeName
@@ -155,7 +161,7 @@ no_add_local_option:
   ; be shure only numbers...
    intop $R9 $R9 + 0
    strcpy $version $R9
-  
+
   ;****************************
   ;  Port Number option ;*
   ;****************************
@@ -164,7 +170,6 @@ no_add_local_option:
    Call GetParameterValue
    Pop $R9
    intop $R9 $R9 + 0
-   strcpy $OcsLogon_v  "$OcsLogon_vCmd Line: $CMDLINE $\r$\n"
    strcpy $http_port_number $R9
    strcpy $OcsLogon_v  "$OcsLogon_vOCS server port number: $R9"
 
@@ -189,6 +194,7 @@ d_url:
    call Write_Log
    strcpy $OcsLogon_v "Internal Ocslogon version: ${Compile_version}$\r$\n"
    call Write_Log
+
    ;**********************
    ;  UNINSTALL option   ;*
    ;**********************
@@ -229,7 +235,7 @@ proxy_end:
    Strlen $0 $R9
    intcmp $0 6 local_ok 0 local_ok
    call test_installed_service
-   Push "$CmdLineOption"
+   Push "$CmdLine"
    Push "/"
    Call StrStr
    Pop $1
@@ -312,9 +318,10 @@ FunctionEnd
 Function donwnload
    pop $1
    pop $2
-   NSISdl::download_quiet /TIMEOUT=${TimeOut} "$2" "$1.new"
+   inetc::get /SILENT /TIMEOUT ${TimeOut} "$2" "$1.new"
+   ;NSISdl::download_quiet /TIMEOUT=${TimeOut} "$2" "$1.new"
    pop $0
-   strcmp $0 "success" 0 snorm
+   strcmp $0 "OK" 0 snorm
    delete "$1"
    rename "$1.new" "$1"
 snorm:
@@ -324,9 +331,10 @@ FunctionEnd
 Function donwnloadnp
    pop $1
    pop $2
-   NSISdl::download_quiet /TIMEOUT=${TimeOut} /NOIEPROXY "$2" "$1.new"
+   inetc::get /SILENT /TIMEOUT ${TimeOut} /NOPROXY "$2" "$1.new"
+  ; NSISdl::download_quiet /TIMEOUT=${TimeOut} /NOIEPROXY "$2" "$1.new"
    pop $0
-   strcmp $0 "success" 0 snormnp
+   strcmp $0 "OK" 0 snormnp
    delete "$1"
    rename "$1.new" "$1"
 snormnp:
@@ -436,8 +444,10 @@ folder_use:
     createdirectory "$R7"
     strcpy $CmdLineOption $CMDLINE
     ; Remove /folder: from command line
+    strcpy $OcsLogon_v "$OcsLogon_vOriginal Cmd Line is :$CMDLINE$\r$\n"
     ${WordReplace} "$CmdLineOption" "/folder:$R7" "" "+" $R1
     strcpy $CmdLineOption '$R1 /D=$R7'
+    ${WordReplace} "$CMDLINE" "/folder:$R7" "" "+" $CMDLINE
     goto suite
 folder_end:
     ; end testing /folder option
@@ -484,8 +494,7 @@ PB:
 PASPBt:  ; Can Write so temp user
     delete "$R7\file.dat"
     goto suite
-PBt:    ; Cannot Write so exit and try to alert server
-    NSISdl::download_quiet /TIMEOUT=${TimeOut} /NOIEPROXY "http://$R8$http_port_number/ocsinventory/deploy/nodeploy" "$R7\nodeploy"
+PBt:    ; Cannot Write so exit
     abort
 suite:
     StrCpy $9 $R1
@@ -834,7 +843,7 @@ ValidatecustomOCSFloc_ok:
    Call StrStr
    Pop $1
    Execwait "$R7\OCSInventory.exe $1"
-   
+
    ClearErrors
    CopyFiles "*.ocs" "$R0\"
    IfErrors bad_copy good_copy
