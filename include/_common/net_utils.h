@@ -19,8 +19,6 @@
 #include "../_common/defines.h"
 #include "../xml/markup.h"
 
-#define OCS_DOWNLOAD_AGENT_VERSION	_T( "OCS-NG_Windows_Download")
-
 class CNetUtils
 {
 
@@ -45,7 +43,7 @@ static CMarkup sendXml(CHttpConnection* pConnect,CMarkup* pX)
 			CString reponseDecompresse = deCompressStr(reponseCompresse);
 			if( reponseDecompresse == "" )
 			{
-				AddLog("\nHTTP SERVER: The server <%s> is not a well configured OCS server\nHTTP ERROR: %s\n",pConnect->GetServerName(),reponseCompresse->GetData());
+				AddLog("\nHTTP SERVER: Server <%s> answer is empty or unreadable\nHTTP Response: %s\n",pConnect->GetServerName(),reponseCompresse->GetData());
 			}
 			ret.SetDoc(reponseDecompresse);		
 		}
@@ -295,7 +293,7 @@ static int downloadMessage( CString mess ,CString Id, CString did, CString serve
 		xml.AddAttrib("ERR", mess);
 		TRACE( xml.GetDoc());
 
-		csUserAgent.Format( _T( "%s_%s"), OCS_DOWNLOAD_AGENT_VERSION, __DATE__);
+		csUserAgent.Format( _T( "%s_%s"), OCS_DOWNLOAD_USER_AGENT, OCS_DOWNLOAD_VERSION);
 		pSess = new CInternetSession( csUserAgent, 1, proxy);	
 		pConnect = pSess->GetHttpConnection(server, port, http_u, http_w);
 

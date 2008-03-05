@@ -31,12 +31,8 @@
 #define	LABEL_FILE				_T( "label")
 #define EXE_NAME				_T( "ocsinventory.exe")
 
-/* No more used, not get version from ocsinventory.exe file
-#define VER_D1					4
-#define VER_D2					0
-#define VER_D3					3
-#define VER_D4				    4
-*/
+#define OCS_DOWNLOAD_USER_AGENT	_T( "OCS-NG_Windows_Download")
+#define OCS_DOWNLOAD_VERSION	_T( "4046")
 
 #define NT4						_T( "NT 4.0")
 #define URL_SUFFIX				_T( "/ocsinventory")
