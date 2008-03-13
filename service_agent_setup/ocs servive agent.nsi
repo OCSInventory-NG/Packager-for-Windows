@@ -14,6 +14,8 @@
 ;
 ;
 ;4046
+; RC2 no mre /force if /now is used
+;4046
 ; bug (sometimes ocsservice.dll is not writable after an upgrage)
 ; patched by a robust servces check
 ;4044
@@ -678,7 +680,7 @@ ocsinventory_launch:
   StrCpy $OcsLogon_v "Forcing a fisrt inventory.$\r$\n"
   Call Write_Log
   ReadINIStr $R0 "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous"
-  ExecWait "$INSTDIR\ocsinventory.exe $R0 /force" $R0
+  ExecWait "$INSTDIR\ocsinventory.exe $R0" $R0
 ocsinventory_launch_end:
   ; Restore used register
   Pop $R0
