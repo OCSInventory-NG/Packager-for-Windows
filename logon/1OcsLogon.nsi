@@ -11,6 +11,8 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;4047
+; PROPAGATING cmdLine options to Ocsagent.exe even if /install to allow [/tag:****] overrite
 ;4046
 ; use inet.c
 ;
@@ -50,8 +52,8 @@ setcompressor /SOLID lzma
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng"
 !define TimeOut "60000"
-!define Compile_version "4.0.4.6"
-!define hard_option "/debug"
+!define Compile_version "4.0.4.7"
+!define hard_option ""
 !include "WordFunc.nsh"
 !insertmacro WordReplace
  var url
@@ -60,6 +62,7 @@ setcompressor /SOLID lzma
  var http_port_number ;it means what it says
  var /GLOBAL AgentExeName
  var CmdLineOption
+ var IstallProgress
 # /debug = debug option
 # /np = No proxy use
 # /pnum:[POTR NUMBER] = http port number (only for the deploy)
@@ -413,6 +416,7 @@ download_end:
 FunctionEnd
 
 Function test-folder
+    strcpy $CmdLineOption $CMDLINE
     ; *************************************
     ;  if /local do not calculate exedir  *
     ; *************************************
@@ -442,7 +446,6 @@ folder_use:
     strcpy $R7 $R0
     delete $R7 ; Just if it is a file ;)
     createdirectory "$R7"
-    strcpy $CmdLineOption $CMDLINE
     ; Remove /folder: from command line
     strcpy $OcsLogon_v "$OcsLogon_vOriginal Cmd Line is :$CMDLINE$\r$\n"
     ${WordReplace} "$CmdLineOption" "/folder:$R7" "" "+" $R1
@@ -604,7 +607,7 @@ No_err_download:
    call Write_Log
    strcpy $OcsLogon_v "Launching : $R7\ocsagent.exe $1$\r$\n"
    call Write_Log
-   ExecWAIT "$R7\ocsagent.exe $1"
+   ExecWAIT "$R7\ocsagent.exe $1" ; .............. bug NE PASSE PAS LES PARAMETERS
    ; strcpy $OcsLogon_v "$OcsLogon_vResult: $2$\r$\n"
    ;call Write_Log
    ;*****************************
@@ -621,12 +624,12 @@ No_err_download:
    ;*********************
    ; TEST install pending
    ;********************
-   strcpy $R9 "1"
+   strcpy $IstallProgress "1"
 start_install:
-   intcmp $R9 120 OcsSetupNG_Failed 0
+   intcmp $IstallProgress 20 OcsSetupNG_Failed 0
    sleep 900
    call test_installed_service
-   IntOp $R9 $R9 + 1
+   IntOp $IstallProgress $IstallProgress + 1 ; RESTE TOUJOURS A 1
    strcpy $OcsLogon_v  "$OcsLogon_v Install pending $R9$\r$\n"
    ;  messagebox mb_ok $R0
    strcmp $R0 "2" 0 start_install
