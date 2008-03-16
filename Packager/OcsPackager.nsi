@@ -11,6 +11,8 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;1027
+; ability to overload Otion if /TGAG: is used
 ; 1026
 ; Multiple file addon
 ; vista programfiles path bug patched
@@ -23,7 +25,7 @@
 !insertmacro WordFind
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "1.0.2.6"
+!define Compile_version "1.0.2.7"
 !define help_file "OCS_Inventory_NG-Packager_Usage_Guide_1.03_EN.pdf"
 
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
