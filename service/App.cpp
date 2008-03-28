@@ -246,7 +246,7 @@ BOOL CMyService::runAgent( BOOL bNotify)
 
 	// Check if Basic authentication required
 	csAuth.Empty();
-	if (!m_csAuthUser.IsEmpty())
+	if (!m_csAuthUser.IsEmpty() && m_csAuthUser.CompareNoCase( _T("none")))
 	{
 		CString csUser, csPwd;
 
