@@ -6228,7 +6228,7 @@ BOOL CRegistry::GetLoggedOnUserNT(CString &csUser)
 
 BOOL CRegistry::GetRegistryValue( UINT uKeyTree, LPCTSTR lpstrSubKey, LPCTSTR lpstrValue, CString &csResult)
 {
-	BYTE	bValue[4*256];
+	BYTE	*lpValue = NULL;
 	HKEY	hKey = NULL;
 	LONG	lResult;
 	LPCTSTR	pSZ;
@@ -6236,8 +6236,8 @@ BOOL CRegistry::GetRegistryValue( UINT uKeyTree, LPCTSTR lpstrSubKey, LPCTSTR lp
 			csTemp;
 	DWORD	dwCpt,
 			dwType = REG_NONE,
-			dwSize = 4*255;
-
+			dwSize = 0,
+			dwValue;
 	csResult = NOT_AVAILABLE;
 	
 	switch (uKeyTree)
@@ -6294,31 +6294,66 @@ BOOL CRegistry::GetRegistryValue( UINT uKeyTree, LPCTSTR lpstrSubKey, LPCTSTR lp
 				csSubKey);
 		return FALSE;
 	}
-	// Get value
-	lResult = RegQueryValueEx( hKey, lpstrValue, NULL, &dwType, (LPBYTE) bValue, &dwSize);
-	if (lResult != ERROR_SUCCESS)
+	// Get value size and type
+	if ((lResult = RegQueryValueEx( hKey, lpstrValue, NULL, &dwType, (LPBYTE) &dwValue, &dwSize)) != ERROR_MORE_DATA)
 	{
-		AddLog( _T( "Failed in call to <RegQueryValueEx> function for value %s\\%s of selected hive (size exceed 255 bytes ?)!\n"),
+		AddLog( _T( "Failed in call to <RegQueryValueEx> function for value %s\\%s of selected hive (unable to get value size)!\n"),
 				csSubKey,
 				lpstrValue);
 		RegCloseKey( hKey);
 		return FALSE;
 	}
-	RegCloseKey( hKey);
+	// Allocate value buffer
+	if ((lpValue = (LPBYTE)malloc( (dwSize+1)*sizeof( BYTE))) == NULL)
+	{
+		AddLog( _T( "Failed in call to <RegQueryValueEx> function for value %s\\%s of selected hive (unable to allocate value size)!\n"),
+				csSubKey,
+				lpstrValue);
+		RegCloseKey( hKey);
+		return FALSE;
+	}
+	// Get value
 	switch (dwType)
 	{
 	case REG_DWORD:
-		csResult.Format( _T( "%lu"), *bValue);
+		if ((lResult = RegQueryValueEx( hKey, lpstrValue, NULL, &dwType, (LPBYTE) &dwValue, &dwSize)) != ERROR_SUCCESS)
+		{
+			AddLog( _T( "Failed in call to <RegQueryValueEx> function for value %s\\%s of selected hive (unable to get value)!\n"),
+					csSubKey,
+					lpstrValue);
+			RegCloseKey( hKey);
+			free( lpValue);
+			return FALSE;
+		}
+		csResult.Format( _T( "%lu"), dwValue);
 		break;
 	case REG_SZ:
 	case REG_EXPAND_SZ:
-		bValue[dwSize]=0;
-		csResult = (LPCTSTR) bValue;
+		if ((lResult = RegQueryValueEx( hKey, lpstrValue, NULL, &dwType, (LPBYTE) lpValue, &dwSize)) != ERROR_SUCCESS)
+		{
+			AddLog( _T( "Failed in call to <RegQueryValueEx> function for value %s\\%s of selected hive (unable to get value)!\n"),
+					csSubKey,
+					lpstrValue);
+			RegCloseKey( hKey);
+			free( lpValue);
+			return FALSE;
+		}
+		lpValue[dwSize]=0;
+		csResult = (LPCTSTR) lpValue;
 		break;
 	case REG_MULTI_SZ:
-		bValue[dwSize]=0;
+		if ((lResult = RegQueryValueEx( hKey, lpstrValue, NULL, &dwType, (LPBYTE) lpValue, &dwSize)) != ERROR_SUCCESS)
+		{
+			AddLog( _T( "Failed in call to <RegQueryValueEx> function for value %s\\%s of selected hive (unable to get value)!\n"),
+					csSubKey,
+					lpstrValue);
+			RegCloseKey( hKey);
+			free( lpValue);
+			return FALSE;
+		}
+		lpValue[dwSize]=0;
 		// Parse multistring registry value
-		pSZ = ParseMultiSZ( (LPCTSTR) bValue);
+		pSZ = ParseMultiSZ( (LPCTSTR) lpValue);
 		if (pSZ != NULL)
 			csResult.Empty();
 		while (pSZ != NULL)
@@ -6329,19 +6364,32 @@ BOOL CRegistry::GetRegistryValue( UINT uKeyTree, LPCTSTR lpstrSubKey, LPCTSTR lp
 		}
 		break;
 	case REG_BINARY:
-		bValue[dwSize]=0;
+		if ((lResult = RegQueryValueEx( hKey, lpstrValue, NULL, &dwType, (LPBYTE) lpValue, &dwSize)) != ERROR_SUCCESS)
+		{
+			AddLog( _T( "Failed in call to <RegQueryValueEx> function for value %s\\%s of selected hive (unable to get value)!\n"),
+					csSubKey,
+					lpstrValue);
+			RegCloseKey( hKey);
+			free( lpValue);
+			return FALSE;
+		}
+		lpValue[dwSize]=0;
 		if (dwSize > 0)
 			csResult.Empty();
 		for (dwCpt=0; dwCpt<dwSize; dwCpt++)
 		{
-			csTemp.Format( _T( "%.02X "), bValue[ dwCpt]);
+			csTemp.Format( _T( "%.02X "), lpValue[ dwCpt]);
 			csResult += csTemp;
 		}
 		break;
 	default:
+    	RegCloseKey( hKey);
+		free( lpValue);
 		AddLog( _T( "Failed because Registry type %lu unhandled !\n"), dwType);
 		return FALSE;
 	}
+	RegCloseKey( hKey);
+	free( lpValue);
 	AddLog( _T( "OK (%s).\n"), csResult);
 	return TRUE;
 }
@@ -7274,7 +7322,7 @@ BOOL CRegistry::ValidateComponent9X(LPCTSTR lpstrComponentKey)
 BOOL CRegistry::GetRegistryMultipleValues(LPCTSTR lpstrDeviceID, LPCTSTR lpstrName, UINT uKeyTree, LPCTSTR lpstrSubKey, CRegistryValueList *pMyList)
 {
 	TCHAR	szName[256];
-    BYTE	bValue[4*256];
+    BYTE	*lpValue = NULL;
 	HKEY	hKey = NULL;
 	LONG	lResult;
 	LPCTSTR	pSZ;
@@ -7284,7 +7332,8 @@ BOOL CRegistry::GetRegistryMultipleValues(LPCTSTR lpstrDeviceID, LPCTSTR lpstrNa
 	DWORD	dwIndex = 0,
 			dwType = REG_NONE,
 			dwSizeName = 255,
-			dwSizeValue = 4*255,
+			dwSizeValue = 0,
+			dwValue,
 			dwCpt;
 	CRegistryValue myRegistry;
 
@@ -7338,75 +7387,120 @@ BOOL CRegistry::GetRegistryMultipleValues(LPCTSTR lpstrDeviceID, LPCTSTR lpstrNa
 				csSubKey);
 		return FALSE;
 	}
-	while ((lResult = RegEnumValue( hKey, dwIndex, szName, &dwSizeName, NULL, &dwType, (LPBYTE) bValue, &dwSizeValue)) != ERROR_NO_MORE_ITEMS)
+	while ((lResult = RegEnumValue( hKey, dwIndex, szName, &dwSizeName, NULL, &dwType, (LPBYTE) &dwValue, &dwSizeValue)) != ERROR_NO_MORE_ITEMS)
 	{
-		if ((lResult != ERROR_SUCCESS) && (lResult != ERROR_NO_MORE_ITEMS))
+		if ((lResult != ERROR_SUCCESS) && (lResult != ERROR_MORE_DATA) && (lResult != ERROR_NO_MORE_ITEMS))
 		{
 			// Error while reading the value
-			szName[255]=0;
-			AddLog( _T( "\tValue %lu: Failed in call to <RegEnumKey> function for value %s\\%s of selected hive (size exceed 255 bytes ?) !\n"),
+			AddLog( _T( "\tFailed in call to <RegEnumKey> function for value %lu in key %s of selected hive (unable to get value size) !\n"),
 					dwIndex,
-					csSubKey,
-					szName);
+					csSubKey);
 		}
 		else
 		{
 			csResult = NOT_AVAILABLE;
 			szName[dwSizeName]=0;
-			switch (dwType)
+			// Allocate value buffer
+			if ((lpValue = (LPBYTE)malloc( (dwSizeValue+1)*sizeof( BYTE))) == NULL)
 			{
-			case REG_DWORD:
-				csResult.Format( _T( "%s=%lu"), szName, *bValue);
-				AddLog( _T("\tValue %lu: %s\n"), dwIndex, csResult);
-				myRegistry.Set( lpstrName, csResult);
-				pMyList->AddTail( myRegistry);
-				break;
-			case REG_SZ:
-			case REG_EXPAND_SZ:
-				bValue[dwSizeValue]=0;
-				csResult.Format( _T( "%s=%s"), szName, (LPCTSTR) bValue);
-				AddLog( _T("\tValue %lu: %s\n"), dwIndex, csResult);
-				myRegistry.Set( lpstrName, csResult);
-				pMyList->AddTail( myRegistry);
-				break;
-			case REG_MULTI_SZ:
-				bValue[dwSizeValue]=0;
-				csResult.Format( _T( "%s="), szName); 
-				// Parse multistring registry value
-				pSZ = ParseMultiSZ( (LPCTSTR) bValue);
-				while (pSZ != NULL)
-				{
-					csResult += pSZ;
-					csResult += _T( " ");
-					pSZ = ParseMultiSZ();
-				}
-				AddLog( _T("\tValue %lu: %s\n"), dwIndex, csResult);
-				myRegistry.Set( lpstrName, csResult);
-				pMyList->AddTail( myRegistry);
-				break;
-			case REG_BINARY:
-				bValue[dwSizeValue]=0;
-				csResult.Format( _T( "%s="), szName);
-				for (dwCpt=0; dwCpt<dwSizeValue; dwCpt++)
-				{
-					csTemp.Format( _T( "%.02X "), bValue[ dwCpt]);
-					csResult += csTemp;
-				}
-				AddLog( _T("\tValue %lu: %s\n"), dwIndex, csResult);
-				myRegistry.Set( lpstrName, csResult);
-				pMyList->AddTail( myRegistry);
-				break;
-			default:
-				AddLog( _T( "\tValue %lu: Failed in call to <RegEnumKey> function for value %s\\%s of selected hive because unhandled Registry type %u !\n"),
+				AddLog( _T( "\tFailed in call to <RegEnumKey> function for value %lu in key %s of selected hive (unable to allocate value size) !\n"),
 						dwIndex,
-						csSubKey,
-						szName,
-						dwType);
+						csSubKey);
+			}
+			else
+			{
+				// Get value
+				switch (dwType)
+				{
+				case REG_DWORD:
+					if ((lResult = RegEnumValue( hKey, dwIndex, szName, &dwSizeName, NULL, &dwType, (LPBYTE) &dwValue, &dwSizeValue)) != ERROR_SUCCESS)
+					{
+						AddLog( _T( "Failed in call to <RegEnumKey> function for value % lu in key %s of selected hive (unable to get value)!\n"),
+								dwIndex,
+								csSubKey);
+					}
+					else
+					{
+						csResult.Format( _T( "%s=%lu"), szName, dwValue);
+						AddLog( _T("\tValue %lu: %s\n"), dwIndex, csResult);
+						myRegistry.Set( lpstrName, csResult);
+						pMyList->AddTail( myRegistry);
+					}
+					break;
+				case REG_SZ:
+				case REG_EXPAND_SZ:
+					if ((lResult = RegEnumValue( hKey, dwIndex, szName, &dwSizeName, NULL, &dwType, (LPBYTE) lpValue, &dwSizeValue)) != ERROR_SUCCESS)
+					{
+						AddLog( _T( "Failed in call to <RegEnumKey> function for value % lu in key %s of selected hive (unable to get value)!\n"),
+								dwIndex,
+								csSubKey);
+					}
+					else
+					{
+						lpValue[dwSizeValue]=0;
+						csResult.Format( _T( "%s=%s"), szName, (LPCTSTR) lpValue);
+						AddLog( _T("\tValue %lu: %s\n"), dwIndex, csResult);
+						myRegistry.Set( lpstrName, csResult);
+						pMyList->AddTail( myRegistry);
+					}
+					break;
+				case REG_MULTI_SZ:
+					if ((lResult = RegEnumValue( hKey, dwIndex, szName, &dwSizeName, NULL, &dwType, (LPBYTE) lpValue, &dwSizeValue)) != ERROR_SUCCESS)
+					{
+						AddLog( _T( "Failed in call to <RegEnumKey> function for value % lu in key %s of selected hive (unable to get value)!\n"),
+								dwIndex,
+								csSubKey);
+					}
+					else
+					{
+						lpValue[dwSizeValue]=0;
+						csResult.Format( _T( "%s="), szName); 
+						// Parse multistring registry value
+						pSZ = ParseMultiSZ( (LPCTSTR) lpValue);
+						while (pSZ != NULL)
+						{
+							csResult += pSZ;
+							csResult += _T( " ");
+							pSZ = ParseMultiSZ();
+						}
+						AddLog( _T("\tValue %lu: %s\n"), dwIndex, csResult);
+						myRegistry.Set( lpstrName, csResult);
+						pMyList->AddTail( myRegistry);
+					}
+					break;
+				case REG_BINARY:
+					if ((lResult = RegEnumValue( hKey, dwIndex, szName, &dwSizeName, NULL, &dwType, (LPBYTE) lpValue, &dwSizeValue)) != ERROR_SUCCESS)
+					{
+						AddLog( _T( "Failed in call to <RegEnumKey> function for value % lu in key %s of selected hive (unable to get value)!\n"),
+								dwIndex,
+								csSubKey);
+					}
+					else
+					{
+						lpValue[dwSizeValue]=0;
+						csResult.Format( _T( "%s="), szName);
+						for (dwCpt=0; dwCpt<dwSizeValue; dwCpt++)
+						{
+							csTemp.Format( _T( "%.02X "), lpValue[ dwCpt]);
+							csResult += csTemp;
+						}
+						AddLog( _T("\tValue %lu: %s\n"), dwIndex, csResult);
+						myRegistry.Set( lpstrName, csResult);
+						pMyList->AddTail( myRegistry);
+					}
+					break;
+				default:
+					AddLog( _T( "\tFailed in call to <RegEnumKey> function for value %lu in key %s of selected hive because unhandled Registry type %u !\n"),
+							dwIndex,
+							csSubKey,
+							dwType);
+				}
+				free( lpValue);
 			}
 		}
 		// Next
 		dwSizeName=255;
-		dwSizeValue=4*255;
+		dwSizeValue=0;
 		dwType=REG_NONE;
 		dwIndex++;
 	}
