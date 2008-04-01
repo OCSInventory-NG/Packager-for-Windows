@@ -46,6 +46,7 @@ public:
 protected:
 	HICON m_hIcon;
 
+	void SysInfoLog (CString str);
 	// Generated message map functions
 	//{{AFX_MSG(CTestSysInfoDlg)
 	virtual BOOL OnInitDialog();

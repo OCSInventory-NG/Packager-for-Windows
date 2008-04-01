@@ -1669,6 +1669,18 @@ void CTestSysInfoDlg::OnOcsWmi()
 	m_List.AddString( "Disconnected from WMI");
 }
 
+void CTestSysInfoDlg::SysInfoLog (CString str)
+{
+	static FILE *Log=NULL;
+
+	if (!Log) 
+		Log = fopen("TestSysInfo.txt", "wt");
+	if (Log) {
+		fputs (str, Log);
+		fputs ("\n", Log);
+	}
+	m_List.AddString( str);
+}
 void CTestSysInfoDlg::OnSysInfo() 
 {
 	CWaitCursor		cWait;
@@ -1681,43 +1693,44 @@ void CTestSysInfoDlg::OnSysInfo()
 	remove( "c:\\TestSysInfo_trace.log");
 	OpenLog( "c:\\TestSysInfo_trace", "-DEBUG");
 	myPC.RetrieveHardwareAndOS( &mySys, _T( ""));
+	CloseLog();
 	m_List.ResetContent();
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "BIOS infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "BIOS infos");
+	SysInfoLog( "------------------------------------------------------");
 	str.Format( "System Manufacturer: %s", myPC.m_BIOS.GetSystemManufacturer());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "System Model: %s", myPC.m_BIOS.GetSystemModel());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "System S/N: %s", myPC.m_BIOS.GetSystemSerialNumber());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "Machine Type: %s", myPC.m_BIOS.GetMachineType());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "BIOS Manufacturer: %s", myPC.m_BIOS.GetBiosManufacturer());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "BIOS Version: %s", myPC.m_BIOS.GetBiosVersion());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "BIOS Date: %s", myPC.m_BIOS.GetBiosDate());
-	m_List.AddString( str);
-	m_List.AddString( "");
+	SysInfoLog( str);
+	SysInfoLog( "");
 	str.Format( "Bios Hash: %s", myPC.m_BIOS.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "Processors infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "Processors infos");
+	SysInfoLog( "------------------------------------------------------");
 	str.Format( "Number of Processors: %u", myPC.GetNumberOfProcessors());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "Processor name: %s", myPC.GetProcessorType());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "Processor speed: %s", myPC.GetProcessorSpeed());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "Memory Slots infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "Memory Slots infos");
+	SysInfoLog( "------------------------------------------------------");
 	CMemorySlot myMemSlot;
 	pos = myPC.m_MemoryList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -1728,34 +1741,34 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Caption: %s", myMemSlot.GetCaption());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Description: %s", myMemSlot.GetDescription());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Capacity: %s KB", myMemSlot.GetCapacity());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Usage: %s", myMemSlot.GetUsage());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Type: %s", myMemSlot.GetType());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Speed: %s MHz", myMemSlot.GetSpeed());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Slot Number: %u", myMemSlot.GetSlotNumber());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (pos != NULL)
 		{
 			myMemSlot = myPC.m_MemoryList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "Memory Slots Hash: %s", myPC.m_MemoryList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "Video Controlers infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "Video Controlers infos");
+	SysInfoLog( "------------------------------------------------------");
 	CVideoAdapter myVideo;
 	pos = myPC.m_VideoList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -1766,28 +1779,28 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Name: %s", myVideo.GetName());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Chipset: %s", myVideo.GetChipset());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Memory: %s MB", myVideo.GetMemory());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Resolution: %s", myVideo.GetScreenResolution());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (pos != NULL)
 		{
 			myVideo = myPC.m_VideoList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "Video Controlers Hash: %s", myPC.m_VideoList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "Desktop Monitors infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "Desktop Monitors infos");
+	SysInfoLog( "------------------------------------------------------");
 	CMonitor myMonitor;
 	pos = myPC.m_MonitorList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -1798,30 +1811,30 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Manufacturer: %s", myMonitor.GetManufacturer());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Caption: %s", myMonitor.GetCaption());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Description: %s", myMonitor.GetDescription());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Type: %s", myMonitor.GetType());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "S/N: %s", myMonitor.GetSerial());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (pos != NULL)
 		{
 			myMonitor = myPC.m_MonitorList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "Monitors Hash: %s", myPC.m_MonitorList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "Sound Devices infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "Sound Devices infos");
+	SysInfoLog( "------------------------------------------------------");
 	CSoundDevice mySound;
 	pos = myPC.m_SoundList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -1832,26 +1845,26 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Manufacturer: %s", mySound.GetManufacturer());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Name: %s", mySound.GetName());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Description: %s", mySound.GetDescription());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (pos != NULL)
 		{
 			mySound = myPC.m_SoundList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "Sound Devices Hash: %s", myPC.m_SoundList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "System Slots infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "System Slots infos");
+	SysInfoLog( "------------------------------------------------------");
 	CSystemSlot mySlot;
 	pos = myPC.m_SlotList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -1862,32 +1875,32 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Name: %s", mySlot.GetName());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Description: %s", mySlot.GetDescription());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Slot Designation: %s", mySlot.GetSlotDesignation());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Usage: %s", mySlot.GetUsage());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Status: %s", mySlot.GetStatus());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Is shared: %s", mySlot.IsShared() ? "TRUE" : "FALSE");
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (pos != NULL)
 		{
 			mySlot = myPC.m_SlotList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "System Slots Hash: %s", myPC.m_SlotList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "System Port infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "System Port infos");
+	SysInfoLog( "------------------------------------------------------");
 	CSystemPort myPort;
 	pos = myPC.m_PortList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -1898,28 +1911,28 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Type: %s", myPort.GetType());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Name: %s", myPort.GetName());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Caption: %s", myPort.GetCaption());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Description: %s", myPort.GetDescription());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (pos != NULL)
 		{
 			myPort = myPC.m_PortList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "System Ports Hash: %s", myPC.m_PortList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "Input Devices infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "Input Devices infos");
+	SysInfoLog( "------------------------------------------------------");
 	CInputDevice myInput;
 	pos = myPC.m_InputList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -1930,31 +1943,31 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Type: %s", myInput.GetType());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Manufacturer: %s", myInput.GetManufacturer());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Caption: %s", myInput.GetCaption());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Description: %s", myInput.GetDescription());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "PointingType: %s", myInput.GetPointingType());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Pointing Interface: %s", myInput.GetPointingInterface());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (pos != NULL)
 		{
 			myInput = myPC.m_InputList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "Input Devices Hash: %s", myPC.m_InputList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "System Controlers infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "System Controlers infos");
+	SysInfoLog( "------------------------------------------------------");
 	CSystemController myController;
 	pos = myPC.m_SystemControllerList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -1965,32 +1978,32 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Type: %s", myController.GetType());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Manufacturer: %s", myController.GetManufacturer());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Name: %s", myController.GetName());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Caption: %s", myController.GetCaption());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Description: %s", myController.GetDescription());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "HW version: %s", myController.GetHardwareVersion());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (pos != NULL)
 		{
 			myController = myPC.m_SystemControllerList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "System Controlers Hash: %s", myPC.m_SystemControllerList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "Storage Peripherals infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "Storage Peripherals infos");
+	SysInfoLog( "------------------------------------------------------");
 	CStoragePeripheral myStorage;
 	pos = myPC.m_StorageList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -2001,32 +2014,32 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Type: %s", myStorage.GetType());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Manufacturer: %s", myStorage.GetManufacturer());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Name: %s", myStorage.GetName());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Model: %s", myStorage.GetModel());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Description: %s", myStorage.GetDescription());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Size: %I64u MB", myStorage.GetSize());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (pos != NULL)
 		{
 			myStorage = myPC.m_StorageList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "Storage Peripherals Hash: %s", myPC.m_StorageList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "Network Adapters infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "Network Adapters infos");
+	SysInfoLog( "------------------------------------------------------");
 	CNetworkAdapter myNetwork;
 	pos = myPC.m_NetworkList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -2037,40 +2050,40 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Type: %s", myNetwork.GetType());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Description: %s", myNetwork.GetDescription());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Speed: %s", myNetwork.GetSpeed());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "MAC: %s", myNetwork.GetMACAddress());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "IP @: %s", myNetwork.GetIPAddress());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "IP mask: %s", myNetwork.GetIPNetMask());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "IP Gateway: %s", myNetwork.GetGateway());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "DHCP Server: %s", myNetwork.GetDhcpServer());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Status: %s", myNetwork.GetOperationalStatus());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "MIB Type: %s", myNetwork.GetTypeMIB());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (pos != NULL)
 		{
 			myNetwork = myPC.m_NetworkList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "Network Adapters Hash: %s", myPC.m_NetworkList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "Telephony Modems infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "Telephony Modems infos");
+	SysInfoLog( "------------------------------------------------------");
 	CModem myModem;
 	pos = myPC.m_ModemList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -2081,28 +2094,28 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Type: %s", myModem.GetType());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Name: %s", myModem.GetName());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Model: %s", myModem.GetModel());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Description: %s", myModem.GetDescription());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (pos != NULL)
 		{
 			myModem = myPC.m_ModemList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "Telephony Modems Hash: %s", myPC.m_ModemList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "Printers infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "Printers infos");
+	SysInfoLog( "------------------------------------------------------");
 	CPrinter myPrinter;
 	pos = myPC.m_PrinterList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -2113,34 +2126,34 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Name: %s", myPrinter.GetName());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Driver: %s", myPrinter.GetDriver());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Port: %s", myPrinter.GetPort());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (pos != NULL)
 		{
 			myPrinter = myPC.m_PrinterList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "Printers Hash: %s", myPC.m_PrinterList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "OS infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "OS infos");
+	SysInfoLog( "------------------------------------------------------");
 	str.Format( "Name: %s", myPC.GetOSName());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "Version: %s", myPC.GetOSVersion());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "Comment: %s", myPC.GetOSComment());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "Description: %s", myPC.GetDescription());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	switch (myPC.GetDeviceType())
 	{
 	case WINDOWS_SERVER:
@@ -2153,23 +2166,23 @@ void CTestSysInfoDlg::OnSysInfo()
 		str = _T( "Windows Workstation");
 		break;
 	}
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "Domain or Workgroup: %s", myPC.GetDomainOrWorkgroup());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "OS Registered Company: %s", myPC.GetWindowsRegisteredCompany());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "OS Registered Owner: %s", myPC.GetWindowsRegisteredOwner());
-	m_List.AddString( str);
+	SysInfoLog( str);
 	str.Format( "OS Product ID : %s", myPC.GetWindowsProductID());
-	m_List.AddString( str);
-	m_List.AddString( "");
+	SysInfoLog( str);
+	SysInfoLog( "");
 	str.Format( "Device Hash: %s", myPC.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
-	m_List.AddString( "");
-	m_List.AddString( "------------------------------------------------------");
-	m_List.AddString( "Registered Applications infos");
-	m_List.AddString( "------------------------------------------------------");
+	SysInfoLog( "");
+	SysInfoLog( "------------------------------------------------------");
+	SysInfoLog( "Registered Applications infos");
+	SysInfoLog( "------------------------------------------------------");
 	CSoftware myApp;
 	pos = myPC.m_SoftwareList.GetHeadPosition();
 	bContinue = (pos != NULL);
@@ -2180,28 +2193,28 @@ void CTestSysInfoDlg::OnSysInfo()
 	{
 		bContinue = (pos != NULL);
 		str.Format( "Publisher: %s", myApp.GetPublisher());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Name: %s", myApp.GetName());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Version: %s", myApp.GetVersion());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Folder: %s", myApp.GetFolder());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		str.Format( "Comments: %s", myApp.GetComments());
-		m_List.AddString( str);
+		SysInfoLog( str);
 		if (myApp.IsFromRegistry())
-			m_List.AddString( "Extracted from registry");
+			SysInfoLog( "Extracted from registry");
 		else
-			m_List.AddString( "Find on disk");
+			SysInfoLog( "Find on disk");
 		if (pos != NULL)
 		{
 			myApp = myPC.m_SoftwareList.GetNext( pos);
-			m_List.AddString( "");
+			SysInfoLog( "");
 		}
 	}
-	m_List.AddString( "");
+	SysInfoLog( "");
 	str.Format( "Registered Applications Hash: %s", myPC.m_SoftwareList.GetHash());
-	m_List.AddString( str);
+	SysInfoLog( str);
 
 	m_List.AddString( "");
 	m_List.AddString( "------------------------------------------------------");
@@ -2227,6 +2240,9 @@ void CTestSysInfoDlg::OnSysInfo()
 	myReg.GetRegistryValue( HKLM_TREE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup", "CDInstall", csValue);
 	str.Format( "REG_DWORD CDInstall=%s", csValue);
 	m_List.AddString( str);
+	myReg.GetRegistryValue( HKLM_TREE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\", "InstallDate", csValue);
+	str.Format( "REG_DWORD Windows NT InstallDate=%s", csValue);
+	m_List.AddString( str);
 	myReg.GetRegistryValue( HKLM_TREE, "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Setup", "BootDir", csValue);
 	str.Format( "REG_SZ BootDir=%s", csValue);
 	m_List.AddString( str);
@@ -2247,3 +2263,4 @@ void CTestSysInfoDlg::OnDestroy()
 	CDialog::OnDestroy();
 	m_List.ResetContent();
 }
+
