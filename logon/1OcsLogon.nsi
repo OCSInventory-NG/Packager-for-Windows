@@ -11,7 +11,7 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
-;4047
+;4048
 ; PROPAGATING cmdLine options to Ocsagent.exe even if /install to allow [/tag:****] overrite
 ;4046
 ; use inet.c
@@ -52,7 +52,7 @@ setcompressor /SOLID lzma
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng"
 !define TimeOut "60000"
-!define Compile_version "4.0.4.7"
+!define Compile_version "4.0.4.8"
 !define hard_option ""
 !include "WordFunc.nsh"
 !insertmacro WordReplace
@@ -184,7 +184,7 @@ no_add_local_option:
    strcpy $url "http://$R8:$http_port_number/ocsinventory/deploy/"
    goto d_url
 c_url:
-   strcpy $OcsLogon_v  "$OcsLogon_v URL used : $url$\r$\n"
+   strcpy $OcsLogon_v  "$OcsLogon_vURL used : $url$\r$\n"
 d_url:
 
   ;***************************************************************************
@@ -225,7 +225,7 @@ noUNinstall_requested:
    Pop $R9
    Strlen $0 $R9
    intcmp $0 3 0 proxy_use 0
-   StrCpy $OcsLogon_v "$OcsLogon_v No proxy use.$\r$\n"
+   StrCpy $OcsLogon_v "$OcsLogon_vNo proxy use.$\r$\n"
    goto proxy_end
 proxy_use:
    StrCpy $OcsLogon_v "$OcsLogon_v Proxy use.$\r$\n"
@@ -258,19 +258,12 @@ function test_installed_service
    ; test 'OCS INVENTORY' service
    ;*******************************************
    strcpy $OcsLogon_v "$OcsLogon_vTesting Service...$\r$\n"
-   services::GetServiceNameFromDisplayName 'OCS INVENTORY'
-   Pop $R0
-   strcmp $R0 "1" 0 lbl_test98
-   strcpy $OcsLogon_v "$OcsLogon_vService is installed.$\r$\n"
-   services::IsServiceRunning 'OCS INVENTORY'
-   Pop $R0
-   strcpy $OcsLogon_v "$OcsLogon_vIs Service Running : $R0$\r$\n"
-   strcmp $R0 "Yes" normal_ending 0
-   services::SendServiceCommand 'start' 'OCS INVENTORY'
-   Pop $R0
-   strcpy $OcsLogon_v "$OcsLogon_vTry to start service : $R0$\r$\n"
-   strcmp $R0 "Ok" normal_ending 0
-   strcpy $OcsLogon_v "$OcsLogon_vService ERROR: $R0$\r$\n PLEASE CHECK CONFIGURATION...$\r$\n"
+   ReadRegStr $3 HKLM "SYSTEM\CurrentControlSet\Services\OCS INVENTORY" "start"
+   strcpy $OcsLogon_v "$OcsLogon_vService start parameter (should be 2): $3$\r$\n"
+   call Write_Log
+   strcmp $3 "2" 0 lbl_test98
+   strcpy $OcsLogon_v "$OcsLogon_vService is installed on NT like OS.$\r$\n"
+   call Write_Log
 normal_ending:
    strcpy $OcsLogon_v "$OcsLogon_vExiting OcsLogon.$\r$\n"
    call Write_Log
@@ -278,7 +271,7 @@ normal_ending:
    abort
 lbl_test98:
    ReadRegStr $R0 HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices" "OCS Inventory NG"
-   strlen $0 $R0
+   strlen $0 $3
    intcmp $0 21 lbl_fintestservice lbl_fintestservice 0
    strcpy $OcsLogon_v "$OcsLogon_vService installed on Widows 9x.$\r$\nExiting OcsLogon.$\r$\n"
    call Write_Log
@@ -528,7 +521,7 @@ lbl_winnt:
    intop $1 $1 - 17
    strcpy $0 $0 $1 1
    strcmp $0 "" normalop 0
-   strcpy $OcsLogon_v  "$OcsLogon_v Service is installed on: $0$\r$\n"
+   strcpy $OcsLogon_v  "$OcsLogon_vService is installed on: $0$\r$\n"
    strcpy $R7 $0
 normalop:
    strcmp $0 "" 0 normalop1
