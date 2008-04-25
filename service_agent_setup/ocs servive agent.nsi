@@ -13,6 +13,7 @@
 ;                             ###############
 ;
 ;
+;4048 NO CHANGE
 ;4046
 ; RC2 no mre /force if /now is used
 ;4046
@@ -52,7 +53,7 @@
 setcompressor /SOLID lzma
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory Agent"
-!define PRODUCT_VERSION "4.0.4.6"
+!define PRODUCT_VERSION "4.0.4.8"
 !define PRODUCT_PUBLISHER "OCS Inventory NG Team"
 !define PRODUCT_WEB_SITE "http://ocsinventory.sourceforge.net"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"
