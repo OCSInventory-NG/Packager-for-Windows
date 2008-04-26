@@ -362,7 +362,7 @@ static void cleanXml( CMarkup* pX ) {
 	
 	for(int i=0;i<bef.GetLength();i++) {	
 		UCHAR cut = (UCHAR)bef.GetAt(i);
-		if( (cut<32 || cut>244) && cut!=10 && cut!=13 ) {			
+		if( (cut<32) && cut!=10 && cut!=13 ) {			
 			bef.SetAt(i,'x');		
 		}
 	}
