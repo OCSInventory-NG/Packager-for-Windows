@@ -32,7 +32,7 @@
 #define EXE_NAME				_T( "ocsinventory.exe")
 
 #define OCS_DOWNLOAD_USER_AGENT	_T( "OCS-NG_Windows_Download")
-#define OCS_DOWNLOAD_VERSION	_T( "4048")
+#define OCS_DOWNLOAD_VERSION	_T( "4050")
 
 #define NT4						_T( "NT 4.0")
 #define URL_SUFFIX				_T( "/ocsinventory")

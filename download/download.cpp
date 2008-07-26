@@ -58,6 +58,9 @@ CDownloadApp theApp;
 
 BOOL CDownloadApp::InitInstance()
 {
+	TCHAR	szExecutionFolder[_MAX_PATH+1];	// Local execution folder
+	UINT	uIndex;
+
     HANDLE hMutexOneInstance = ::CreateMutex( NULL, TRUE,
 	 _T("OCSINVENTORY-DOWNLOAD"));
 
@@ -77,17 +80,29 @@ BOOL CDownloadApp::InitInstance()
 							   cStartTime.Format( _T( "%#c")),
 							   AfxGetApp()->m_lpCmdLine);	
 
-	if( ! SetCurrentDirectory("download") ) {
+	// Get application path
+	if (GetModuleFileName( AfxGetInstanceHandle(), szExecutionFolder, _MAX_PATH) == 0)
+	{
 		AddLog("ERROR: Can't chdir to download folder");		
 		finish();
 		return 0;
 	}
-
+	for (uIndex = strlen( szExecutionFolder); (uIndex >= 0) && (szExecutionFolder[uIndex] != '\\') && (szExecutionFolder[uIndex] != ':'); uIndex --)
+		szExecutionFolder[uIndex] = 0;
+	csMessage.Format( _T( "%s\\download"), szExecutionFolder);
+	if( ! SetCurrentDirectory( csMessage) ) {
+		AddLog("ERROR: Can't chdir to <%s> folder", csMessage);		
+		finish();
+		return 0;
+	}
+/*
 	char direc[_MAX_PATH+1];
 	GetCurrentDirectory(_MAX_PATH,direc);
 	CString serIni;
 	serIni.Format("%s\\config.ini",direc);
-
+*/
+	CString serIni;
+	serIni.Format("%s\\config.ini", csMessage);
 	while(1) {
 
 		CFile suspend;
@@ -635,9 +650,14 @@ int CPackage::execute() {
 		si.wShowWindow = SW_HIDE;
 
 		si.dwFlags=STARTF_USESHOWWINDOW;
-		CString commandLine = "..\\..\\..\\inst32.exe /exe:" + CString("\"") + Name + CString("\"") + " /log:instlog.txt";
 
-		if( ! CreateProcess( NULL, commandLine.GetBuffer(0), NULL, NULL, TRUE, 0, NULL, NULL, &si,&pi )) {
+		char szFolder[_MAX_PATH+1];
+		GetCurrentDirectory( _MAX_PATH, szFolder);
+		CString csCommandLine;
+		csCommandLine.Format( _T( "..\\..\\..\\inst32.exe /exe:\"%s\\%s\" /log:instlog.txt"),
+							  szFolder, Name);
+
+		if( ! CreateProcess( NULL, csCommandLine.GetBuffer(0), NULL, NULL, TRUE, 0, NULL, NULL, &si,&pi )) {
 			AddLog("ERROR: Error %d occured while running %s", GetLastError(), Name);
 			markAsDone( ERR_EXECUTE, "..\\.." );
 			return 1;
