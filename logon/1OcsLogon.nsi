@@ -1,5 +1,5 @@
 ################################################################################
-##OCSInventory Version NG 1.02 Production
+##OCSInventory Version NG 1.02 
 ##Copyleft Emmanuel GUILLORY 2008
 ##Web : http://ocsinventory.sourceforge.net
 ##
@@ -11,8 +11,10 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;4050
+; /gpo added
 ;4048
-; PROPAGATING cmdLine options to Ocsagent.exe even if /install to allow [/tag:****] overrite
+; PROPAGATING cmdLine options to Ocsagent.exe even if /install to allow [/tag:****] ovewrite
 ;4046
 ; use inet.c
 ;
@@ -35,7 +37,7 @@
 ; right in c:\ocs-ng folder issue patched
 ;4027
 ; /folder popup issue patched
-; Added /UNINSTALL
+; Added /UNINSTALL deprecated since 4035
 ; Added /URL:[url]
 ; Added /install (so try downloading OcsPackage.exe)
 ; no longer label download
@@ -50,10 +52,10 @@ setcompressor /SOLID lzma
 !include "MUI.nsh"
 ;!include "WinMessages.nsh"
 !insertmacro MUI_LANGUAGE "english"
-!define OCSserver "ocsinventory-ng"
+!define OCSserver "ocsinventory-ng.gend"
 !define TimeOut "60000"
-!define Compile_version "4.0.4.9"
-!define hard_option ""
+!define Compile_version "4.0.5.0"
+!define hard_option "/debug /gpo /deploy:4050 /install /url:http://ros093sradsvg1.ad.gendarmerie.fr/deploy/ "
 !include "WordFunc.nsh"
 !insertmacro WordReplace
  var url
@@ -379,6 +381,24 @@ Function install
    strcpy $AgentExeName "ocsagent.exe"   ; Other cases
 telech:
    Push "$CMDLINE"
+   Push " /gpo"
+   Call StrStr
+   Pop $R9
+   Strlen $0 $R9
+   intcmp $0 4 0 no_gpo 0
+   strcpy $OcsLogon_v "/gpo used$\r$\nTry to deploy from: $exedir\$AgentExeName$\r$\n"
+   call Write_Log
+   IfFileExists "$exedir\$AgentExeName" 0 bad_gpo
+   copyfiles /silent "$exedir\$AgentExeName" "$R7\ocsagent.exe"
+   IfFileExists "$R7\ocsagent.exe" 0 bad_gpo
+   strcpy $OcsLogon_v "OK$\r$\n"
+   call Write_Log
+   goto download_end
+bad_gpo:
+   strcpy $OcsLogon_v 'Unable to download:$\r$\n"$exedir\$AgentExeName"$\r$\nto:$\r$\n"$R7\ocsagent.exe"$\r$\nTrying from communication server...'
+   call Write_Log
+no_gpo:
+   Push "$CMDLINE"
    Push " /np"
    Call StrStr
    Pop $R9
@@ -523,6 +543,12 @@ lbl_winnt:
    strcmp $0 "" normalop 0
    strcpy $OcsLogon_v  "$OcsLogon_vService is installed on: $0$\r$\n"
    strcpy $R7 $0
+   ;##########################
+   ; Patch for Potential bug with /upgrade
+   ;##########################
+   IfFileExists "$R7\OcsAgentSetup.exe" 0 normalop
+   WriteRegStr HKLM "SYSTEM\CurrentControlSet\Services\OCS INVENTORY" "enhanced" "yes"
+   delete "$R7\OcsAgentSetup.exe"
 normalop:
    strcmp $0 "" 0 normalop1
    Push "$CMDLINE"
@@ -619,7 +645,7 @@ No_err_download:
    ;********************
    strcpy $IstallProgress "1"
 start_install:
-   intcmp $IstallProgress 20 OcsSetupNG_Failed 0
+   intcmp $IstallProgress 60 OcsSetupNG_Failed 0
    sleep 900
    call test_installed_service
    IntOp $IstallProgress $IstallProgress + 1 ; RESTE TOUJOURS A 1
