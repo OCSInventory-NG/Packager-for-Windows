@@ -13,12 +13,13 @@
 ;                             ###############
 ;
 ;
-;4048 NO CHANGE
+;4050 Ocs-contact added
+; dont try to stop service if aleready stopped
 ;4046
-; RC2 no mre /force if /now is used
+; RC2 nomre /force if /now is used
 ;4046
 ; bug (sometimes ocsservice.dll is not writable after an upgrage)
-; patched by a robust servces check
+; patched by a robust services check
 ;4044
 ; Cleaning /upgrade when used
 ;4042
@@ -53,7 +54,7 @@
 setcompressor /SOLID lzma
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "OCS Inventory Agent"
-!define PRODUCT_VERSION "4.0.4.9"
+!define PRODUCT_VERSION "4.0.5.0"
 !define PRODUCT_PUBLISHER "OCS Inventory NG Team"
 !define PRODUCT_WEB_SITE "http://ocsinventory.sourceforge.net"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"
@@ -63,7 +64,8 @@ setcompressor /SOLID lzma
 !include "WordFunc.nsh"
 !insertmacro GetTime
 !insertmacro WordReplace
-
+!insertmacro un.GetParent
+!insertmacro GetParent
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
 ICON "aocs2.ico"
@@ -132,7 +134,8 @@ Page custom customOCSFloc ValidatecustomOCSFloc ""
   var /GLOBAL OcsNoSplash ; To store if setup must display spash screen (FALSE) or not (TRUE)
   var /GLOBAL OcsSilent ; To store if setup must be silent (TRUE) or not (FALSE)
   var /GLOBAL OcsUpgrade ; To store if /UPGRADE option used (TRUE) or not (FALSE)
-
+  var /GLOBAL Miscellaneous ; To store Miscellaneous of service.ini
+  var /GLOBAL installSatus ; To store installation status
 #####################################################################
 # GetParameters
 # input, none
@@ -483,6 +486,7 @@ FunctionEnd
 # This function try to stop service when installing/upgrading
 #####################################################################
 Function StopService
+   StrCmp $OcsService "TRUE" 0 fin_boucle_stop_service
    ; Save used register
    Push $R0
    ; Verifying if not Windows NT
@@ -678,10 +682,9 @@ StartSvc_end:
   ; launch
   StrCmp "$R0" "1" ocsinventory_launch ocsinventory_launch_end
 ocsinventory_launch:
-  StrCpy $OcsLogon_v "Forcing a fisrt inventory.$\r$\n"
+  StrCpy $OcsLogon_v '[/now] used$\r$\nLaunching:"$INSTDIR\ocsinventory.exe $Miscellaneous"$\r$\n'
   Call Write_Log
-  ReadINIStr $R0 "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous"
-  ExecWait "$INSTDIR\ocsinventory.exe $R0" $R0
+  ExecWait "$INSTDIR\ocsinventory.exe $Miscellaneous" $R0
 ocsinventory_launch_end:
   ; Restore used register
   Pop $R0
@@ -765,7 +768,9 @@ TestInstall_No_Service:
   Call Write_Log
 TestInstall_end:
 ; If yes, stop it and kill processes
-  StrCpy $OcsLogon_v "--$\r$\nTrying to stop service and kill processes...$\r$\n"
+  StrCpy $OcsLogon_v "--$\r$\n"
+  Call Write_Log
+  StrCpy $OcsLogon_v "Trying to stop service and kill processes...$\r$\n"
   Call Write_Log
   Call StopService
   StrCpy $OcsLogon_v "--$\r$\n"
@@ -809,7 +814,9 @@ WriteServiceIni_debug:
   StrCpy $R0 "$R0 /DEBUG"
 WriteServiceIni_debug_end:
   ; Write miscellaneous
-  WriteINIStr "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous" "$R0"
+  ; store micellanesou
+  StrCpy $Miscellaneous $R0
+  WriteINIStr "$INSTDIR\service.ini" "OCS_SERVICE" "Miscellaneous" "$Miscellaneous"
 ; write and preserve auth_user and auth_pwd to prevent warning event
   readinistr $0 "$INSTDIR\service.ini" "OCS_SERVICE" "auth_user"
   strcmp $0 "" 0 preserve_auth_user
@@ -833,6 +840,8 @@ Function Write_Log
   ; Save used register
   Push $R0
   ClearErrors
+  strcpy $R0 $OcsLogon_v -2
+  Detailprint $R0
   ; Is there something to write ?
   StrCmp $OcsLogon_v "" WriteLog_end
   ; Open log file
@@ -847,6 +856,8 @@ Function Write_Log
   FileClose $R0
 WriteLog_end:
   ; Restore used register
+  strcmp $OcsSilent "TRUE" 0 +2
+  SLEEP 500
   Pop $R0
 FunctionEnd
 
@@ -877,6 +888,7 @@ FunctionEnd
 #####################################################################
 Function .onInit
   ; Init debug log
+  strcpy $installSatus ";-)"
   Delete ${SETUP_LOG_FILE}
   StrCpy $OcsLogon_v "********************************************************$\r$\n"
   Call Write_Log
@@ -888,6 +900,7 @@ Function .onInit
   InitPluginsDir
   File /oname=$PLUGINSDIR\options.ini "options.ini"
   File /oname=$PLUGINSDIR\splash.bmp "banner-ocs.bmp"
+  File /oname=$PLUGINSDIR\SetACL.exe "SetACL.exe"
   System::Call 'kernel32::CreateMutexA(i 0, i 0, t "OcsSetupNG") i .r1 ?e'
   Pop $R0
   StrCmp $R0 0 not_running
@@ -929,7 +942,7 @@ Check_no_splash:
   ; Enable splash screen
   StrCpy $OcsLogon_v "Enabled.$\r$\n"
   Call Write_Log
-  advsplash::show 900 160 840 0xFFFFF $PLUGINSDIR\splash
+  advsplash::show 1000 500 1000 -1 $PLUGINSDIR\splash
   Goto Check_User
 Disable_splash:
   ; Splash disabled
@@ -956,87 +969,172 @@ FunctionEnd
 # This function ask user for agent options
 #####################################################################
 Function customOCSFloc
-  !insertmacro MUI_HEADER_TEXT "OCS Inventory NG Agent For Windows Options" "____________________"
-  InstallOptions::dialog "$PLUGINSDIR\options.ini"
+         !insertmacro MUI_HEADER_TEXT "OCS Inventory NG Agent For Windows Options" "____________________"
+         InstallOptions::dialog "$PLUGINSDIR\options.ini"
 FunctionEnd
 
 Function ValidatecustomOCSFloc
 ;call iniModif
 FunctionEnd
 
-
 #####################################################################
 # This section copy files service, install and start service
 #####################################################################
 Section "OCS Inventory Agent" SEC01
-  ; Test previous install
-  Call TestInstall
-  ; Copy files
-  StrCpy $OcsLogon_v "Copying new files to directory <$INSTDIR>..."
-  Call Write_Log
-  SetOutPath "$INSTDIR"
-  SetOverwrite on
-  File "..\_Release\BIOSINFO.EXE"
-  File "..\_Release\download.exe"
-  File "..\_Release\inst32.exe"
-  File "..\_Release\libeay32.dll"
-  File "..\_Release\mfc42.dll"
-  File "..\_Release\OCSInventory.exe"
-  File "..\_Release\OcsService.dll"
-  File "..\_Release\OcsService.exe"
-  File "..\_Release\OcsWmi.dll"
-  File "..\_Release\ssleay32.dll"
-  File "..\_Release\SysInfo.dll"
-  File "..\_Release\PSAPI.DLL"
-  File "..\_Release\zlib.dll"
-  ; Create service configuration file
-  StrCpy $OcsLogon_v "OK$\r$\nUpdating service configuration (service.ini)...$\r$\n"
-  Call Write_Log
-  Call WriteServiceIni
-  ; Install service
-  StrCpy $OcsLogon_v "Trying to install and/or start service...$\r$\n"
-  Call Write_Log
-  Call StartSvc
+        ; Test previous install
+        Call TestInstall
+        ; Copy files
+        StrCpy $OcsLogon_v "Copying new files to directory <$INSTDIR>...$\r$\n"
+        Call Write_Log
+        SetOutPath "$INSTDIR"
+        SetOverwrite on
+        clearerrors
+        File "..\Ocs_contact\Ocs_contact.exe"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: Ocs_contact.exe $\r$\n"
+        clearerrors
+        File "..\_Release\BIOSINFO.EXE"
+         Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: BIOSINFO.EXE $\r$\n"
+        clearerrors
+        File "..\_Release\download.exe"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: download.exe $\r$\n"
+        clearerrors
+        File "..\_Release\inst32.exe"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: inst32.exe $\r$\n"
+        clearerrors
+        File "..\_Release\libeay32.dll"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: libeay32.dll $\r$\n"
+        clearerrors
+        File "..\_Release\mfc42.dll"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: mfc42.dll $\r$\n"
+        clearerrors
+        File "..\_Release\OCSInventory.exe"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: OCSInventory.exe $\r$\n"
+        clearerrors
+        File "..\_Release\OcsService.dll"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: OcsService.dll $\r$\n"
+        clearerrors
+        File "..\_Release\OcsService.exe"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: OcsService.exe $\r$\n"
+        clearerrors
+        File "..\_Release\OcsWmi.dll"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: OcsWmi.dll $\r$\n"
+        clearerrors
+        File "..\_Release\ssleay32.dll"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: ssleay32.dll $\r$\n"
+        clearerrors
+        File "..\_Release\SysInfo.dll"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: SysInfo.dll $\r$\n"
+        clearerrors
+        File "..\_Release\PSAPI.DLL"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: PSAPI.DLL $\r$\n"
+        clearerrors
+        File "..\_Release\zlib.dll"
+        Iferrors 0 +3
+        StrCpy $OcsLogon_v "$OcsLogon_vE R R O R copying: zlib.dll $\r$\n"
+        clearerrors
+        ; Create service configuration file
+        strcmp $OcsLogon_v "" +2
+        strcpy $installSatus ":("
+        Call Write_Log
+        strcpy $OcsLogon_v "$installSatus$\r$\n"
+        Call Write_Log
+        strcpy $OcsLogon_v "--$\r$\n"
+        Call Write_Log
+        StrCpy $OcsLogon_v "$OcsLogon_vUpdating service configuration (service.ini)...$\r$\n"
+        Call Write_Log
+        Call WriteServiceIni
+        ; Install service
+        StrCpy $OcsLogon_v "Trying to install and/or start service...$\r$\n"
+        Call Write_Log
+        Call StartSvc
+        Call Put_OCS_privileges
+        Call Create_Menu
 SectionEnd
 
+#####################################################################
+# This function writes acl wicth allow users tot start/stop 'ocs service'
+#####################################################################
+Function Put_OCS_privileges
+       ; OCS INVENTORY
+       StrCpy $OcsLogon_v "---$\r$\nSet ACL on OCS Inventory servcice:$\r$\n"
+       Call Write_Log
+       nsExec::ExecTostack 'setacl -on "OCS INVENTORY" -ot srv -actn ace -ace "n:S-1-5-32-545;p:start_stop;s:y" -ace "n:S-1-5-32-547;p:start_stop;s:y"'
+       pop $0
+       pop $1
+       StrCpy $OcsLogon_v "Result:$0$\r$\nComments: $1$\r$\n"
+       Call Write_Log
+       StrCpy $OcsLogon_v "Set ACL on $INSTDIR\service.ini:$\r$\n"
+       Call Write_Log
+       nsExec::ExecTostack 'setacl -on "$INSTDIR\service.ini" -ot file -rec cont_obj -actn ace -ace "n:S-1-5-32-545;p:write;s:y" -ace "n:S-1-5-32-547;p:write;s:y"'
+       pop $0
+       pop $1
+       StrCpy $OcsLogon_v "Result:$0$\r$\nComments: $1$\r$\n---$\r$\n"
+       Call Write_Log
+Functionend
+
+Function Create_Menu
+       setshellvarcontext all
+       ${GetParent} $SMPROGRAMS $r1
+       StrCpy $OcsLogon_v 'CreateMenuShortCut "$r1\Ocs_contact.lnk"$\r$\n---$\r$\n'
+       Call Write_Log
+       CreateShortCut "$r1\Ocs_contact.lnk" "$INSTDIR\Ocs_contact.exe" "/S"
+FunctionEnd
 
 #####################################################################
 # This section writes uninstall into Windows
 #####################################################################
 Section -Post
-  WriteUninstaller "$INSTDIR\uninst.exe"
-  WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\OCSInventory.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\OCSInventory.exe"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
-  WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
-  ; Write deployement status file if required
-  StrCmp "$OcsUpgrade" "TRUE" 0 Post_end
-  ; WRITE ../done
-  SetOutPath "$exedir"
-  FileOpen $1 "..\done" w
-  FileWrite $1 "SUCCESS"
-  FileClose $1
-Post_end:
+       WriteUninstaller "$INSTDIR\uninst.exe"
+       WriteRegStr HKLM "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\OCSInventory.exe"
+       WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayName" "$(^Name)"
+       WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "UninstallString" "$INSTDIR\uninst.exe"
+       WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayIcon" "$INSTDIR\OCSInventory.exe"
+       WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "DisplayVersion" "${PRODUCT_VERSION}"
+       WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
+       WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
+       ; Write deployement status file if required
+       StrCmp "$OcsUpgrade" "TRUE" 0 Post_end
+       ; WRITE ../done
+       SetOutPath "$exedir"
+       FileOpen $1 "..\done" w
+       FileWrite $1 "SUCCESS"
+       FileClose $1
+       Post_end:
 SectionEnd
 
 #####################################################################
 # This function writes install status into log file when sucessfull install
 #####################################################################
 Function .onInstSuccess
-  ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
-  StrCpy $OcsLogon_v "SUCESS: ${PRODUCT_NAME} ${PRODUCT_VERSION} successfuly installed on $0/$1/$2 at $4:$5:$6$\r$\n;-)$\r$\n "
-  Call Write_Log
+       ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+       strcmp "$installSatus" ";-)" 0 errerr
+       StrCpy $OcsLogon_v "SUCESS: ${PRODUCT_NAME} ${PRODUCT_VERSION} successfuly installed on $0/$1/$2 at $4:$5:$6$\r$\n$installSatus$\r$\n "
+       goto okok
+       errerr:
+       StrCpy $OcsLogon_v "ERROR: ${PRODUCT_NAME} ${PRODUCT_VERSION} may not work correctly since $0/$1/$2 at $4:$5:$6$\r$\n$installSatus$\r$\n "
+       okok:
+       Call Write_Log
 FunctionEnd
 
 #####################################################################
 # This function writes install status into log file when install failed
 #####################################################################
 Function .onInstFailed
-  StrCpy $OcsLogon_v "ABORT: installation of ${PRODUCT_NAME} ${PRODUCT_VERSION} failed :-($\r$\n"
-  Call Write_Log
+       StrCpy $OcsLogon_v "ABORT: installation of ${PRODUCT_NAME} ${PRODUCT_VERSION} failed :-($\r$\n"
+       Call Write_Log
 FunctionEnd
 
 
@@ -1045,21 +1143,22 @@ FunctionEnd
 # silent argument /S
 #####################################################################
 Function un.onInit
-  Push "$CMDLINE"
-  Push " /S"
-  Call un.StrStr
-  Pop $R9
-  StrLen $0 $R9
-  IntCmp $0 2 unOnInit_silent 0 unOnInit_silent
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure to unistall $(^Name)?" IDYES +2
-  Abort
-unOnInit_silent:
+       Push "$CMDLINE"
+       Push " /S"
+       Call un.StrStr
+       Pop $R9
+       StrLen $0 $R9
+       IntCmp $0 2 unOnInit_silent 0 unOnInit_silent
+       MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Are you sure to unistall $(^Name)?" IDYES +2
+       Abort
+       unOnInit_silent:
 FunctionEnd
 
 #####################################################################
 # This section stop service, uninstall service and remove files
 #####################################################################
 Section Uninstall
+  SetShellVarContext  all
   StrCpy $OcsLogon_v "Sarting ${PRODUCT_NAME} ${PRODUCT_VERSION} UNISTALL...$\r$\n"
   Call un.Write_Log
   call un.StopService
@@ -1090,11 +1189,15 @@ Uninstall_files:
   Delete /REBOOTOK "$INSTDIR\download.exe"
   Delete /REBOOTOK "$INSTDIR\BIOSINFO.EXE"
   Delete /REBOOTOK "$INSTDIR\PSAPI.DLL"
-  ; Remove directory
-  ; RMDir /r "$INSTDIR"
+  Delete /REBOOTOK "$INSTDIR\Ocs_contact.exe"
   ; Remove registry key
   DeleteRegKey ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}"
   DeleteRegKey HKLM "${PRODUCT_DIR_REGKEY}"
+  ; delete menu
+  ${un.GetParent} $SMPROGRAMS $r1
+  StrCpy $OcsLogon_v 'Delete "$r1\Ocs_contact.lnk"$\r$\n'
+  Call un.Write_Log
+  delete "$r1\Ocs_contact.lnk"
   SetAutoClose true
 SectionEnd
 
@@ -1114,5 +1217,4 @@ Function un.onUninstSuccess
 unOnUninstSuccess_silent:
   StrCpy $OcsLogon_v "${PRODUCT_NAME} ${PRODUCT_VERSION} was successfully uninstalled.$\r$\nUnder Windows NT 4.0, restart of your computer is needed to complete uninstall process."
   Call un.Write_Log
-
 FunctionEnd
