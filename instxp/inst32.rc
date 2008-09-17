@@ -31,8 +31,8 @@ LANGUAGE LANG_FRENCH, SUBLANG_FRENCH
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 2,3,2,0
- PRODUCTVERSION 2,3,2,0
+ FILEVERSION 2,3,3,0
+ PRODUCTVERSION 2,3,3,0
  FILEFLAGSMASK 0x0L
 #ifdef _DEBUG
  FILEFLAGS 0xbL
@@ -49,15 +49,15 @@ BEGIN
         BEGIN
             VALUE "Comments", "Programme permettant le retour de code contenu dans fichier log (code retourné=***<code>)\r\n \r\nSyntaxe : \r\ninst32.exe /exe:nom_du_programme_d'installation  /log:nom_du_fichier_log /err:nom_du_fichier_err\0"
             VALUE "CompanyName", "\0"
-            VALUE "FileDescription", "inst32 version 32 bits  Windows 95, 98, Me, XP\0"
-            VALUE "FileVersion", "2.3.2\0"
+            VALUE "FileDescription", "inst32 version 32 bits Windows 95, 98, Me, NT4, 2000, XP, 2003, Vista\0"
+            VALUE "FileVersion", "2.3.3.0\0"
             VALUE "InternalName", "inst32\0"
             VALUE "LegalCopyright", "\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "inst32.exe\0"
-            VALUE "PrivateBuild", "int32  par B. Le Roux\0"
+            VALUE "PrivateBuild", "int32 par B. Le Roux\0"
             VALUE "ProductName", "\0"
-            VALUE "ProductVersion", "2.3.2\0"
+            VALUE "ProductVersion", "2.3.3.0\0"
             VALUE "SpecialBuild", "\0"
         END
     END

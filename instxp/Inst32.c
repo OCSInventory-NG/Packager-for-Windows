@@ -107,15 +107,25 @@ BOOL InitToolHelp(void)
 
 	HANDLE hKernel = NULL; 
 
-    if ((hKernel = GetModuleHandle("KERNEL32.DLL")) != NULL){ 
-        pCreateToolhelp32Snapshot =  (CREATESNAPSHOT)GetProcAddress(hKernel, "CreateToolhelp32Snapshot"); 
-        pProcess32First = (PROCESSWALK)GetProcAddress(hKernel, "Process32First"); 
-        pProcess32Next  = (PROCESSWALK)GetProcAddress(hKernel, "Process32Next"); 
-        if (	pProcess32First				== NULL || 
-				pProcess32Next				== NULL	|| 
-				pCreateToolhelp32Snapshot	== NULL)
+    if ((hKernel = GetModuleHandle("KERNEL32.DLL")) != NULL)
+	{ 
+        pCreateToolhelp32Snapshot =  (CREATESNAPSHOT)GetProcAddress(hKernel, "CreateToolhelp32Snapshot");
+		if (pCreateToolhelp32Snapshot	== NULL)
 		{
-			return FALSE; 
+			// MessageBox( NULL, "CreateToolhelp32Snapshot not found in KERNEL32.DLL", "Inst32.exe", MB_OK);
+			return FALSE;
+		}
+        pProcess32First = (PROCESSWALK)GetProcAddress(hKernel, "Process32First"); 
+		if (pCreateToolhelp32Snapshot	== NULL)
+		{
+			// MessageBox( NULL, "Process32First not found in KERNEL32.DLL", "Inst32.exe", MB_OK);
+			return FALSE;
+		}
+        pProcess32Next  = (PROCESSWALK)GetProcAddress(hKernel, "Process32Next"); 
+		if (pCreateToolhelp32Snapshot	== NULL)
+		{
+			// MessageBox( NULL, "Process32Next not found in KERNEL32.DLL", "Inst32.exe", MB_OK);
+			return FALSE;
 		}
     } 
     else 
@@ -987,8 +997,10 @@ OSVERSIONINFO osversion;
 	 	return Arret( ERR_OS, 0);
     */
 
+/* Remove OS check
 	if ( !(ISWIN95(osversion) || ISWIN98(osversion) || ISWINME(osversion) || ISWINXP(osversion) || ISWIN2000(osversion) ))
 	 	return Arret( ERR_OS, 0);
+*/
 
 	if ( !InitToolHelp())
 		return Arret(ERR_FONC_TOOL, 0); 
