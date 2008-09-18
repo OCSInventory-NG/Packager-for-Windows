@@ -52,6 +52,7 @@ void CDeviceProperties::Clear()
 	m_csIPAddress.Empty();		// IP Address of the device if available (ex "192.3.4.1" or "Unavailable")
 	m_csExecutionDuration = _T( "00:00:00"); // Duration of the inventory check
 	m_csLoggedOnUser.Empty();	// Logged on user when device has been checked
+	m_csLastLoggedUser.Empty();	// Last user who'd been logged in
 	m_csDescription.Empty();	// Device description extracted from OS
 	m_csWinRegCompany.Empty();	// Windows registered company
 	m_csWinRegOwner.Empty();	// Windows registered owner
@@ -162,6 +163,13 @@ void CDeviceProperties::SetLoggedOnUser( LPCTSTR lpstrUser)
 	m_csLoggedOnUser = lpstrUser;
 	StrForSQL( m_csLoggedOnUser);
 }
+
+void CDeviceProperties::SetLastLoggedUser( LPCTSTR lpstrLastLoggedUser)
+{
+	m_csLastLoggedUser = lpstrLastLoggedUser;
+	StrForSQL( m_csLastLoggedUser);
+}
+
 
 void CDeviceProperties::SetDescription( LPCTSTR lpstrDescription)
 {
@@ -276,6 +284,11 @@ LPCTSTR CDeviceProperties::GetLoggedOnUser()
 	return m_csLoggedOnUser;
 }
 
+LPCTSTR CDeviceProperties::GetLastLoggedUser()
+{
+	return m_csLastLoggedUser;
+}
+
 LPCTSTR CDeviceProperties::GetDescription()
 {
 	return m_csDescription;
@@ -326,6 +339,9 @@ BOOL CDeviceProperties::RetrieveHardwareAndOS(SysInfo * myPC, LPCSTR cmdL)
 	// Get logged on user
 	CUtils::trace("USERNAME",cmdL);
 	myPC->getUserName( m_csLoggedOnUser);
+
+	// Get the last user who'd been logged in
+	myPC->getLastLoggedUser( m_csLastLoggedUser);
 
 	// Get OS informations and device type (windows station or windows server)
 	CUtils::trace("OS",cmdL);
@@ -437,6 +453,7 @@ BOOL CDeviceProperties::FormatXML(CMarkup* pX)
 		pX->AddElemNV("ETIME",m_csExecutionDuration);
 		pX->AddElemNV("LASTDATE",m_csLastCheckDate);
 		pX->AddElemNV("USERID",m_csLoggedOnUser);
+		pX->AddElemNV("LASTLOGGEDUSER",m_csLastLoggedUser);
 		pX->AddElemNV("TYPE",m_uType);
 		pX->AddElemNV("DESCRIPTION",m_csDescription);
 		pX->AddElemNV("WINCOMPANY",m_csWinRegCompany);

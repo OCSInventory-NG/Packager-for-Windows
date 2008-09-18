@@ -50,6 +50,7 @@ public: // Methods
 	BOOL GetDomainOrWorkgroup( CString &csDomain);
 	BOOL GetInputDevices( CInputDeviceList *pList);
 	BOOL GetLoggedOnUser( CString &csUser);
+	BOOL GetLastLoggedUser(CString &csLastLoggedUser);
 	BOOL GetModems( CModemList *pMyList);
 	BOOL GetMonitors( CMonitorList *pMyList);
 	BOOL GetSystemPorts( CSystemPortList *pMyList);

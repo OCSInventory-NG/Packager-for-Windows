@@ -634,6 +634,11 @@ RETRY:
 	return m_registryInfo.GetLoggedOnUser( csUserName);	
 }
 
+BOOL SysInfo::getLastLoggedUser(CString &csLastLoggedUser)
+{
+	return m_registryInfo.GetLastLoggedUser( csLastLoggedUser);
+}
+
 BOOL SysInfo::getRegistryApplications(CSoftwareList *pList, BOOL hkcu)
 {
 	return m_registryInfo.GetRegistryApplications( pList, hkcu);

@@ -92,6 +92,8 @@ public:
 	LPCTSTR GetExecutionDuration();
 	// Return a string with the logged on user when device has been checked
 	LPCTSTR GetLoggedOnUser();
+	// Return a string with the last user who'd been logged in the system
+	LPCTSTR GetLastLoggedUser();
 	// Return a string with the device description extracted from OS
 	LPCTSTR GetDescription();
 	// Return the NT domain name or workgroup
@@ -137,8 +139,10 @@ public:
 	void SetExecutionDuration( CTime &cBeginTime, CTime &cEndTime);
 	// Set the execution duration from string
 	void SetExecutionDuration( LPCTSTR lpstrDuration);
-	// Set the last check date
+	// Set the user
 	void SetLoggedOnUser( LPCTSTR lpstrUser);
+	// Set the last user who'd been logged in
+	void SetLastLoggedUser( LPCTSTR lpstrLastLoggedUser);
 	// Set the device type
 	void SetDeviceType( UINT uType);
 	// Set the device description extracted from OS
@@ -219,6 +223,7 @@ protected: // Attributes
 	CString	m_csLastCheckDate;	// Last check date when reading from CSV
 	CString	m_csExecutionDuration; // Excution duration in string format
 	CString	m_csLoggedOnUser;	// Logged on username when device have been checked
+	CString m_csLastLoggedUser; // Last user who'd been logged in
 	CString	m_csDescription;	// Description extracted from OS
 	UINT	m_uType;			// Network device type
 	CString	m_csDomain;			// NT Domain name or workgroup

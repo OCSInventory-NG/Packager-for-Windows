@@ -114,6 +114,9 @@ public: // Methods
 	// User informations
 	BOOL getUserName( CString &csUserName);
 
+	// Last user logged in the system
+	BOOL getLastLoggedUser( CString &csLastLoggedUser);
+
 	// Software informations
 	BOOL getRegistryApplications( CSoftwareList *pList, BOOL hkcu);
 
