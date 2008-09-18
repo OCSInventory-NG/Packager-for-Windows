@@ -27,7 +27,10 @@ CFilePackageHistory::CFilePackageHistory()
 
 CFilePackageHistory::~CFilePackageHistory()
 {
-	m_File.Close();
+	// Thanks Goneri
+	if (m_bOpened)
+		m_File.Close();
+	m_bOpened = FALSE;
 }
 
 BOOL CFilePackageHistory::Open(LPCTSTR lpstrFile, BOOL bForWriting, BOOL bExclusive)
@@ -57,12 +60,14 @@ BOOL CFilePackageHistory::Open(LPCTSTR lpstrFile, BOOL bForWriting, BOOL bExclus
 
 void CFilePackageHistory::SeekToBegin()
 {
-	m_File.SeekToBegin();
+	if (m_bOpened)
+		m_File.SeekToBegin();
 }
 
 void CFilePackageHistory::SeekToEnd()
 {
-	m_File.SeekToEnd();
+	if (m_bOpened)
+		m_File.SeekToEnd();
 }
 
 BOOL CFilePackageHistory::AddPackage(LPCTSTR lpstrPackageID)
