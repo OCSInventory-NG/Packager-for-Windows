@@ -80,7 +80,7 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040c04b0"
+        BLOCK "000004b0"
         BEGIN
             VALUE "Comments", "Inventory Tool under GNU General Public License\0"
             VALUE "CompanyName", "http://www.ocsinventory-ng.org\0"
@@ -98,7 +98,7 @@ BEGIN
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x40c, 1200
+        VALUE "Translation", 0x0, 1200
     END
 END
 

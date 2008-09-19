@@ -45,9 +45,9 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "040c04e2"
+        BLOCK "000004b0"
         BEGIN
-            VALUE "Comments", "Programme permettant le retour de code contenu dans fichier log (code retourné=***<code>)\r\n \r\nSyntaxe : \r\ninst32.exe /exe:nom_du_programme_d'installation  /log:nom_du_fichier_log /err:nom_du_fichier_err\0"
+            VALUE "Comments", "Tool to launch command and wait for it's ending to retreive exit code\r\n \r\nSyntax : \r\ninst32.exe /exe:setup_filename  /log:log_filename /err:error_filename\0"
             VALUE "CompanyName", "\0"
             VALUE "FileDescription", "inst32 version 32 bits Windows 95, 98, Me, NT4, 2000, XP, 2003, Vista\0"
             VALUE "FileVersion", "2.3.3.0\0"
@@ -63,7 +63,7 @@ BEGIN
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x40c, 1250
+        VALUE "Translation", 0x0, 1200
     END
 END
 
