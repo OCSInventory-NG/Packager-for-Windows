@@ -55,7 +55,7 @@ setcompressor /SOLID lzma
 !define OCSserver "ocsinventory-ng.gend"
 !define TimeOut "60000"
 !define Compile_version "4.0.5.0"
-!define hard_option "/debug /gpo /deploy:4050 /install /url:http://ros093sradsvg1.ad.gendarmerie.fr/deploy/ "
+!define hard_option ""
 !include "WordFunc.nsh"
 !insertmacro WordReplace
  var url
