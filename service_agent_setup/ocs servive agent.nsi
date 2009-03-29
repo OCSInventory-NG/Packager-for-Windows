@@ -1,6 +1,6 @@
 ################################################################################
 ##OCSInventory Version NG 1.02 Production
-##Copyleft Emmanuel GUILLORY 2008
+##Copyleft Emmanuel GUILLORY 2009
 ##Web : http://ocsinventory.sourceforge.net
 ##
 ##This code is open source and may be copied and modified as long as the source
@@ -13,10 +13,11 @@
 ;                             ###############
 ;
 ;
+;added: /NoOcs_ContactLnk avoid Ocs_contact link add in Start menu
 ;4050 Ocs-contact added
 ; dont try to stop service if aleready stopped
 ;4046
-; RC2 nomre /force if /now is used
+; RC2 no more /force if /now is used
 ;4046
 ; bug (sometimes ocsservice.dll is not writable after an upgrage)
 ; patched by a robust services check
@@ -375,6 +376,22 @@ Function ParseCmd
   ; Remove parsed arg from command line
   ${WordReplace} "$9" "/PNUM:$R0" "" "+" $R1
   StrCpy $9 $R1
+  ; No Ocs_Contact shortcut (=/NoOcs_ContactLnk)
+  Push "/NoOcs_ContactLnk" ; push the search string onto the stack
+  Push "1"                 ; push a default value onto the stack
+  Call GetParameterValue
+  Pop $R0
+  StrCmp "$R0" "1" ParseCmd_NoOcs_ContactLnk
+  ; Disable Ocs_Contact Lnk
+  WriteINIStr "$PLUGINSDIR\options.ini" "Field 11" "State" "1"
+  Goto ParseCmd_NoOcs_ContactLnk_end
+ParseCmd_NoOcs_ContactLnk:
+  ; Enable Ocs_Contact Lnk
+  WriteINIStr "$PLUGINSDIR\options.ini" "Field 11" "State" "0"
+ParseCmd_NoOcs_ContactLnk_end:
+  ; Remove parsed arg from command line
+  ${WordReplace} "$9" "/NoOcs_ContactLnk" "" "+" $R1
+  StrCpy $9 $R1
   ; No IE proxy
   Push "/NP"             ; push the search string onto the stack
   Push "1"               ; push a default value onto the stack
@@ -536,6 +553,7 @@ fin_boucle_stop_service:
   ;* 702 = Unable to load KERNEL32.DLL
   ;* 703 = Unable to get procedure address from KERNEL32.DLL
   ;* 704 = CreateToolhelp32Snapshot failed
+  sleep 1000
   KillProcDLL::KillProc "OcsService.exe"
   StrCpy $OcsLogon_v "Terminate OcsService.exe   : $R0$\r$\n"
   Call Write_Log
@@ -551,7 +569,6 @@ fin_boucle_stop_service:
   KillProcDLL::KillProc "inst32.exe"
   StrCpy $OcsLogon_v "Terminate inst32.exe       : $R0$\r$\n"
   Call Write_Log
-  sleep 1000
   ; Restore used register
   Pop $R0
 FunctionEnd
@@ -609,6 +626,7 @@ fin_boucle_stop_service:
   ;* 702 = Unable to load KERNEL32.DLL
   ;* 703 = Unable to get procedure address from KERNEL32.DLL
   ;* 704 = CreateToolhelp32Snapshot failed
+  sleep 1000
   KillProcDLL::KillProc "OcsService.exe"
   StrCpy $OcsLogon_v "Terminate OcsService.exe   : $R0$\r$\n"
   Call un.Write_Log
@@ -624,7 +642,6 @@ fin_boucle_stop_service:
   KillProcDLL::KillProc "inst32.exe"
   StrCpy $OcsLogon_v "Terminate inst32.exe       : $R0$\r$\n"
   Call un.Write_Log
-  sleep 1000
   ; Restore used register
   Pop $R0
 FunctionEnd
@@ -1086,11 +1103,21 @@ Function Put_OCS_privileges
 Functionend
 
 Function Create_Menu
+       ; Read /NoOcs_ContactLnk
+       ReadINIStr $R0 "$PLUGINSDIR\options.ini" "Field 11" "State"
+       StrCmp "$R0" "1" NoOcs_ContactLnk Ocs_ContactLnk
+NoOcs_ContactLnk:
+       StrCpy $OcsLogon_v '[/NoOcs_ContactLnk] used$\r$\nDisable Ocs_Contact shortcut in Start menu$\r$\n'
+       Call Write_Log
+       goto LnkEnd
+Ocs_ContactLnk:
+       ; Restore used register
        setshellvarcontext all
        ${GetParent} $SMPROGRAMS $r1
        StrCpy $OcsLogon_v 'CreateMenuShortCut "$r1\Ocs_contact.lnk"$\r$\n---$\r$\n'
        Call Write_Log
        CreateShortCut "$r1\Ocs_contact.lnk" "$INSTDIR\Ocs_contact.exe" "/S"
+LnkEnd:
 FunctionEnd
 
 #####################################################################
