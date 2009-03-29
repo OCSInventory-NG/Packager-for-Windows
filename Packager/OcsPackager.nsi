@@ -11,6 +11,7 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;1028 more help
 ;1027
 ; ability to overload Otion if /TGAG: is used
 ; 1026
@@ -25,9 +26,7 @@
 !insertmacro WordFind
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "1.0.2.7"
-!define help_file "OCS_Inventory_NG-Packager_Usage_Guide_1.03_EN.pdf"
-
+!define Compile_version "1.0.2.8"
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
 !define COL_FILE "col.txt"
 
@@ -65,7 +64,6 @@ Function .onInit
  File /oname=$PLUGINSDIR\upack.ico "upack.ico"
  File /oname=$PLUGINSDIR\instocs.exe "instocs.exe"
  File /oname=$PLUGINSDIR\uninsocs.exe "uninsocs.exe"
- File /oname=$PLUGINSDIR\${help_file} ${help_file}
  File /oname=$PLUGINSDIR\ListBox.exe "ListBox.exe"
 FunctionEnd
 
@@ -135,7 +133,7 @@ Function Validatedonnee
    abort
 no_select_files:
    StrCmp $0 "18" 0 no_help
-   execshell 'open' '${help_file}'
+   execshell 'open' 'http://wiki.ocsinventory-ng.org/index.php?title=OCS_Inventory_NG:Packager'
    abort
 no_help:
    StrCmp $0 "19" 0 no_help2
@@ -145,9 +143,11 @@ no_help:
    /np --> IE proxy setting bypass.$\r$\n$\r$\n\
    /pnum:[Port number] --> Default: 80.$\r$\n$\r$\n\
    /now --> Force inventory just after agent install.$\r$\n$\r$\n\
+   /NoOcs_ContactLnk -->avoid Ocs_contact link add in Start menu.$\r$\n$\r$\n\
    /D=[installation folder] --> Must be the last parametter. No ( " ) in the path.$\r$\n$\r$\n\
    Example 1:  /S /server:10.1.1.1 /np /now$\r$\n$\r$\n\
-   Example 2:  /S /server:my.server.com /np /pnum:8090 /D=D:\my app\my inventory appp'
+   Example 2:  /S /server:myserver.fr /NoOcs_ContactLnk $\r$\n$\r$\n\
+   Example 3:  /S /server:my.server.com /np /pnum:8090 /D=D:\my app\my inventory appp'
    abort
 no_help2:
    execwait "$PLUGINSDIR\ListBox.exe /S"
