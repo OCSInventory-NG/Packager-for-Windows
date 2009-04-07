@@ -406,7 +406,14 @@ static CString getMacs(SysInfo* pSysInfo, CDeviceProperties & m_ThePC) {
 		CNetworkAdapter	cObject;
 		POSITION		pos;
 		BOOL			bContinue;
-		CString			lesMacs;
+		CString			lesMacs, tmpMac;
+		CString TabMac[32]={
+			"00:53:45:00:00:00",	// WAN (PPP/SLIP) Interface
+			"44:45:53:54:42:00",	// Nortel IPSECSHM Adapter 
+			"80:00:60:0F:E8:00",	// Windows Mobile-based 
+			"BA:D0:BE:EF:FA:CE",	// GlobeTrotter Module 3G+ Network Card 
+			"00:00:00:00:00:00"};
+		int	i, Nb=5;
 
 		pSysInfo->getNetworkAdapters( &m_ThePC.m_NetworkList );	
 		pos = m_ThePC.m_NetworkList.GetHeadPosition();
@@ -416,12 +423,24 @@ static CString getMacs(SysInfo* pSysInfo, CDeviceProperties & m_ThePC) {
 
 		while (bContinue) {
 			bContinue = (pos != NULL);
-			lesMacs += cObject.GetMACAddress();
+
+			tmpMac = cObject.GetMACAddress();
+			for (i=0 ; i<Nb && TabMac[i]!=tmpMac ; i++);
+
+			if (i>=Nb) { // New MAC (not in BlackList nor already found)
+
+				if (Nb<32) { // Always true, I hope
+					TabMac[Nb++] = tmpMac;
+				}
+				lesMacs += tmpMac;
+
+			}
 			if (pos != NULL)
 				cObject = m_ThePC.m_NetworkList.GetNext( pos);
 		}
 		return lesMacs;
 }
+
 
 static CString cleanVersion(CString target) {
 	target.Replace(" ","");
