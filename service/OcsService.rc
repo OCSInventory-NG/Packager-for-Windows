@@ -75,8 +75,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 4,0,5,0
- PRODUCTVERSION 4,0,5,0
+ FILEVERSION 4,0,5,4
+ PRODUCTVERSION 4,0,5,4
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -94,14 +94,14 @@ BEGIN
             VALUE "Comments", "Inventory Tool under GNU General Public License\0"
             VALUE "CompanyName", "http://www.ocsinventory-ng.org\0"
             VALUE "FileDescription", "Open Computers and Software Inventory Agent launcher service\0"
-            VALUE "FileVersion", "4, 0, 5, 0\0"
+            VALUE "FileVersion", "4, 0, 5, 4\0"
             VALUE "InternalName", "OcsService\0"
             VALUE "LegalCopyright", "Open Source Software under GNU General Public License V2.0\0"
             VALUE "LegalTrademarks", "http://www.ocsinventory-ng.org\0"
             VALUE "OriginalFilename", "OcsService.exe\0"
             VALUE "PrivateBuild", "\0"
             VALUE "ProductName", "Open Computers and Software Inventory\0"
-            VALUE "ProductVersion", "4, 0, 5, 0\0"
+            VALUE "ProductVersion", "4, 0, 5, 4\0"
             VALUE "SpecialBuild", "\0"
         END
     END
