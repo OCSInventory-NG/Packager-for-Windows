@@ -54,7 +54,7 @@ setcompressor /SOLID lzma
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng.gend"
 !define TimeOut "60000"
-!define Compile_version "4.0.5.0"
+!define Compile_version "4.0.5.4"
 !define hard_option ""
 !include "WordFunc.nsh"
 !insertmacro WordReplace

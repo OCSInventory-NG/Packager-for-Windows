@@ -42,7 +42,7 @@
 ; HM NIS Edit Wizard helper defines
 setcompressor /SOLID lzma
 !define PRODUCT_NAME "OCS Inventory NG Standalone Agent"
-!define PRODUCT_VERSION "4.0.5.0"
+!define PRODUCT_VERSION "4.0.5.4"
 !define PRODUCT_PUBLISHER "OCS Inventory NG Team"
 !define PRODUCT_WEB_SITE "http://www.ocsinventory-ng.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"
