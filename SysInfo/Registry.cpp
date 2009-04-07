@@ -380,6 +380,7 @@
 #define WIN_APPS_FOLDER_VALUE					_T( "InstallLocation")
 #define WIN_APPS_COMMENTS_VALUE					_T( "Comments")
 #define WIN_APPS_UNINSTALL_VALUE				_T( "UninstallString")
+#define WIN_APPS_QUIETUNINSTALL_VALUE			_T( "QuietUninstallString")
 
 // Defines for retrieving installed apps from 9X/Me registry
 #define NT_APPS_KEY								_T( "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
@@ -389,6 +390,7 @@
 #define NT_APPS_FOLDER_VALUE					_T( "InstallLocation")
 #define NT_APPS_COMMENTS_VALUE					_T( "Comments")
 #define NT_APPS_UNINSTALL_VALUE					_T( "UninstallString")
+#define NT_APPS_QUIETUNINSTALL_VALUE			_T( "QuietUninstallString")
 
 // Defines for validating detected components under HKEY_DYN_DATA for 9X/Me
 #define WIN_CONFIG_MANAGER_KEY					_T( "Config Manager\\Enum")
@@ -5534,7 +5536,8 @@ BOOL CRegistry::GetRegistryApplications9X(CSoftwareList *pList, HKEY__* curHive)
 				}
 				// Read the uninstall string
 				dwLength = 999;
-				if (RegQueryValueEx( hKeyObject, WIN_APPS_UNINSTALL_VALUE, 0, &dwType, (LPBYTE) szUninstall, &dwLength) != ERROR_SUCCESS)
+				if ((RegQueryValueEx( hKeyObject, WIN_APPS_UNINSTALL_VALUE, 0, &dwType, (LPBYTE) szUninstall, &dwLength) != ERROR_SUCCESS) &&
+					(RegQueryValueEx( hKeyObject, WIN_APPS_QUIETUNINSTALL_VALUE, 0, &dwType, (LPBYTE) szUninstall, &dwLength) != ERROR_SUCCESS))
 				{
 					if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for %s\\%s\\%s !\n"),csCurHive,
 									   csSubKey, WIN_APPS_UNINSTALL_VALUE);
@@ -5674,7 +5677,8 @@ BOOL CRegistry::GetRegistryApplicationsNT(CSoftwareList *pList, HKEY__* curHive 
 				}
 				// Read the uninstall string
 				dwLength = 999;
-				if (RegQueryValueEx( hKeyObject, NT_APPS_UNINSTALL_VALUE, 0, &dwType, (LPBYTE) szUninstall, &dwLength) != ERROR_SUCCESS)
+				if ((RegQueryValueEx( hKeyObject, NT_APPS_UNINSTALL_VALUE, 0, &dwType, (LPBYTE) szUninstall, &dwLength) != ERROR_SUCCESS) &&
+					(RegQueryValueEx( hKeyObject, NT_APPS_QUIETUNINSTALL_VALUE, 0, &dwType, (LPBYTE) szUninstall, &dwLength) != ERROR_SUCCESS))
 				{
 					if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for %s\\%s\\%s !\n"),csCurHive,
 									   csSubKey, NT_APPS_UNINSTALL_VALUE);
