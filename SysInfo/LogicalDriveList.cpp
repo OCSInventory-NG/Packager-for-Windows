@@ -51,8 +51,9 @@ LPCTSTR CLogicalDriveList::GetHash()
 		myObject = GetNext( pos);
 	while (bContinue)
 	{
-		csToHash.Format( _T( "%s%s%s%ld%s"), myObject.GetDriveLetter(), myObject.GetDriveType(),
-						 myObject.GetFileSystem(), myObject.GetTotalMB(), myObject.GetVolumName());
+		csToHash.Format( _T( "%s%s%s%ld%ld%s"), myObject.GetDriveLetter(), myObject.GetDriveType(),
+						 myObject.GetFileSystem(), myObject.GetTotalMB(), myObject.GetFreeMB(), 
+						 myObject.GetVolumName());
 		myHash.HashUpdate( LPCTSTR( csToHash), csToHash.GetLength());
 		bContinue = (pos != NULL);
 		if (bContinue)
