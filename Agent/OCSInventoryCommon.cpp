@@ -175,7 +175,10 @@ BOOL COCSInventoryApp::InitInstance()
 		// Open log file if needed
 		csMessage.Format( _T( "%s%s"), szExecutionFolder, szDeviceName);
 		CUtils::trace("OPEN_LOG",cmdL);
-		OpenLog( csMessage,cmdL );
+		/* We always write log file now
+		OpenLog( csMessage, cmdL);
+		*/
+		OpenLog( csMessage, _T( "/debug"));
 		
 		/*****
 		 *
