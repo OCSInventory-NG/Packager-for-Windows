@@ -517,9 +517,13 @@ void CEdid::Bricolage (CMonitor *myMonitor, Standard_EDID *myRecord)
 		myRecord->Manufacturer_ID, (DWORD)myRecord->EDID_ID_Code, (DWORD)myRecord->Serial_Number,
 		myMonitor->GetSerial());
 	
-	if (!lstrcmpi(myRecord->Manufacturer_ID, "ACR")) {
-		if (myRecord->EDID_ID_Code==0xad49) {
-			// Acer AL1916
+	if (!lstrcmpi(myRecord->Manufacturer_ID, "ACR"))
+	{
+		if ((myRecord->EDID_ID_Code==0xad49) ||	// Acer AL1916
+			(myRecord->EDID_ID_Code==0x0783) ||	// Acer AL1923
+			(myRecord->EDID_ID_Code==0x0020))	// Acer B223W
+		{
+			
 			lstrcpyn(Buf1, myMonitor->GetSerial(), sizeof(Buf1));
 			if (strlen(Buf1)>8) {
 				wsprintf(Buf2, "%08x", myRecord->Serial_Number);
