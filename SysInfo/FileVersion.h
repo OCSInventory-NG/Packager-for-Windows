@@ -40,6 +40,7 @@ public: // Methods
     CString GetOriginalFilename() {return QueryValue(_T( "OriginalFilename"));};
     CString GetProductName()      {return QueryValue(_T( "ProductName"));     };
     CString GetProductVersion()   {return QueryValue(_T( "ProductVersion"));  };
+	CString GetProductLanguage();
 
     BOOL    GetFixedInfo(VS_FIXEDFILEINFO& vsffi);
     CString GetFixedFileVersion();

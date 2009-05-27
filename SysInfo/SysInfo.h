@@ -138,7 +138,7 @@ protected: // Attributes
 	CWindowsSocket	m_Sock;		// Class to get informations from Windows Sockets
 };
 
-inline BOOL getFileVersion( LPCTSTR lpstrFile, CString &csPublisher, CString &csName, CString &csVersion, CString &csComment)
+inline BOOL getFileVersion( LPCTSTR lpstrFile, CString &csPublisher, CString &csName, CString &csVersion, CString &csComment, CString &csLanguage)
 {
 	CFileVersion myFileVersion;
 
@@ -150,6 +150,7 @@ inline BOOL getFileVersion( LPCTSTR lpstrFile, CString &csPublisher, CString &cs
 			csName = NOT_AVAILABLE;
 			csVersion = NOT_AVAILABLE;
 			csComment = NOT_AVAILABLE;
+			csLanguage = NOT_AVAILABLE;
 			return FALSE;
 		}
 		csPublisher = myFileVersion.GetCompanyName();
@@ -162,6 +163,7 @@ inline BOOL getFileVersion( LPCTSTR lpstrFile, CString &csPublisher, CString &cs
 		csVersion.Replace( _T( "\r"), _T( " "));
 		csComment = myFileVersion.GetFileDescription();
 		csComment.Replace( _T( "\r"), _T( " "));
+		csLanguage = myFileVersion.GetProductLanguage();
 		myFileVersion.Close();
 	}
 	catch (CException *pEx)
@@ -171,6 +173,7 @@ inline BOOL getFileVersion( LPCTSTR lpstrFile, CString &csPublisher, CString &cs
 		csName = NOT_AVAILABLE;
 		csVersion = NOT_AVAILABLE;
 		csComment = NOT_AVAILABLE;
+		csLanguage = NOT_AVAILABLE;
 		return FALSE;
 	}
 	return TRUE;

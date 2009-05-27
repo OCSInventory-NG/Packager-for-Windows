@@ -382,6 +382,7 @@
 #define WIN_APPS_UNINSTALL_VALUE				_T( "UninstallString")
 #define WIN_APPS_QUIETUNINSTALL_VALUE			_T( "QuietUninstallString")
 #define WIN_APPS_MODIFY_VALUE					_T( "ModifyPath")
+#define WIN_APPS_LANGUAGE_VALUE					_T( "Language")
 
 // Defines for retrieving installed apps from 9X/Me registry
 #define NT_APPS_KEY								_T( "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Uninstall")
@@ -393,6 +394,7 @@
 #define NT_APPS_UNINSTALL_VALUE					_T( "UninstallString")
 #define NT_APPS_QUIETUNINSTALL_VALUE			_T( "QuietUninstallString")
 #define NT_APPS_MODIFY_VALUE					_T( "ModifyPath")
+#define NT_APPS_LANGUAGE_VALUE					_T( "Language")
 
 // Defines for validating detected components under HKEY_DYN_DATA for 9X/Me
 #define WIN_CONFIG_MANAGER_KEY					_T( "Config Manager\\Enum")
@@ -5445,9 +5447,12 @@ BOOL CRegistry::GetRegistryApplications9X(CSoftwareList *pList, HKEY__* curHive)
 					szVersion[256],
 					szFolder[256],
 					szComments[256],
+					szGUID[256],
+					szLanguage[256],
 					szUninstall[1000];
 	DWORD			dwLength,
 					dwType,
+					dwValue,
 					dwIndexEnum = 0;
 	LONG			lResult;
 	FILETIME		MyFileTime;
@@ -5462,19 +5467,20 @@ BOOL CRegistry::GetRegistryApplications9X(CSoftwareList *pList, HKEY__* curHive)
 	{
 		// Enum the devices subkeys to find installed apps
 		dwLength = 255;
-		while ((lResult = RegEnumKeyEx( hKeyEnum, dwIndexEnum, szName, &dwLength, 0, NULL, 0, &MyFileTime)) == ERROR_SUCCESS)
+		while ((lResult = RegEnumKeyEx( hKeyEnum, dwIndexEnum, szGUID, &dwLength, 0, NULL, 0, &MyFileTime)) == ERROR_SUCCESS)
 		{
 			// For each object, Try to open the device key
-			szName[dwLength] = 0;
+			szGUID[dwLength] = 0;
 			bHaveToStore = FALSE;
-			csSubKey.Format( _T( "%s\\%s"), WIN_APPS_KEY, szName);
+			csSubKey.Format( _T( "%s\\%s"), WIN_APPS_KEY, szGUID);
 			if (RegOpenKeyEx( curHive, csSubKey, 0, KEY_READ, &hKeyObject) == ERROR_SUCCESS)
 			{
 				_tcscpy( szPublisher, NOT_AVAILABLE); 
 				_tcscpy( szName, NOT_AVAILABLE); 
 				_tcscpy( szVersion, NOT_AVAILABLE);
 				_tcscpy( szFolder, NOT_AVAILABLE); 
-				_tcscpy( szComments, NOT_AVAILABLE); 
+				_tcscpy( szComments, NOT_AVAILABLE);
+				_tcscpy( szLanguage, NOT_AVAILABLE);
 				// Read the Publisher
 				dwLength = 255;
 				if (RegQueryValueEx( hKeyObject, WIN_APPS_VENDOR_VALUE, 0, &dwType, (LPBYTE) szPublisher, &dwLength) == ERROR_SUCCESS)
@@ -5536,6 +5542,25 @@ BOOL CRegistry::GetRegistryApplications9X(CSoftwareList *pList, HKEY__* curHive)
 									   csSubKey, WIN_APPS_COMMENTS_VALUE);
 					_tcscpy( szComments, NOT_AVAILABLE);
 				}
+				// Read the language, this gives the language of the installation tool not of the application itself!
+				dwLength = 255;
+				dwType = REG_DWORD;
+				if (RegQueryValueEx( hKeyObject, WIN_APPS_LANGUAGE_VALUE, 0, &dwType, (LPBYTE) &dwValue, &dwLength) == ERROR_SUCCESS)
+				{
+				    DWORD nSize = 256;
+					TCHAR lpData[256];
+					DWORD nResult;
+
+					nResult = VerLanguageName(dwValue, lpData, nSize);
+					if ((nResult != 0) && (nResult < nSize - 1))
+						_tcscpy( szLanguage, lpData);
+				}
+				else
+				{
+					if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for %s\\%s\\%s !\n"),csCurHive,
+									   csSubKey, WIN_APPS_LANGUAGE_VALUE);
+					_tcscpy( szLanguage, NOT_AVAILABLE);
+				}
 				// Read the uninstall string
 				dwLength = 999;
 				if ((RegQueryValueEx( hKeyObject, WIN_APPS_UNINSTALL_VALUE, 0, &dwType, (LPBYTE) szUninstall, &dwLength) != ERROR_SUCCESS) &&
@@ -5549,6 +5574,8 @@ BOOL CRegistry::GetRegistryApplications9X(CSoftwareList *pList, HKEY__* curHive)
 				RegCloseKey( hKeyObject);
 				cApp.Clear();
 				cApp.Set( szPublisher, szName, szVersion, szFolder, szComments, NOT_AVAILABLE, 0, TRUE);
+				cApp.SetGUID(szGUID);
+				cApp.SetLanguage(szLanguage);
 				// Add the app to the apps list
 				if (bHaveToStore)
 				{
@@ -5587,9 +5614,12 @@ BOOL CRegistry::GetRegistryApplicationsNT(CSoftwareList *pList, HKEY__* curHive 
 					szVersion[256],
 					szFolder[256],
 					szComments[256],
+ 					szGUID[256],
+ 					szLanguage[256],
 					szUninstall[1000];
 	DWORD			dwLength,
 					dwType,
+					dwValue,
 					dwIndexEnum = 0;
 	LONG			lResult;
 	FILETIME		MyFileTime;
@@ -5604,19 +5634,20 @@ BOOL CRegistry::GetRegistryApplicationsNT(CSoftwareList *pList, HKEY__* curHive 
 	{
 		// Enum the devices subkeys to find installed apps
 		dwLength = 255;
-		while ((lResult = RegEnumKeyEx( hKeyEnum, dwIndexEnum, szName, &dwLength, 0, NULL, 0, &MyFileTime)) == ERROR_SUCCESS)
+		while ((lResult = RegEnumKeyEx( hKeyEnum, dwIndexEnum, szGUID, &dwLength, 0, NULL, 0, &MyFileTime)) == ERROR_SUCCESS)
 		{
 			// For each object, Try to open the device key
-			szName[dwLength] = 0;
+			szGUID[dwLength] = 0;
 			bHaveToStore = FALSE;
-			csSubKey.Format( _T( "%s\\%s"), NT_APPS_KEY, szName);
+			csSubKey.Format( _T( "%s\\%s"), NT_APPS_KEY, szGUID);
 			if (RegOpenKeyEx( curHive, csSubKey, 0, KEY_READ, &hKeyObject) == ERROR_SUCCESS)
 			{
 				_tcscpy( szPublisher, NOT_AVAILABLE); 
 				_tcscpy( szName, NOT_AVAILABLE); 
 				_tcscpy( szVersion, NOT_AVAILABLE);
 				_tcscpy( szFolder, NOT_AVAILABLE); 
-				_tcscpy( szComments, NOT_AVAILABLE); 
+				_tcscpy( szComments, NOT_AVAILABLE);
+				_tcscpy( szLanguage, NOT_AVAILABLE);
 				// Read the Publisher
 				dwLength = 255;
 				if (RegQueryValueEx( hKeyObject, NT_APPS_VENDOR_VALUE, 0, &dwType, (LPBYTE) szPublisher, &dwLength) == ERROR_SUCCESS)
@@ -5678,6 +5709,25 @@ BOOL CRegistry::GetRegistryApplicationsNT(CSoftwareList *pList, HKEY__* curHive 
 									   csSubKey, NT_APPS_COMMENTS_VALUE);
 					_tcscpy( szComments, NOT_AVAILABLE);
 				}
+				// Read the language, this gives the language of the installation tool not of the application itself!
+ 				dwLength = 255;
+				dwType = REG_DWORD;
+				if (RegQueryValueEx( hKeyObject, NT_APPS_LANGUAGE_VALUE, 0, &dwType, (LPBYTE) &dwValue, &dwLength) == ERROR_SUCCESS)
+				{
+					DWORD nSize = 256;
+					TCHAR lpData[256];
+					DWORD nResult;
+
+					nResult = VerLanguageName(dwValue, lpData, nSize);
+					if ((nResult != 0) && (nResult < nSize - 1))
+						_tcscpy( szLanguage, lpData);
+				}
+				else
+				{
+					if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for %s\\%s\\%s !\n"),csCurHive,
+										csSubKey, NT_APPS_LANGUAGE_VALUE);
+					_tcscpy( szLanguage, NOT_AVAILABLE);
+				}
 				// Read the uninstall string
 				dwLength = 999;
 				if ((RegQueryValueEx( hKeyObject, NT_APPS_UNINSTALL_VALUE, 0, &dwType, (LPBYTE) szUninstall, &dwLength) != ERROR_SUCCESS) &&
@@ -5691,6 +5741,8 @@ BOOL CRegistry::GetRegistryApplicationsNT(CSoftwareList *pList, HKEY__* curHive 
 				RegCloseKey( hKeyObject);
 				cApp.Clear();
 				cApp.Set( szPublisher, szName, szVersion, szFolder, szComments, NOT_AVAILABLE, 0, TRUE);
+				cApp.SetGUID(szGUID);
+				cApp.SetLanguage(szLanguage);
 				// Add the app to the apps list
 				if (bHaveToStore)
 				{

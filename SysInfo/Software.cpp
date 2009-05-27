@@ -73,6 +73,16 @@ LPCTSTR CSoftware::GetComments()
 	return m_csComments;
 }
 
+LPCTSTR CSoftware::GetGUID()
+{
+	return m_csGUID;
+}
+
+LPCTSTR CSoftware::GetLanguage()
+{
+	return m_csLanguage;
+}
+
 LPCTSTR CSoftware::GetFilename()
 {
 	return m_csFilename;
@@ -154,6 +164,18 @@ void CSoftware::SetComments(LPCTSTR lpstrComments)
 	StrForSQL( m_csComments);
 }
 
+void CSoftware::SetGUID(LPCTSTR lpstrGUID)
+{
+	m_csGUID = lpstrGUID;
+	StrForSQL(m_csGUID);
+}
+
+void CSoftware::SetLanguage(LPCTSTR lpstrLanguage)
+{
+	m_csLanguage = lpstrLanguage;
+	StrForSQL( m_csLanguage);
+}
+
 void CSoftware::SetFilename(LPCTSTR lpstrFilename)
 {
 	m_csFilename = lpstrFilename;
@@ -182,6 +204,8 @@ BOOL CSoftware::FormatXML(CMarkup* pX)
 		pX->AddElemNV("FILENAME",m_csFilename);
 		pX->AddElemNV("FILESIZE",m_ulFilesize);
 		pX->AddElemNV("SOURCE",m_bFromRegistry ? 1 : 0);
+		pX->AddElemNV("GUID",m_csGUID);
+		pX->AddElemNV("LANGUAGE",m_csLanguage);
 	pX->OutOfElem();
 	return TRUE;
 }
@@ -207,6 +231,8 @@ void CSoftware::Clear()
 	m_csVersion.Empty();	
 	m_csFolder.Empty();		
 	m_csComments.Empty();	
+	m_csGUID.Empty();	
+	m_csLanguage.Empty();	
 	m_csFilename.Empty();	
 	m_ulFilesize = 0;	
 	m_bFromRegistry = FALSE;

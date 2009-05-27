@@ -969,7 +969,8 @@ void COCSInventoryApp::SearchFilesInDirectory(LPCTSTR lpstrDir)
 	CString		csPublisher,
 				csName,
 				csVersion,
-				csComment;
+				csComment,
+				csLanguage;
 
 	// Search for all files and directory
 	csDir += "*.*";
@@ -1001,7 +1002,7 @@ void COCSInventoryApp::SearchFilesInDirectory(LPCTSTR lpstrDir)
 				if (m_pTheDB->IsExtensionToSearch( cFinder.GetFileName()))
 				{
 					// This is an apps to search
-					if (!getFileVersion( cFinder.GetFilePath(), csPublisher, csName, csVersion, csComment))
+					if (!getFileVersion( cFinder.GetFilePath(), csPublisher, csName, csVersion, csComment, csLanguage))
 						// Unable to get version infos => use filename
 						csName = cFinder.GetFileName();
 					StrForSQL( csName);
@@ -1010,6 +1011,7 @@ void COCSInventoryApp::SearchFilesInDirectory(LPCTSTR lpstrDir)
 						csName = cFinder.GetFileName();
 					cApp.Clear();
 					cApp.Set( csPublisher, csName, csVersion, cFinder.GetRoot(), csComment, cFinder.GetFileName(), cFinder.GetLength());
+					cApp.SetLanguage(csLanguage);
 					m_ThePC.m_SoftwareList.AddTail( cApp);
 				}
 			}

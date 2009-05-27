@@ -149,3 +149,17 @@ CString CFileVersion::GetFixedProductVersion()
     }
     return strVersion;
 }
+
+CString CFileVersion::GetProductLanguage()
+{
+	CString strLanguage;
+	DWORD nSize = 256;
+	TCHAR lpData[256];
+	DWORD nResult;
+
+	nResult = VerLanguageName(m_dwLangCharset, lpData, nSize);
+	if ((nResult != 0) && (nResult < nSize - 1))
+		strLanguage = (LPCTSTR)lpData;
+
+	return strLanguage;
+}

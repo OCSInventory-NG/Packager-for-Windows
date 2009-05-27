@@ -55,6 +55,10 @@ public: // Methods
 	LPCTSTR GetFolder();
 	// Get the app comments
 	LPCTSTR GetComments();
+	// Get the app GUID
+	LPCTSTR GetGUID();
+	// Get the app language
+	LPCTSTR GetLanguage();
 	// Get the app filename
 	LPCTSTR GetFilename();
 	// Get the app filezie
@@ -87,6 +91,10 @@ public: // Methods
 	void SetFolder( LPCTSTR lpstrFolder);
 	// Set the app comments
 	void SetComments( LPCTSTR lpstrComments);
+	// Set the app GUID
+	void SetGUID( LPCTSTR lpstrGUID);
+	// Set the app language
+	void SetLanguage( LPCTSTR lpstrLanguage);
 	// Set the app filename
 	void SetFilename( LPCTSTR lpstrFilename);
 	// Set the app filesize
@@ -103,6 +111,8 @@ protected: // Attributes
 	CString m_csVersion;	// Version
 	CString m_csFolder;		// File folder C:\MyAppDir
 	CString m_csComments;	// Comments
+	CString m_csGUID;		// GUID of app
+	CString m_csLanguage;	// Language of app
 	CString m_csFilename;	// Filename of app
 	ULONG	m_ulFilesize;	// Size in bytes of file app
 	BOOL	m_bFromRegistry;// Extracted from registry ?
