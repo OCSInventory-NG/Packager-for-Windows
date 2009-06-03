@@ -52,7 +52,7 @@ setcompressor /SOLID lzma
 !include "MUI.nsh"
 ;!include "WinMessages.nsh"
 !insertmacro MUI_LANGUAGE "english"
-!define OCSserver "ocsinventory-ng.gend"
+!define OCSserver "ocsinventory-ng"
 !define TimeOut "60000"
 !define Compile_version "4.0.5.4"
 !define hard_option ""
