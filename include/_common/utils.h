@@ -229,9 +229,10 @@ static BOOL byteToFile(CByteArray* pB,CString filename) {
 	try
 	{
 		CFile f;
-		f.Open(filename,CFile::modeCreate|CFile::modeWrite);
-		f.Write(pB->GetData(),pB->GetSize());
-		f.Close();
+		if (f.Open(filename,CFile::modeCreate|CFile::modeWrite)) {
+		  f.Write(pB->GetData(),pB->GetSize());
+		  f.Close();
+		}
 	}
 	catch (CException* pEx)
 	{
@@ -267,8 +268,10 @@ static CByteArray* fileToByte( CString filename ) {
 	{
 		AddLog("ERROR: could not read file %s\n", filename);
 		pEx->Delete();
-		delete res;
-		res = NULL;
+		if (res != NULL) {
+			delete res;
+			res = NULL;
+		}
 	}
 	
 	return res;
@@ -464,6 +467,9 @@ static void CUtils::getMacDeviceid(CString & csDeviceID, CString & csMac,LPCTSTR
 	}		
 	
 	CByteArray * pCb = CUtils::fileToByte(fileToOpen);
+	if (pCb == NULL) {
+		return;
+	}
 	CString content = CNetUtils::deCompressStr( pCb );
 	delete pCb;
 

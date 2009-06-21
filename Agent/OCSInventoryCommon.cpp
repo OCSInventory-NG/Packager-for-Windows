@@ -625,10 +625,11 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 				try	{
 					CString xmlFname;
 					xmlFname.Format( "%s.xml",m_ThePC.GetDeviceID());
-					xm.Open( xmlFname,CFile::modeCreate | CFile::modeWrite);
-					xm.Write(pXml->GetDoc(),pXml->GetDoc().GetLength());
-					xm.Close();
-					AddLog( _T( "OK\n"));
+					if (xm.Open( xmlFname,CFile::modeCreate | CFile::modeWrite)) {
+						xm.Write(pXml->GetDoc(),pXml->GetDoc().GetLength());
+						xm.Close();
+						AddLog( _T( "OK\n"));
+					}
 				}
 				catch(CException* pEx)
 				{
