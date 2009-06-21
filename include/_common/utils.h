@@ -229,10 +229,11 @@ static BOOL byteToFile(CByteArray* pB,CString filename) {
 	try
 	{
 		CFile f;
-		if (f.Open(filename,CFile::modeCreate|CFile::modeWrite)) {
-		  f.Write(pB->GetData(),pB->GetSize());
-		  f.Close();
+		if (!f.Open(filename,CFile::modeCreate|CFile::modeWrite)) {
+			return FALSE;
 		}
+		f.Write(pB->GetData(),pB->GetSize());
+		f.Close();
 	}
 	catch (CException* pEx)
 	{
