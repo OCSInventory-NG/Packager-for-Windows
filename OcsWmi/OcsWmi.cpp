@@ -452,6 +452,7 @@ LPCTSTR COcsWmi::GetClassObjectStringValue(LPCTSTR lpstrProperty)
 		CComBSTR propName = CComBSTR( lpstrProperty);
 
 		VARIANT pVal;
+		VariantInit(&pVal);
 
 		CIMTYPE pType;
 
@@ -520,6 +521,7 @@ DWORD COcsWmi::GetClassObjectDwordValue(LPCTSTR lpstrProperty)
 		CComBSTR propName = CComBSTR( lpstrProperty);
 
 		VARIANT pVal;
+		VariantInit(&pVal);
 
 		CIMTYPE pType;
 
@@ -570,6 +572,7 @@ __int64 COcsWmi::GetClassObjectI64Value(LPCTSTR lpstrProperty)
 		CComBSTR propName = CComBSTR( lpstrProperty);
 
 		VARIANT pVal;
+		VariantInit(&pVal);
 
 		CIMTYPE pType;
 
@@ -620,6 +623,7 @@ unsigned __int64 COcsWmi::GetClassObjectU64Value(LPCTSTR lpstrProperty)
 		CComBSTR propName = CComBSTR( lpstrProperty);
 
 		VARIANT pVal;
+		VariantInit(&pVal);
 
 		CIMTYPE pType;
 
@@ -674,6 +678,7 @@ LPCTSTR COcsWmi::GetRefElementClassObjectStringValue(LPCTSTR lpstrRefElement, LP
 		CString	csObject;
 
 		VARIANT pVal;
+		VariantInit(&pVal);
 
 		CIMTYPE pType;
 
@@ -784,6 +789,7 @@ DWORD COcsWmi::GetRefElementClassObjectDwordValue(LPCTSTR lpstrRefElement, LPCTS
 		CString	csObject;
 
 		VARIANT pVal;
+		VariantInit(&pVal);
 
 		CIMTYPE pType;
 
@@ -886,6 +892,7 @@ __int64 COcsWmi::GetRefElementClassObjectI64Value(LPCTSTR lpstrRefElement, LPCTS
 		CString	csObject;
 
 		VARIANT pVal;
+		VariantInit(&pVal);
 
 		CIMTYPE pType;
 
@@ -988,6 +995,7 @@ unsigned __int64 COcsWmi::GetRefElementClassObjectU64Value(LPCTSTR lpstrRefEleme
 		CString	csObject;
 
 		VARIANT pVal;
+		VariantInit(&pVal);
 
 		CIMTYPE pType;
 
@@ -1432,6 +1440,7 @@ LPCTSTR COcsWmi::strCimArrayValue(VARIANT &pVal, CIMTYPE &pType)
     LONG dwSUBound = 0;
 
     VARIANT v;
+	VariantInit(&v);
 
     LONG i;
 
@@ -1840,6 +1849,7 @@ LPCTSTR COcsWmi::strVariantArray( VARIANT var)
     LONG dwSUBound = 0;
 
     VARIANT v;
+	VariantInit(&v);
 
     LONG i;
 
