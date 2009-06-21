@@ -40,6 +40,10 @@
 #define NT_LASTLOGGEDUSER_USER_KEY				_T( "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Winlogon")
 #define NT_LASTLOGGEDUSER_USER_VALUE			_T( "DefaultUserName")
 
+// Defines for retrieving last user who'd been logged in on Vista
+#define VISTA_LASTLOGGEDUSER_USER_KEY			_T( "Volatile Environment")
+#define VISTA_LASTLOGGEDUSER_USER_VALUE			_T( "USERNAME")
+
 // Defines for retrieving computer description from 9X/Me registry
 #define WIN_COMPUTER_DESCRIPTION_KEY			_T( "SYSTEM\\CurrentControlSet\\Services\\VxD\\VNETSUP")
 #define WIN_COMPUTER_DESCRIPTION_VALUE			_T( "Comment")
@@ -6230,28 +6234,41 @@ BOOL CRegistry::GetLastLoggedUser(CString &csLastLoggedUser)
 	DWORD dwSize = 255;
 
   	AddLog( _T( "Registry NT GetLastLoggerUser: Trying to get the last user who'd been logged in..."));
-	LONG lResult = RegOpenKeyEx( HKEY_LOCAL_MACHINE, NT_LASTLOGGEDUSER_USER_KEY, 0, KEY_READ, &hKey);
-	if (lResult == ERROR_SUCCESS)
-	{
-		// Get user name.
-		lResult = RegQueryValueEx( hKey, NT_LASTLOGGEDUSER_USER_VALUE, NULL, &dwType, (LPBYTE) szLastLoggedUser, &dwSize);
-		if (lResult == ERROR_SUCCESS)
-		{
-			szLastLoggedUser[dwSize]=0;
-			csLastLoggedUser = szLastLoggedUser;
-			RegCloseKey( hKey);
-			AddLog( _T( "OK (%s).\n"), csLastLoggedUser);
-			return TRUE;
-		}
-		AddLog( _T( "Failed in call to <RegQueryValueEx> function for HKLM\\%s\\%s !\n"),
-				NT_LASTLOGGEDUSER_USER_KEY,
-				NT_LASTLOGGEDUSER_USER_VALUE);
-		RegCloseKey( hKey);
+
+	LONG lResult;
+	// Since Vista 
+	if (RegOpenKeyEx( HKEY_CURRENT_USER, VISTA_LASTLOGGEDUSER_USER_KEY, 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+		lResult = RegQueryValueEx( hKey, VISTA_LASTLOGGEDUSER_USER_VALUE, NULL, &dwType, (LPBYTE) szLastLoggedUser, &dwSize);
+		RegCloseKey( hKey);	
 	}
-	else
-		AddLog( _T( "Failed in call to <RegOpenKey> function for HKCU\\%s !\n"),
-				NT_LASTLOGGEDUSER_USER_VALUE);
-	return FALSE;
+
+	// Since Windows 2000, deprecated on Vista
+	if (lResult != ERROR_SUCCESS) {
+		if (RegOpenKeyEx( HKEY_LOCAL_MACHINE, NT_LASTLOGGEDUSER_USER_KEY, 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+			lResult = RegQueryValueEx( hKey, NT_LASTLOGGEDUSER_USER_VALUE, NULL, &dwType, (LPBYTE) szLastLoggedUser, &dwSize);
+			RegCloseKey( hKey);
+		} else {
+			AddLog( _T( "Failed in retrieve LASTLOGGEDUSER from registry!\n"));
+			return FALSE;
+		}
+	}
+	
+	
+
+
+	if (lResult == ERROR_SUCCESS) {
+
+		szLastLoggedUser[dwSize]=0;
+		csLastLoggedUser = szLastLoggedUser;
+		AddLog( _T( "OK (%s).\n"), csLastLoggedUser);
+		return TRUE;
+
+	} else {
+
+		AddLog( _T( "Failed in read LASTLOGGEDUSER from registry!\n"));
+		return FALSE;
+
+	}
 }
 
 BOOL CRegistry::GetLoggedOnUser9X(CString &csUser)
