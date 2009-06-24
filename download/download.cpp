@@ -85,7 +85,7 @@ BOOL CDownloadApp::InitInstance()
 	{
 		AddLog("ERROR: Can't chdir to download folder");		
 		finish();
-		return 0;
+		return FALSE;
 	}
 	for (uIndex = strlen( szExecutionFolder); (uIndex >= 0) && (szExecutionFolder[uIndex] != '\\') && (szExecutionFolder[uIndex] != ':'); uIndex --)
 		szExecutionFolder[uIndex] = 0;
@@ -93,7 +93,7 @@ BOOL CDownloadApp::InitInstance()
 	if( ! SetCurrentDirectory( csMessage) ) {
 		AddLog("ERROR: Can't chdir to <%s> folder", csMessage);		
 		finish();
-		return 0;
+		return FALSE;
 	}
 /*
 	char direc[_MAX_PATH+1];
@@ -514,23 +514,23 @@ int CDownloadApp::download( CPackage * pP ) {
 				downloadedFile.Write( szBuff, read );
 			}
 			pFile->Close();
-			delete pFile;			
+			delete pFile;
+			pFile = NULL;
 		}
 		catch(CException * e) {
 			error++;			
 			AddLog("ERROR: In downloading %s",uri);
 			Sleep(atoi(m_csFragLatency) * 1000);
 			e->Delete();
-			downloadedFile.Close();
+			downloadedFile.Abort();
+			if( pFile){
+				pFile->Close();
+				delete pFile;
+			}
 			if( error > atoi(MAX_ERROR_COUNT) ) {
 				AddLog("ERROR: Max error count reached, exiting...");
 				finish();
 				ExitProcess(1);
-			}
-
-			if( pFile){
-				pFile->Close();
-				delete pFile;
 			}
 			return 1;
 		}
