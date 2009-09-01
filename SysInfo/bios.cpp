@@ -231,7 +231,7 @@ BOOL CBios::FormatXML(CMarkup* pX)
 		pX->AddElemNV("BMANUFACTURER",m_csBiosManufacturer);
 		pX->AddElemNV("BVERSION",m_csBiosVersion);
 		pX->AddElemNV("BDATE",m_csBiosDate);
-		pX->AddElemNV("BASSETTAG",m_csBiosAssetTag);
+		pX->AddElemNV("ASSETTAG",m_csBiosAssetTag);
 	pX->OutOfElem();
 	return TRUE;
 }
