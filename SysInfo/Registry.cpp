@@ -583,8 +583,9 @@ BOOL CRegistry::GetBiosInfo( CBios *pMyBios)
 		return GetBiosInfoNT( pMyBios);
 	default:
 		// Unknown
-		pMyBios->Set( NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE
-					  NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE);
+		pMyBios->Set( NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE,
+			          NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE,
+					  NOT_AVAILABLE, NOT_AVAILABLE);
 		AddLog( _T( "Registry GetBiosInfo...Failed because unsupported or unrecognized OS !\n"));
 		return FALSE;
 	}
@@ -728,8 +729,9 @@ BOOL CRegistry::GetBiosInfo9X( CBios *pMyBios)
 	{
 		AddLog( _T( "\tFailed in call to <RegOpenKeyEx> function for HKLM\\%s !\n"),
 				WIN_BIOS_KEY);
-		pMyBios->Set( NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE
-					  NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE);
+		pMyBios->Set( NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE,
+					  NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE,
+					  NOT_AVAILABLE, NOT_AVAILABLE);
 	}
 	if ((!bManufacturer) || (!bModel))
 	{
@@ -990,7 +992,8 @@ BOOL CRegistry::GetBiosInfoNT( CBios *pMyBios)
 		AddLog( _T( "\tFailed in call to <RegOpenKeyEx> function for HKLM\\%s !\n"),
 				NT_BIOS_KEY);
 		pMyBios->Set( NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE
-					  NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE);
+					  NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE,
+					  NOT_AVAILABLE);
 	}
 	if ((!bManufacturer) || (!bModel))
 	{

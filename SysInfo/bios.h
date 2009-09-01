@@ -55,6 +55,8 @@ public: // Methods
 	LPCTSTR GetBiosVersion();
 	// Return the BIOS Date
 	LPCTSTR GetBiosDate();
+	// Return the BIOS Asset Tag
+	LPCTSTR GetBiosAssetTag();
 	// Format informations in a XML string
 	BOOL FormatXML( CMarkup* pX );
 	// Get hash code of data, to determine if changed since last inventory
@@ -73,7 +75,7 @@ public: // Methods
 	// Clear BIOS infos
 	void Clear();
 	// Set all BIOSInfo attributes
-	void Set( LPCTSTR lpstrSystemManufacturer, LPCTSTR lpstrSystemModel, LPCTSTR lpstrSystemSerialNumber, LPCTSTR lpstrMachineType, LPCTSTR lpstrBiosManufacturer, LPCTSTR lpstrBiosVersion, LPCTSTR lpstrBiosDate);
+	void Set( LPCTSTR lpstrSystemManufacturer, LPCTSTR lpstrSystemModel, LPCTSTR lpstrSystemSerialNumber, LPCTSTR lpstrMachineType, LPCTSTR lpstrBiosManufacturer, LPCTSTR lpstrBiosVersion, LPCTSTR lpstrBiosDate, LPCTSTR lpstrBiosAssetTag);
 	// Set System manufacturer
 	void SetSystemManufacturer( LPCTSTR lpstrManufacturer);
 	// Set System model
@@ -88,6 +90,8 @@ public: // Methods
 	void SetBiosVersion( LPCTSTR lpstrBiosVersion);
 	// Set BIOS date
 	void SetBiosDate( LPCTSTR lpstrBiosDate);
+	// Set ASSET tag
+	void SetBiosAssetTag( LPCTSTR lpstrBiosAssetTag);
 
 protected: // Attributes
 	CString		m_csDeviceID;			// Device unique ID
@@ -99,6 +103,7 @@ protected: // Attributes
 	CString		m_csBiosManufacturer;	// BIOS manufacturer
 	CString		m_csBiosVersion;		// BIOS version
 	CString		m_csBiosDate;			// BIOS date
+	CString     m_csBiosAssetTag;           // ASSET tag
 };
 #endif // !defined(AFX_BIOS_H__0769B90F_185D_424A_A8E9_121705E35122__INCLUDED_)
 

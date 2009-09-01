@@ -151,7 +151,7 @@ protected:
 	static bool x_FindAny( LPCTSTR szDoc, int& nChar );
 	static bool x_FindToken( TokenPos& token );
 	CString x_GetToken( const TokenPos& token ) const;
-	int x_FindElem( int iPosParent, int iPos, LPCTSTR szPath );
+	int _FindElem( int iPosParent, int iPos, LPCTSTR szPath );
 	CString x_GetTagName( int iPos ) const;
 	CString x_GetData( int iPos ) const;
 	CString x_GetAttrib( int iPos, LPCTSTR szAttrib ) const;

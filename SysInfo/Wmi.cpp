@@ -158,6 +158,7 @@ BOOL CWmi::GetBiosInfo(CBios *pMyBios)
 	CString	csManufacturer = NOT_AVAILABLE,
 			csModel = NOT_AVAILABLE,
 			csSN = NOT_AVAILABLE,
+			csBiosAssetTag = NOT_AVAILABLE,
 			csRdate = NOT_AVAILABLE,
 			csBiosVer = NOT_AVAILABLE,
 			csBiosBiosVer = NOT_AVAILABLE,
@@ -204,10 +205,11 @@ BOOL CWmi::GetBiosInfo(CBios *pMyBios)
 				if (csModel.IsEmpty())
 					csModel = m_dllWMI.GetClassObjectStringValue( _T( "Model"));
 				csSN = m_dllWMI.GetClassObjectStringValue( _T( "SerialNumber"));
-				csChassisType = m_dllWMI.GetClassObjectStringValue( _T( "ChassisTypes"));			
+				csChassisType = m_dllWMI.GetClassObjectStringValue( _T( "ChassisTypes"));
+				csBiosAssetTag = m_dllWMI.GetClassObjectStringValue( _T( "SMBIOSAssetTag"));
 			}
 			m_dllWMI.CloseEnumClassObject();
-			AddLog( _T( "OK (%s %s %s %s)\n"), csManufacturer, csModel, csSN, csChassisType);
+			AddLog( _T( "OK (%s %s %s %s %s)\n"), csManufacturer, csModel, csSN, csChassisType, csBiosAssetTag);
 		}
 	}
 	catch (CException *pEx)
@@ -248,6 +250,7 @@ BOOL CWmi::GetBiosInfo(CBios *pMyBios)
 	pMyBios->SetSystemManufacturer( csManufacturer);
 	pMyBios->SetSystemModel( csModel);
 	pMyBios->SetSystemSerialNumber( csSN);
+	pMyBios->SetBiosAssetTag(csBiosAssetTag);
 	ParseChassisType( csChassisType);
 	pMyBios->SetMachineType( csChassisType);
 	// GET BIOS Informations

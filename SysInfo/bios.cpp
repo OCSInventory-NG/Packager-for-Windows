@@ -35,7 +35,7 @@ CBios::~CBios()
 {
 }
 
-void CBios::Set( LPCTSTR lpstrSystemManufacturer, LPCTSTR lpstrSystemModel, LPCTSTR lpstrSystemSerialNumber, LPCTSTR lpstrMachineType, LPCTSTR lpstrBiosManufacturer, LPCTSTR lpstrBiosVersion, LPCTSTR lpstrBiosDate)
+void CBios::Set( LPCTSTR lpstrSystemManufacturer, LPCTSTR lpstrSystemModel, LPCTSTR lpstrSystemSerialNumber, LPCTSTR lpstrMachineType, LPCTSTR lpstrBiosManufacturer, LPCTSTR lpstrBiosVersion, LPCTSTR lpstrBiosDate, LPCTSTR lpstrBiosAssetTag)
 {
 	m_csSystemManufacturer = lpstrSystemManufacturer;
 	StrForSQL( m_csSystemManufacturer);
@@ -51,6 +51,8 @@ void CBios::Set( LPCTSTR lpstrSystemManufacturer, LPCTSTR lpstrSystemModel, LPCT
 	StrForSQL( m_csBiosVersion);
 	m_csBiosDate = lpstrBiosDate;
 	StrForSQL( m_csBiosDate);
+	m_csBiosAssetTag = lpstrBiosAssetTag;
+	StrForSQL( m_csBiosAssetTag);
 }
 
 void CBios::SetSystemManufacturer(LPCTSTR lpstrSystemManufacturer)
@@ -112,6 +114,12 @@ void CBios::SetBiosDate(LPCTSTR lpstrBiosDate)
 	StrForSQL( m_csBiosDate);
 }
 
+void CBios::SetBiosAssetTag( LPCTSTR lpstrBiosAssetTag)
+{
+	m_csBiosAssetTag = lpstrBiosAssetTag;
+	StrForSQL( m_csBiosAssetTag);
+}
+
 LPCTSTR CBios::GetDeviceID()
 {
 	return m_csDeviceID;
@@ -152,6 +160,11 @@ LPCTSTR CBios::GetBiosDate()
 	return m_csBiosDate;
 }
 
+LPCTSTR CBios::GetBiosAssetTag()
+{
+	return m_csBiosAssetTag;
+}
+
 BOOL CBios::ParseFromXML(CString &xml)
 {
 	CMarkup x;
@@ -188,6 +201,10 @@ BOOL CBios::ParseFromXML(CString &xml)
 	m_csMachineType = x.GetChildData();
 	x.ResetChildPos();
 
+	x.FindChildElem("ASSETTAG");
+	m_csBiosAssetTag = x.GetChildData();
+	x.ResetChildPos();
+
 	return TRUE;
 }
 
@@ -200,6 +217,7 @@ void CBios::Clear()
 	m_csBiosManufacturer.Empty();
 	m_csBiosVersion.Empty();
 	m_csBiosDate.Empty();
+	m_csBiosAssetTag.Empty();
 }
 
 BOOL CBios::FormatXML(CMarkup* pX)
@@ -213,6 +231,7 @@ BOOL CBios::FormatXML(CMarkup* pX)
 		pX->AddElemNV("BMANUFACTURER",m_csBiosManufacturer);
 		pX->AddElemNV("BVERSION",m_csBiosVersion);
 		pX->AddElemNV("BDATE",m_csBiosDate);
+		pX->AddElemNV("BASSETTAG",m_csBiosAssetTag);
 	pX->OutOfElem();
 	return TRUE;
 }
@@ -235,9 +254,9 @@ LPCTSTR CBios::GetHash()
 
 	if (!myHash.HashInit())
 		return NULL;
-	csToHash.Format( _T( "%s%s%s%s%s%s%s"), m_csSystemManufacturer, m_csSystemModel,
+	csToHash.Format( _T( "%s%s%s%s%s%s%s%s"), m_csSystemManufacturer, m_csSystemModel,
 					 m_csSystemSerialNumber, m_csBiosManufacturer, m_csBiosVersion,
-					 m_csBiosDate,m_csMachineType);
+					 m_csBiosDate,m_csMachineType, m_csBiosAssetTag);
 	myHash.HashUpdate( LPCTSTR( csToHash), csToHash.GetLength());
 	return myHash.HashFinal();
 }
