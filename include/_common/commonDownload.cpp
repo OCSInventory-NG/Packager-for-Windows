@@ -12,6 +12,7 @@
 #include "stdafx.h"
 #include "commonDownload.h"
 
+
 int init_OpenSSL(void)
 {
     if (/*!THREAD_setup() || */!SSL_library_init())

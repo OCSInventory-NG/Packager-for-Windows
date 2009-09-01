@@ -1,0 +1,1 @@
+void scanApps (CMarkup*			pXml);

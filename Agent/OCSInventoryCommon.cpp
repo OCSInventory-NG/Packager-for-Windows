@@ -27,6 +27,8 @@
 #include "modules\ModuleIpdiscover.h"
 #include "modules\ModuleRegistry.h"
 #include "modules\ModuleDownload.h"
+#include "scanApps.h"
+#include <iostream>
 
 //#include <winver.h>
 
@@ -175,9 +177,9 @@ BOOL COCSInventoryApp::InitInstance()
 		// Open log file if needed
 		csMessage.Format( _T( "%s%s"), szExecutionFolder, szDeviceName);
 		CUtils::trace("OPEN_LOG",cmdL);
-		/* We always write log file now
-		OpenLog( csMessage, cmdL);
-		*/
+		/* We always write log file now */
+		// OpenLog( csMessage, cmdL);
+		/* */
 		OpenLog( csMessage, _T( "/debug"));
 		
 		/*****
@@ -377,7 +379,10 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 				pXml->AddElemNV("OLD_DEVICEID",csFileDeviceID);
 
 			pXml->AddElemNV("VERSIONCLIENT",csAgentVer);
+
 		}		
+
+					
 
 		/*****
 		 *
@@ -594,6 +599,11 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 					((CModuleApi*)modules.GetAt(modCount))->inventory(pXml,&m_ThePC);
 			}
 
+			
+			// Feed the inventory with the scripts
+			scanApps(pXml);
+
+
 			// Check state to see if changed
 			HasChanged( &m_ThePC, szExecutionFolder);
 
@@ -611,6 +621,8 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 			CUtils::trace("CLEAN_XML",cmdL);
 			// Cleaning function to remove any binary character
 			CUtils::cleanXml(pXml);
+
+			
 
 			/*****
 			 *
@@ -1085,7 +1097,9 @@ BOOL COCSInventoryApp::LoadBIOS( LPCTSTR lpstrCommandLine, LPCTSTR lpstrExecutio
 		// Loading BIOS from an external XML file is not asked
 		return TRUE;
 	// Try to load BIOS infos from CSV
-	pPC.m_BIOS.Set( NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE);
+	pPC.m_BIOS.Set( NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE,
+		            NOT_AVAILABLE, NOT_AVAILABLE, NOT_AVAILABLE,
+					NOT_AVAILABLE, NOT_AVAILABLE);
 	if (myXmlDB.ReadBIOS( csFilename, pPC))
 	{
 		// BIOS read => Try to find if laptop chassis
