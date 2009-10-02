@@ -436,31 +436,106 @@ BOOL CDeviceProperties::RetrieveHardwareAndOS(SysInfo * myPC, LPCSTR cmdL)
 }
 BOOL CDeviceProperties::FormatXML(CMarkup* pX)
 {
-	pX->AddElem("HARDWARE");
+
+// HARDWARE keys are unique. I do a look up to see an external script
+// already created them.
+// I've to scan every key from the begining of the section
+#define GO_IN_HARDWARE pX->ResetPos();pX->FindElem("REQUEST"); \
+	pX->IntoElem();pX->FindElem("CONTENT");pX->IntoElem();	if \
+	(!pX->FindElem("HARDWARE")) {pX->AddElem("HARDWARE");} \
 	pX->IntoElem();
-		pX->AddElemNV("NAME",m_csDeviceName);
-		pX->AddElemNV("WORKGROUP",m_csDomain);
-		pX->AddElemNV("USERDOMAIN",m_csUserDomain);
-		pX->AddElemNV("OSNAME",m_csOSName);
-		pX->AddElemNV("OSVERSION",m_csOSVersion);
-		pX->AddElemNV("OSCOMMENTS",m_csOSComment);
-		pX->AddElemNV("PROCESSORT",m_csProcessorType);
-		pX->AddElemNV("PROCESSORS",m_csProcessorSpeed);
-		pX->AddElemNV("PROCESSORN",m_dwNumberOfProcessor);
-		pX->AddElemNV("MEMORY",m_ulPhysicalMemory);
-		pX->AddElemNV("SWAP",m_ulSwapSize);
-		pX->AddElemNV("IPADDR",m_csIPAddress);
-		pX->AddElemNV("ETIME",m_csExecutionDuration);
-		pX->AddElemNV("LASTDATE",m_csLastCheckDate);
-		pX->AddElemNV("USERID",m_csLoggedOnUser);
-		pX->AddElemNV("LASTLOGGEDUSER",m_csLastLoggedUser);
-		pX->AddElemNV("TYPE",m_uType);
-		pX->AddElemNV("DESCRIPTION",m_csDescription);
-		pX->AddElemNV("WINCOMPANY",m_csWinRegCompany);
-		pX->AddElemNV("WINOWNER",m_csWinRegOwner);
-		pX->AddElemNV("WINPRODID",m_csWinRegProductID);
-		pX->AddElemNV("WINPRODKEY",m_csWinProductKey);
-		pX->AddElemNV("CHECKSUM",m_ulChecksum);
+
+
+GO_IN_HARDWARE
+		if (!pX->FindElem("LASTLOGGEDUSER"))
+			pX->AddElemNV("LASTLOGGEDUSER",m_csLastLoggedUser);
+
+GO_IN_HARDWARE
+		if (!pX->FindElem("NAME"))
+			pX->AddElemNV("NAME",m_csDeviceName);
+
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("WORKGROUP"))
+			pX->AddElemNV("WORKGROUP",m_csDomain);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("USERDOMAIN"))
+			pX->AddElemNV("USERDOMAIN",m_csUserDomain);
+		if (!pX->FindElem("OSNAME"))
+			pX->AddElemNV("OSNAME",m_csOSName);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("OSVERSION"))
+			pX->AddElemNV("OSVERSION",m_csOSVersion);
+GO_IN_HARDWARE
+		if (!pX->FindElem("OSCOMMENTS"))
+			pX->AddElemNV("OSCOMMENTS",m_csOSComment);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("PROCESSORT"))
+			pX->AddElemNV("PROCESSORT",m_csProcessorType);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("PROCESSORS"))
+			pX->AddElemNV("PROCESSORS",m_csProcessorSpeed);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("PROCESSORN"))
+			pX->AddElemNV("PROCESSORN",m_dwNumberOfProcessor);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("MEMORY"))
+			pX->AddElemNV("MEMORY",m_ulPhysicalMemory);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("SWAP"))
+			pX->AddElemNV("SWAP",m_ulSwapSize);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("IPADDR"))
+			pX->AddElemNV("IPADDR",m_csIPAddress);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("ETIME"))
+			pX->AddElemNV("ETIME",m_csExecutionDuration);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("LASTDATE"))
+			pX->AddElemNV("LASTDATE",m_csLastCheckDate);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("USERID"))
+			pX->AddElemNV("USERID",m_csLoggedOnUser);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("TYPE"))
+			pX->AddElemNV("TYPE",m_uType);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("DESCRIPTION"))
+			pX->AddElemNV("DESCRIPTION",m_csDescription);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("WINCOMPANY"))
+			pX->AddElemNV("WINCOMPANY",m_csWinRegCompany);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("WINOWNER"))
+			pX->AddElemNV("WINOWNER",m_csWinRegOwner);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("WINPRODID"))
+			pX->AddElemNV("WINPRODID",m_csWinRegProductID);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("WINPRODKEY"))
+			pX->AddElemNV("WINPRODKEY",m_csWinProductKey);
+				pX->ResetPos();
+GO_IN_HARDWARE
+		if (!pX->FindElem("CHECKSUM"))
+			pX->AddElemNV("CHECKSUM",m_ulChecksum);
+
 	pX->OutOfElem();
 	return TRUE;
 }
