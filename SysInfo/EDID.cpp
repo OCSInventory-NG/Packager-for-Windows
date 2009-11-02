@@ -511,33 +511,29 @@ BOOL CEdid::GetDisplayEDID(HDEVINFO hDeviceInfoSet, SP_DEVINFO_DATA *pDevInfoDat
 
 void CEdid::Bricolage (CMonitor *myMonitor, Standard_EDID *myRecord)
 {
+
 	char Buf1[32], Buf2[32], Buffer[32];
 
-	AddLog( _T( "\tEDID : Monitor %s.%04X.%8X (%s)\n"), 
+	AddLog( _T( "\tGediff : Ecran %s.%04X.%8X (%s)\n"), 
 		myRecord->Manufacturer_ID, (DWORD)myRecord->EDID_ID_Code, (DWORD)myRecord->Serial_Number,
 		myMonitor->GetSerial());
-	
-	if (!lstrcmpi(myRecord->Manufacturer_ID, "ACR"))
-	{
-		if ((myRecord->EDID_ID_Code==0xad49) ||	// Acer AL1916
-			(myRecord->EDID_ID_Code==0x0783) ||	// Acer AL1923
-			(myRecord->EDID_ID_Code==0x0020))	// Acer B223W
-		{
-			
-			lstrcpyn(Buf1, myMonitor->GetSerial(), sizeof(Buf1));
-			if (strlen(Buf1)>8) {
-				wsprintf(Buf2, "%08x", myRecord->Serial_Number);
-				lstrcpyn (Buffer,    Buf1, 9);
-				lstrcpyn (Buffer+8,  Buf2, 9);
-				lstrcpyn (Buffer+16, Buf1+8, 5);
 
-				AddLog( _T( "\tEDID Fix: Change Serial Number to %s\n"), Buffer);
-				myMonitor->SetSerial(Buffer);
+	if (!lstrcmpi(myRecord->Manufacturer_ID, "ACR")) {
+		lstrcpyn(Buf1, myMonitor->GetSerial(), sizeof(Buf1));
 
-			}
+		if (lstrlen(Buf1)==12) {
+			// Heuristic confirm for
+			// AL1916 (0xAD49), AL1923 (0x0783) B223W (0x0018 et 0x0020)
+			// P243W  (0xADAF), X233H  (0x00A8)
+			wsprintf(Buf2, "%08X", myRecord->Serial_Number);
+			lstrcpyn (Buffer,    Buf1, 9);
+			lstrcpyn (Buffer+8,  Buf2, 9);
+			lstrcpyn (Buffer+16, Buf1+8, 5);
+
+			AddLog( _T( "\t+ Change Serial Number %s\n"), Buffer);
+			myMonitor->SetSerial(Buffer);
 		}
 	}
-}
 
 LPCTSTR CEdid::GetDescription(Standard_EDID *myRecord)
 {
