@@ -534,6 +534,7 @@ void CEdid::AcerHack (CMonitor *myMonitor, Standard_EDID *myRecord)
 			myMonitor->SetSerial(Buffer);
 		}
 	}
+}
 
 LPCTSTR CEdid::GetDescription(Standard_EDID *myRecord)
 {
