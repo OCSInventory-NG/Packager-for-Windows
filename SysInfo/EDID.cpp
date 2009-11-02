@@ -509,7 +509,7 @@ BOOL CEdid::GetDisplayEDID(HDEVINFO hDeviceInfoSet, SP_DEVINFO_DATA *pDevInfoDat
 	return TRUE;
 }
 
-void CEdid::Bricolage (CMonitor *myMonitor, Standard_EDID *myRecord)
+void CEdid::AcerHack (CMonitor *myMonitor, Standard_EDID *myRecord)
 {
 
 	char Buf1[32], Buf2[32], Buffer[32];
@@ -617,7 +617,7 @@ BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 					break;
 				}
 				myMonitor.SetType( DecodeDPMSFlag( myRecord.DPMS_Flags));
-				Bricolage(&myMonitor, &myRecord);
+				AcerHack(&myMonitor, &myRecord);
 				pMyList->AddTail( myMonitor);
 			}
 			dwIndex++;
@@ -693,7 +693,7 @@ BOOL CEdid::GetMonitors(CMonitorList *pMyList)
 					break;
 				}
 				myMonitor.SetType( DecodeDPMSFlag( myRecord.DPMS_Flags));
-				Bricolage(&myMonitor, &myRecord);
+				AcerHack(&myMonitor, &myRecord);
 				pMyList->AddTail( myMonitor);
 			}
 			dwIndex++;
