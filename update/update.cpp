@@ -197,7 +197,7 @@ CString params = this->m_lpCmdLine;
 		//////////////////////////////////
 
 		AddLog("\nCLIENT TESTING\n");
-		CDeleteFile("ok.ok");
+		DeleteFile("ok.ok");
 		AddLog("CLEAN: Deleting ok.ok");
 
 		CString cmd,fname;
