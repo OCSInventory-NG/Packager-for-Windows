@@ -735,6 +735,18 @@ modules.Add(new CModuleDownload(cmdL, &m_ThePC, csServer, iProxy, iPort, csHttpU
 							xmlNotify.AddElemNV( "MASK", pXml->GetChildData());
 							pXml->ResetChildPos();
 
+							pXml->FindChildElem( "IPGATEWAY");
+							xmlNotify.AddElemNV( "GW", pXml->GetChildData());
+							pXml->ResetChildPos();
+
+							pXml->FindChildElem( "IPDHCP");
+							xmlNotify.AddElemNV( "DHCP", pXml->GetChildData());
+							pXml->ResetChildPos();
+
+							pXml->FindChildElem( "IPSUBNET");
+							xmlNotify.AddElemNV( "SUBNET", pXml->GetChildData());
+							pXml->ResetChildPos();
+
 							xmlNotify.OutOfElem();
 						}
 						xmlResp=CNetUtils::sendXml( pConnect, &xmlNotify);
