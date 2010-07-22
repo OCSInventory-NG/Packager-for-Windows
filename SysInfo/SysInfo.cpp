@@ -310,39 +310,8 @@ DWORD SysInfo::getProcessors( CString &csProcType, CString &csProcSpeed)
 		return m_SystemInfo.dwNumberOfProcessors;
 	}
 			
-	// WMI not available => using CAMEL
-	try
-	{
-		dwRegNumber = m_registryInfo.GetProcessors( csRegType, csRegSpeed);
-		AddLog( _T( "CAMEL getProcessors: Trying to use CAMEL classes..."));
-		CPUInfo    cpuInfo;
-		// Get Processor name
-		csProcType.Format( _T( "%s %s"), cpuInfo.GetVendorID(), cpuInfo.GetExtendedProcessorName());
-		// Get Processor Speed
-		if ((dwRegNumber > 0) && (csRegSpeed != NOT_AVAILABLE))
-			// We've found at least 1 proc in registry and
-			// Speed is available in registry => use it
-			csProcSpeed = csRegSpeed;
-		else
-			// Use CAMEL speed => may be inconsistent
-			csProcSpeed.Format( _T( "%d"), cpuInfo.GetProcessorClockFrequency());
-		
-		AddLog( _T( "%s %s (Family %d Model %d Stepping %d) %d MHz. OK\n"),
-				cpuInfo.GetVendorID(),
-				cpuInfo.GetExtendedProcessorName(), m_SystemInfo.wProcessorLevel,
-				(m_SystemInfo.wProcessorRevision & 0xFF00) >> 8,
-				m_SystemInfo.wProcessorRevision & 0X00FF,
-				cpuInfo.GetProcessorClockFrequency());
-	}
-	catch (CException *pEx)
-	{
-		AddLog( _T( "CAMEL getProcessors: Failed because unknown exception...\n"));
-		pEx->Delete();
-		// Try registry
-		return m_registryInfo.GetProcessors( csProcType, csProcSpeed);
-	}
-	// return the number of processors
-	AddLog( _T( "CAMEL getProcessors: %lu processor(s) found.\n"), m_SystemInfo.dwNumberOfProcessors);
+	// WMI not available => using Registry
+	dwRegNumber = m_registryInfo.GetProcessors( csProcType, csProcSpeed);
 	return m_SystemInfo.dwNumberOfProcessors;
 }
 

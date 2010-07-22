@@ -6067,6 +6067,78 @@ BOOL CRegistry::GetWindowsRegistration9X(CString &csCompany, CString &csOwner, C
 	return FALSE;
 }
 
+
+
+BOOL CRegistry::GetWindowsRegistrationNT(CString &csCompany, CString &csOwner, CString &csProductID)
+{
+	HKEY			hKeyObject;
+	CString			csSubKey;
+	TCHAR			szCompany[256],
+					szOwner[256],
+					szProductID[256];
+	DWORD			dwLength,
+					dwType;
+
+	AddLog( _T( "Registry NT GetWindowsRegistration...\n"));
+	_tcscpy( szCompany, NOT_AVAILABLE); 
+	_tcscpy( szOwner, NOT_AVAILABLE);
+	_tcscpy( szProductID, NOT_AVAILABLE);
+	// Windows NT => Open the registration key
+	if (RegOpenKeyEx( m_hKey, NT_REGISTRATION_KEY, 0, KEY_READ, &hKeyObject) == ERROR_SUCCESS)
+	{
+		// Read the company name
+		dwLength = 255;
+		if (RegQueryValueEx( hKeyObject, NT_REGISTRATION_COMPANY_VALUE, 0, &dwType, (LPBYTE) szCompany, &dwLength) == ERROR_SUCCESS)
+		{
+			szCompany[dwLength]=0;
+		}
+		else
+		{
+			if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for HKLM\\%s\\%s !\n"),
+							   NT_REGISTRATION_KEY, NT_REGISTRATION_COMPANY_VALUE);
+			_tcscpy( szCompany, NOT_AVAILABLE);
+		}
+		// Read the user
+		dwLength = 255;
+		if (RegQueryValueEx( hKeyObject, NT_REGISTRATION_OWNER_VALUE, 0, &dwType, (LPBYTE) szOwner, &dwLength) == ERROR_SUCCESS)
+		{
+			szOwner[dwLength+1]=0;
+		}
+		else
+		{
+			if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for HKLM\\%s\\%s !\n"),
+							   NT_REGISTRATION_KEY, NT_REGISTRATION_OWNER_VALUE);
+			_tcscpy( szOwner, NOT_AVAILABLE);
+		}
+		// Read the productID
+		dwLength = 255;
+		if (RegQueryValueEx( hKeyObject, NT_REGISTRATION_PRODUCT_ID_VALUE, 0, &dwType, (LPBYTE) szProductID, &dwLength) == ERROR_SUCCESS)
+		{
+			szProductID[dwLength+1]=0;
+		}
+		else
+		{
+			if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for HKLM\\%s\\%s !\n"),
+							   NT_REGISTRATION_KEY, NT_REGISTRATION_PRODUCT_ID_VALUE);
+			_tcscpy( szProductID, NOT_AVAILABLE);
+		}
+		RegCloseKey( hKeyObject);
+		// Add the device to the adapter list
+		csCompany = szCompany;
+		StrForSQL( csCompany);
+		csOwner = szOwner;
+		StrForSQL( csOwner);
+		csProductID = szProductID;
+		StrForSQL( csProductID);
+		AddLog( _T( "Registry NT GetWindowsRegistration: OK (%s %s %s).\n"),
+				csCompany, csOwner, csProductID);
+		return TRUE;
+	}
+	AddLog( _T( "Registry NT GetWindowsRegistration: Failed in call to <RegOpenKeyEx> function for HKLM\\%s !\n"),
+			NT_REGISTRATION_KEY);
+	return FALSE;
+}
+
 BOOL CRegistry::GetWindowsProductKey(CString &productKey)
 {
 	char *KeyPath = "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion";
@@ -6139,75 +6211,6 @@ BOOL CRegistry::GetWindowsProductKey(CString &productKey)
 	return FALSE;
 }
 
-BOOL CRegistry::GetWindowsRegistrationNT(CString &csCompany, CString &csOwner, CString &csProductID)
-{
-	HKEY			hKeyObject;
-	CString			csSubKey;
-	TCHAR			szCompany[256],
-					szOwner[256],
-					szProductID[256];
-	DWORD			dwLength,
-					dwType;
-
-	AddLog( _T( "Registry NT GetWindowsRegistration...\n"));
-	_tcscpy( szCompany, NOT_AVAILABLE); 
-	_tcscpy( szOwner, NOT_AVAILABLE);
-	_tcscpy( szProductID, NOT_AVAILABLE);
-	// Windows NT => Open the registration key
-	if (RegOpenKeyEx( m_hKey, NT_REGISTRATION_KEY, 0, KEY_READ, &hKeyObject) == ERROR_SUCCESS)
-	{
-		// Read the company name
-		dwLength = 255;
-		if (RegQueryValueEx( hKeyObject, NT_REGISTRATION_COMPANY_VALUE, 0, &dwType, (LPBYTE) szCompany, &dwLength) == ERROR_SUCCESS)
-		{
-			szCompany[dwLength]=0;
-		}
-		else
-		{
-			if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for HKLM\\%s\\%s !\n"),
-							   NT_REGISTRATION_KEY, NT_REGISTRATION_COMPANY_VALUE);
-			_tcscpy( szCompany, NOT_AVAILABLE);
-		}
-		// Read the user
-		dwLength = 255;
-		if (RegQueryValueEx( hKeyObject, NT_REGISTRATION_OWNER_VALUE, 0, &dwType, (LPBYTE) szOwner, &dwLength) == ERROR_SUCCESS)
-		{
-			szOwner[dwLength+1]=0;
-		}
-		else
-		{
-			if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for HKLM\\%s\\%s !\n"),
-							   NT_REGISTRATION_KEY, NT_REGISTRATION_OWNER_VALUE);
-			_tcscpy( szOwner, NOT_AVAILABLE);
-		}
-		// Read the productID
-		dwLength = 255;
-		if (RegQueryValueEx( hKeyObject, NT_REGISTRATION_PRODUCT_ID_VALUE, 0, &dwType, (LPBYTE) szProductID, &dwLength) == ERROR_SUCCESS)
-		{
-			szProductID[dwLength+1]=0;
-		}
-		else
-		{
-			if(VVERBOSE) AddLog( _T( "\tFailed in call to <RegQueryValueEx> function for HKLM\\%s\\%s !\n"),
-							   NT_REGISTRATION_KEY, NT_REGISTRATION_PRODUCT_ID_VALUE);
-			_tcscpy( szProductID, NOT_AVAILABLE);
-		}
-		RegCloseKey( hKeyObject);
-		// Add the device to the adapter list
-		csCompany = szCompany;
-		StrForSQL( csCompany);
-		csOwner = szOwner;
-		StrForSQL( csOwner);
-		csProductID = szProductID;
-		StrForSQL( csProductID);
-		AddLog( _T( "Registry NT GetWindowsRegistration: OK (%s %s %s).\n"),
-				csCompany, csOwner, csProductID);
-		return TRUE;
-	}
-	AddLog( _T( "Registry NT GetWindowsRegistration: Failed in call to <RegOpenKeyEx> function for HKLM\\%s !\n"),
-			NT_REGISTRATION_KEY);
-	return FALSE;
-}
 
 BOOL CRegistry::GetLoggedOnUser(CString &csUser)
 {
@@ -6227,51 +6230,6 @@ BOOL CRegistry::GetLoggedOnUser(CString &csUser)
 		return NULL;
 	}
 	return NULL;
-}
-
-BOOL CRegistry::GetLastLoggedUser(CString &csLastLoggedUser)
-{
-	TCHAR szLastLoggedUser[256];
-	HKEY  hKey = NULL;
-	DWORD dwType = REG_SZ;
-	DWORD dwSize = 255;
-
-  	AddLog( _T( "Registry NT GetLastLoggerUser: Trying to get the last user who'd been logged in..."));
-
-	LONG lResult;
-	// Since Vista 
-	if (RegOpenKeyEx( HKEY_CURRENT_USER, VISTA_LASTLOGGEDUSER_USER_KEY, 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
-		lResult = RegQueryValueEx( hKey, VISTA_LASTLOGGEDUSER_USER_VALUE, NULL, &dwType, (LPBYTE) szLastLoggedUser, &dwSize);
-		RegCloseKey( hKey);	
-	}
-
-	// Since Windows 2000, deprecated on Vista
-	if (lResult != ERROR_SUCCESS) {
-		if (RegOpenKeyEx( HKEY_LOCAL_MACHINE, NT_LASTLOGGEDUSER_USER_KEY, 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
-			lResult = RegQueryValueEx( hKey, NT_LASTLOGGEDUSER_USER_VALUE, NULL, &dwType, (LPBYTE) szLastLoggedUser, &dwSize);
-			RegCloseKey( hKey);
-		} else {
-			AddLog( _T( "Failed in retrieve LASTLOGGEDUSER from registry!\n"));
-			return FALSE;
-		}
-	}
-	
-	
-
-
-	if (lResult == ERROR_SUCCESS) {
-
-		szLastLoggedUser[dwSize]=0;
-		csLastLoggedUser = szLastLoggedUser;
-		AddLog( _T( "OK (%s).\n"), csLastLoggedUser);
-		return TRUE;
-
-	} else {
-
-		AddLog( _T( "Failed in read LASTLOGGEDUSER from registry!\n"));
-		return FALSE;
-
-	}
 }
 
 BOOL CRegistry::GetLoggedOnUser9X(CString &csUser)
@@ -6340,6 +6298,51 @@ BOOL CRegistry::GetLoggedOnUserNT(CString &csUser)
 		AddLog( _T( "Failed in call to <RegOpenKey> function for HKCU\\%s !\n"),
 				NT_LOGON_USER_KEY);
 	return FALSE;
+}
+
+BOOL CRegistry::GetLastLoggedUser(CString &csLastLoggedUser)
+{
+	TCHAR szLastLoggedUser[256];
+	HKEY  hKey = NULL;
+	DWORD dwType = REG_SZ;
+	DWORD dwSize = 255;
+
+  	AddLog( _T( "Registry NT GetLastLoggerUser: Trying to get the last user who'd been logged in..."));
+
+	LONG lResult;
+	// Since Vista 
+	if (RegOpenKeyEx( HKEY_CURRENT_USER, VISTA_LASTLOGGEDUSER_USER_KEY, 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+		lResult = RegQueryValueEx( hKey, VISTA_LASTLOGGEDUSER_USER_VALUE, NULL, &dwType, (LPBYTE) szLastLoggedUser, &dwSize);
+		RegCloseKey( hKey);	
+	}
+
+	// Since Windows 2000, deprecated on Vista
+	if (lResult != ERROR_SUCCESS) {
+		if (RegOpenKeyEx( HKEY_LOCAL_MACHINE, NT_LASTLOGGEDUSER_USER_KEY, 0, KEY_READ, &hKey) == ERROR_SUCCESS) {
+			lResult = RegQueryValueEx( hKey, NT_LASTLOGGEDUSER_USER_VALUE, NULL, &dwType, (LPBYTE) szLastLoggedUser, &dwSize);
+			RegCloseKey( hKey);
+		} else {
+			AddLog( _T( "Failed in retrieve LASTLOGGEDUSER from registry!\n"));
+			return FALSE;
+		}
+	}
+	
+	
+
+
+	if (lResult == ERROR_SUCCESS) {
+
+		szLastLoggedUser[dwSize]=0;
+		csLastLoggedUser = szLastLoggedUser;
+		AddLog( _T( "OK (%s).\n"), csLastLoggedUser);
+		return TRUE;
+
+	} else {
+
+		AddLog( _T( "Failed in read LASTLOGGEDUSER from registry!\n"));
+		return FALSE;
+
+	}
 }
 
 BOOL CRegistry::GetRegistryValue( UINT uKeyTree, LPCTSTR lpstrSubKey, LPCTSTR lpstrValue, CString &csResult)
