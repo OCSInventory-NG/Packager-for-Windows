@@ -82,17 +82,33 @@ no_option_overload:
   Call Write_Log
   Call get_computer_name
   pop $9
-  ; bug remcom*********************************
+  ; bug Psexec*********************************
   strcpy $9 "localhost"
-  ; bug remcom*********************************
+  ; bug Psexec*********************************
   
-  StrCpy $OcsLogon_v "${appname}_:_Launching setup by remcom.exe...$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_Launching setup by Psexec.exe...$\r$\n"
   Call Write_Log
-  StrCpy $OcsLogon_v "${appname}_:_Remcom options: \\$9 /user:$r4 /pwd:********$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_Psexec options: \\$9 /user:$r4 /pwd:********$\r$\n"
   Call Write_Log
-  nsexec::exec 'cmd /c RemCom.exe \\$9 /user:$r4 /pwd:$r1 "$PLUGINSDIR\instocs.exe" > remcom.log 2>&1'
-  sleep 4000
-  StrCpy $OcsLogon_v "${appname}_:_Waiting for RemCom.exe log:"
+  sleep 1000
+  ; Now usign Psexec if needed
+  ;messagebox mb_ok "'cmd /c psexec /accepteula -u $r4 -p $r1 instocs.exe > Psexec.log 2>&1'"
+  nsexec::ExecToStack 'cmd /c psexec /accepteula -u $r4 -p $r1 instocs.exe > Psexec.log 2>&1'
+  sleep 1000
+ ; pop $1
+ ; FileOpen $0 Psexec.log a
+ ; IfErrors done
+ ; messagebox mb_ok "'cmd /c psexec /accepteula -h -u $r4 -p $r1 instocs.exe > Psexec.log 2>&1'"
+ ; fileseek $0 END END
+ ; FileWrite $0 "some text"
+ ; FileClose $0
+;done:
+  
+  ;messagebox mb_ok "$1"
+
+  ;nsexec::exec 'cmd /c Psexec.exe \\$9 /user:$r4 /pwd:$r1 "$PLUGINSDIR\instocs.exe" > Psexec.log 2>&1'
+  ;sleep 4000
+  StrCpy $OcsLogon_v "${appname}_:_Waiting for Psexec.exe log:"
   Call Write_Log
 wait_for_log:
   intop $9 $9 + 1
@@ -104,11 +120,11 @@ wait_for_log:
   abort
 no_timeout:
   sleep 1000
-  IfFileExists "remcom.log" 0 wait_for_log
-  StrCpy $OcsLogon_v '$\r$\n${appname}_:_============== Start of Remcom.exe log =============$\r$\n'
+  IfFileExists "Psexec.log" 0 wait_for_log
+  StrCpy $OcsLogon_v '$\r$\n${appname}_:_============== Start of Psexec.exe log =============$\r$\n'
   Call Write_Log
-  ${FileJoin} ${SETUP_LOG_FILE} 'remcom.log' ${SETUP_LOG_FILE}
-  StrCpy $OcsLogon_v "$\r$\n${appname}_:_============== End of Remcom.exe log ==============$\r$\n"
+  ${FileJoin} ${SETUP_LOG_FILE} 'Psexec.log' ${SETUP_LOG_FILE}
+  StrCpy $OcsLogon_v "$\r$\n${appname}_:_============== End of Psexec.exe log ==============$\r$\n"
   Call Write_Log
   goto NOkadmin
 Okadmin:
@@ -413,12 +429,14 @@ Function .onInit
   Call Write_Log
   StrCpy $OcsLogon_v "${appname}_:_Temp dir: $PLUGINSDIR\$\r$\n"
   Call Write_Log
-  File /oname=$PLUGINSDIR\RemCom.exe "RemCom.exe"
+  ; definir si on souhaite psexec et le gérer....
+  ; File /oname=$PLUGINSDIR\Psexec.exe "Psexec.exe"
+  ;other-psex.rem File /oname=$PLUGINSDIR\psexec.exe "psexec.exe"
   File /oname=$PLUGINSDIR\OcsSetup.exe "OcsAgentSetupTMP"
   File /oname=$PLUGINSDIR\pack.ico "pack.ico"
   File /oname=$PLUGINSDIR\instocs.exe "instocs.exe"
- ;other.rem File /oname=$PLUGINSDIR\other.file.def
- ;other1.rem File /oname=$PLUGINSDIR\other1.file.def
+  ;other.rem File /oname=$PLUGINSDIR\other.file.def
+  ;other1.rem File /oname=$PLUGINSDIR\other1.file.def
 ;**********************************
 ;** ATUOCOMPLETED BY INSTELLER ! **
 ;**********************************

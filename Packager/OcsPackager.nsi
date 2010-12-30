@@ -1,6 +1,6 @@
 ################################################################################
-##OCSInventory Version NG 1.01 Production
-##Copyleft Emmanuel GUILLORY 2008
+##OCSInventory-NG 2
+##Copyleft Emmanuel GUILLORY
 ##Web : http://ocsinventory.sourceforge.net
 ##
 ##This code is open source and may be copied and modified as long as the source
@@ -11,6 +11,7 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;1030 psexec usage
 ;1028 more help
 ;1027
 ; ability to overload Otion if /TGAG: is used
@@ -26,7 +27,7 @@
 !insertmacro WordFind
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "1.0.2.8"
+!define Compile_version "1.0.3.0"
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
 !define COL_FILE "col.txt"
 
@@ -42,6 +43,8 @@ Var HWND
 var /GLOBAL deployed_file
 var /GLOBAL Dest_Folder
 var /GLOBAL file_array
+var /GLOBAL Use_alternate
+
 
 BRANDINGTEXT "OCS Packager ${Compile_version}"
 Icon "logoOCS3.ico"
@@ -51,6 +54,7 @@ OutFile "OcsPackager.exe"
 
 Page custom donnee Validatedonnee ""
 Page custom customOCSFloc ValidatecustomOCSFloc ""
+
 Page instfiles
 
 Function .onInit
@@ -59,12 +63,30 @@ Function .onInit
  File /oname=$PLUGINSDIR\OCSFloc.ini "OCSFloc.ini"
  File /oname=$PLUGINSDIR\1runas.nsi "1runas.nsi"
  File /oname=$PLUGINSDIR\1runasUninst.nsi "1runasUninst.nsi"
- File /oname=$PLUGINSDIR\RemCom.exe "RemCom.exe"
  File /oname=$PLUGINSDIR\pack.ico "pack.ico"
  File /oname=$PLUGINSDIR\upack.ico "upack.ico"
  File /oname=$PLUGINSDIR\instocs.exe "instocs.exe"
  File /oname=$PLUGINSDIR\uninsocs.exe "uninsocs.exe"
  File /oname=$PLUGINSDIR\ListBox.exe "ListBox.exe"
+ call test_psexec
+FunctionEnd
+
+Function test_psexec
+         test_psexec:
+         IfFileExists psexec.exe ps_ok
+         MessageBox MB_YESNO "Alternate account needs PsExec.exe please put it in the same directory as OcsPackager and click Yes to try again." IDYES test_psexec IDNO No_psexec
+
+         No_psexec:
+         strcpy $Use_alternate "no"
+         WriteINIStr "$PLUGINSDIR\Donnee.ini" "Field 6" "Flags" "DISABLED"
+         WriteINIStr "$PLUGINSDIR\Donnee.ini" "Field 7" "Flags" "DISABLED"
+         WriteINIStr "$PLUGINSDIR\Donnee.ini" "Field 9" "Flags" "DISABLED"
+         WriteINIStr "$PLUGINSDIR\Donnee.ini" "Field 10" "Flags" "DISABLED"
+
+         return
+         ps_ok:
+         strcpy $Use_alternate "yes"
+         copyfiles "psexec.exe" "$PLUGINSDIR\"
 FunctionEnd
 
 Function StrStr
@@ -180,10 +202,18 @@ chemin_calcule:
 ;   VALIDATION................................FileOpen $1 "$PLUGINSDIR\1runas.nsi" r
 ;lecture:
    ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'label.txt' '$R7' '/S=1' $1
-   ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Administrateur' "$R0" '/S=1' $0
-   ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Password' "$R1" '/S=1' $0
    ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Options' "$R2" '/S=1' $0
    ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'OcsAgentSetupTMP' "$R3" '/S=1' $0
+; use Psexec?
+strcmp $Use_alternate "yes" 0 no_psexec
+; Yes!
+  ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Administrateur' "$R0" '/S=1' $0
+  ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Password' "$R1" '/S=1' $0
+  ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' ';other-psex.rem' '' '/S=1' $1
+;No
+no_psexec:
+
+
 ;   ${textreplace::ReplaceInFile} '$PLUGINSDIR\1runasUninst.nsi' '$PLUGINSDIR\runasUninst.nsi' 'Administrateur' "$R0" '/S=1' $0
 ;   ${textreplace::ReplaceInFile} '$PLUGINSDIR\runasUninst.nsi' '$PLUGINSDIR\runasUninst.nsi' 'Password' "$R1" '/S=1' $0
 ;  messagebox mb_ok "Le label est $R7 dans: $PLUGINSDIR\runas.nsi"
