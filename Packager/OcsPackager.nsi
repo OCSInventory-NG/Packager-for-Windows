@@ -75,14 +75,12 @@ Function test_psexec
          test_psexec:
          IfFileExists psexec.exe ps_ok
          MessageBox MB_YESNO "Alternate account needs PsExec.exe please put it in the same directory as OcsPackager and click Yes to try again." IDYES test_psexec IDNO No_psexec
-
          No_psexec:
          strcpy $Use_alternate "no"
          WriteINIStr "$PLUGINSDIR\Donnee.ini" "Field 6" "Flags" "DISABLED"
          WriteINIStr "$PLUGINSDIR\Donnee.ini" "Field 7" "Flags" "DISABLED"
          WriteINIStr "$PLUGINSDIR\Donnee.ini" "Field 9" "Flags" "DISABLED"
          WriteINIStr "$PLUGINSDIR\Donnee.ini" "Field 10" "Flags" "DISABLED"
-
          return
          ps_ok:
          strcpy $Use_alternate "yes"
@@ -120,16 +118,13 @@ FunctionEnd
 
 Function donnee
   !insertmacro MUI_HEADER_TEXT "Parameters" ""
-  ; InstallOptions::dialog "$PLUGINSDIR\donnee.ini"
   !insertmacro MUI_INSTALLOPTIONS_INITDIALOG "donnee.ini"
   Pop $hwnd
- ; lecture du registre, si on a des fichiers on change le libellé du boutton
+  ; lecture du registre, si on a des fichiers on change le libellé du boutton
   call change_button
- ;	GetDlgItem $1 $HWNDPARENT 1
- ;	EnableWindow $1 0
-	!insertmacro MUI_INSTALLOPTIONS_SHOW
-	Pop $0
-; customOCSFloc_endprocess:
+  !insertmacro MUI_INSTALLOPTIONS_SHOW
+  Pop $0
+  ; customOCSFloc_endprocess:
 FunctionEnd
 
 function change_button
@@ -148,7 +143,6 @@ functionend
 
 Function Validatedonnee
    !insertmacro MUI_INSTALLOPTIONS_READ $0 "donnee.ini" "Settings" "State"
-   ;  messagebox mb_ok $0
    StrCmp $0 "17" 0 no_select_files
    execwait "$PLUGINSDIR\ListBox.exe"
    call change_button
@@ -190,83 +184,49 @@ chemin_calcule:
    ReadINIStr $R2 "$PLUGINSDIR\donnee.ini" "Field 5" "State"
    ReadINIStr $R0 "$PLUGINSDIR\donnee.ini" "Field 6" "State"
    ReadINIStr $R1 "$PLUGINSDIR\donnee.ini" "Field 7" "State"
-;  ReadINIStr $R6 "$PLUGINSDIR\donnee.ini" "Field 13" "State"
-;  to replace by...
-;   Readinistr $R6 "$PLUGINSDIR\${COL_FILE}" "collection" "Liste"
-;   messagebox mb_ok $R6
-;  sum of files in collection in $r6
    ReadINIStr $R7 "$PLUGINSDIR\donnee.ini" "Field 15" "State"
-;   ReadINIStr $R0 "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State"
-;  call donnee
-
-;   VALIDATION................................FileOpen $1 "$PLUGINSDIR\1runas.nsi" r
-;lecture:
+   ;lecture:
    ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'label.txt' '$R7' '/S=1' $1
    ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Options' "$R2" '/S=1' $0
    ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'OcsAgentSetupTMP' "$R3" '/S=1' $0
-; use Psexec?
-strcmp $Use_alternate "yes" 0 no_psexec
-; Yes!
-  ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Administrateur' "$R0" '/S=1' $0
-  ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Password' "$R1" '/S=1' $0
-  ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' ';other-psex.rem' '' '/S=1' $1
-;No
-no_psexec:
-
-
-;   ${textreplace::ReplaceInFile} '$PLUGINSDIR\1runasUninst.nsi' '$PLUGINSDIR\runasUninst.nsi' 'Administrateur' "$R0" '/S=1' $0
-;   ${textreplace::ReplaceInFile} '$PLUGINSDIR\runasUninst.nsi' '$PLUGINSDIR\runasUninst.nsi' 'Password' "$R1" '/S=1' $0
-;  messagebox mb_ok "Le label est $R7 dans: $PLUGINSDIR\runas.nsi"
-;  TEST PASSWORD
-;  StrCpy $1 $R0
-;  StrCpy $2 $R1
-;  StrCpy $3 "$R3"
-;  StrCpy $4 0
-;  System::Call 'RunAs::RunAsW(w r1, w r2, w r3, *w .r4) i .r0 ? u'
-;  IntCmp $0 1 success
-;  MESSAGEBOX MB_OK "$0  echec"
-;  abort
-;success:
-;  MESSAGEBOX MB_OK "pass $0   OK"
-;  FIN TEST PASSWORD
-;  chercher si other file
-;call folder
-;MESSAGEBOX MB_OK "$r4   cert"
-  push $R4
-  call split_path
-  pop $R3
-  pop $R4
-  strcmp $R3 "" rien
-  ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'other.file.def' '$R3 "$R4"' '/S=1' $1
-  ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'createdir' '$Dest_Folder' '/S=1' $1
-  ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'No certificate' '$Dest_Folder\$R3' '/S=1' $1
-  ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'othern.filen' '$R3' '/S=1' $1
-  ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' ';other.rem' '' '/S=1' $1
-  ${textreplace::Unload}
+   ; use Psexec?
+   strcmp $Use_alternate "yes" 0 no_psexec
+   ; Yes!
+   ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Administrateur' "$R0" '/S=1' $0
+   ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Password' "$R1" '/S=1' $0
+   ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' ';other-psex.rem' '' '/S=1' $1
+   ;No
+   no_psexec:
+   push $R4
+   call split_path
+   pop $R3
+   pop $R4
+   strcmp $R3 "" rien
+   ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'other.file.def' '$R3 "$R4"' '/S=1' $1
+   ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'createdir' '$Dest_Folder' '/S=1' $1
+   ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'No certificate' '$Dest_Folder\$R3' '/S=1' $1
+   ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'othern.filen' '$R3' '/S=1' $1
+   ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' ';other.rem' '' '/S=1' $1
+   ${textreplace::Unload}
 rien:
- ; chercher si other1 file
- ;call folder
- ;MESSAGEBOX MB_OK "$r6   other..."
-  Readinistr $R6 "$PLUGINSDIR\${COL_FILE}" "collection" "Liste"
-;  messagebox mb_ok $R6
-  ;Readinistr $R6 "$exedir\${COL_FILE}" "collection" "Liste"
-  ;messagebox mb_ok $R6
-  ;*******************
-  ; open runas.nsi
-  ;*******************
-  fileopen $2 '$PLUGINSDIR\runas.nsi' a
-  fileseek $2 END END
-  strcmp $R6 "" endloopfiles ; si pas option alors fin
-; messagebox mb_ok "liste= $R6"
-;*******************************************************
-; BUILD COLLECTION FILES AND WRITE IT TO RUNAS.NSI
-;*******************************************************
+   ; chercher si other1 file
+   ;call folder
+   ;MESSAGEBOX MB_OK "$r6   other..."
+   Readinistr $R6 "$PLUGINSDIR\${COL_FILE}" "collection" "Liste"
+   ;*******************
+   ; open runas.nsi
+   ;*******************
+   fileopen $2 '$PLUGINSDIR\runas.nsi' a
+   fileseek $2 END END
+   strcmp $R6 "" endloopfiles ; si pas option alors fin
+   ;*******************************************************
+   ; BUILD COLLECTION FILES AND WRITE IT TO RUNAS.NSI
+   ;*******************************************************
    ; sum of files in collection in $r0
    ${WordFind} $R6 "|" "*" $R0
    ; editing each files
    strcpy $1 "0"
 loopfiles:
-;   messagebox mb_ok "r0---$R0"
    intcmp $R0 $1 0 endloopfiles
    intop $1 $1 + 1
    ; retrieve current indexed_file
@@ -282,7 +242,6 @@ loopfiles:
    goto was_first
    strcpy $file_array '$file_array|$R3'
 was_first:
-;  messagebox mb_ok "array=$file_array"
    filewrite $2 " File '/oname=$$PLUGINSDIR\$R3' '$R4'$\r$\n"
    goto loopfiles
 endloopfiles:
@@ -301,13 +260,13 @@ endloopfiles:
 FunctionEnd
 
 Function customOCSFloc
-  !insertmacro MUI_HEADER_TEXT "Target directory" "---->:"
-  InstallOptions::dialog "$PLUGINSDIR\OCSFloc.ini"
-; customOCSFloc_endprocess:
+   !insertmacro MUI_HEADER_TEXT "Target directory" "---->:"
+   InstallOptions::dialog "$PLUGINSDIR\OCSFloc.ini"
+   ;customOCSFloc_endprocess:
 FunctionEnd
 
 Function ValidatecustomOCSFloc
-  ; destination choice and control
+   ; destination choice and control
    ReadINIStr $R0 "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State"
    StrCmp $R0 "" 0 ValidatecustomOCSFloc_done
    MessageBox MB_ICONEXCLAMATION "Please, select a target directory."
@@ -319,12 +278,12 @@ ValidatecustomOCSFloc_done:
    Strlen $0 $R0                                      ;*
    intcmp $0 3 0 0 +2                                 ;*
    StrCpy $R0 $R0 2                                   ;*
-   ; Si oui en supprimer un                           ;*
+   ; If yes, delete one "\"                           ;*
    ;****************************************************
    FileOpen $1 "$R0\file.dat" w
    FileWrite $1 "OK$\r$\n"
    Fileclose $1
-;  MessageBox MB_ICONEXCLAMATION "$R0\file.dat"
+   ;  MessageBox MB_ICONEXCLAMATION "$R0\file.dat"
    IfFileExists "$R0\file.dat" ValidatecustomOCSFloc_ok ValidatecustomOCSFloc_err
 ValidatecustomOCSFloc_err:
    MessageBox MB_iconstop "Target directory not writable!"
@@ -365,15 +324,13 @@ Section
    IntOp $R4 $R1 / 0x00010000
    IntOp $R5 $R1 & 0x0000FFFF
    StrCpy $r6 "$R2.$R3.$R4.$R5"
-;messagebox mb_ok "Version: $r6"
+   ;messagebox mb_ok "Version: $r6"
    ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'Compile_version' '$r6' '/S=1' $0
-sleep 1000
-  nsExec::Exec "$PLUGINSDIR\nsis\makensis.exe runas.nsi"
- ;Execwait "$PLUGINSDIR\nsis\makensis.exe runas.nsi"
-; Execwait "$PLUGINSDIR\nsis\makensisw.exe runasuninst.nsi"
-ClearErrors
+   sleep 1000
+   nsExec::Exec "$PLUGINSDIR\nsis\makensis.exe runas.nsi"
+   ClearErrors
    CopyFiles "OcsPackage.exe" "$R0\"
- ;  CopyFiles "OcsUninstall.exe" "$R0\"
+   ;  CopyFiles "OcsUninstall.exe" "$R0\"
    IfErrors bad_copy good_copy
 bad_copy:
    MessageBox MB_iconexclamation "Error writing output files on:$\r$\n$R0"
@@ -397,7 +354,7 @@ get_char:
 suite:
    strcpy $R3 "$R3$R5"
    intcmp $R1 $0 0 get_char
-;////////$R3 = FICHIER $R4= CHEMIN COMPLET source///////////////
+   ;////////$R3 = FICHIER $R4= CHEMIN COMPLET source///////////////
 rien:
    push $R4
    push $R3
@@ -415,7 +372,7 @@ Function folder
    goto folder_end
 folder_use:
    strcpy $R7 $R9 "" 4
-;  repérer la séquence {blanc slash}
+   ;  repérer la séquence {blanc slash}
    Push "$R7"
    Push " /"
    Call StrStr
@@ -424,7 +381,7 @@ folder_use:
    Strlen $1 $R9
    intop $3 $2 - $1
    strcpy $R7 $R7 $3 0
-;  createdirectory "$R7"
+   ;  createdirectory "$R7"
 folder_end:
-;  messagebox mb_ok "install dans le dossier :$R7"
+   ;  messagebox mb_ok "install dans le dossier :$R7"
 FunctionEnd
