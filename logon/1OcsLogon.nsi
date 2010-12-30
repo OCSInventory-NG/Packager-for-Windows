@@ -1,6 +1,6 @@
 ################################################################################
-##OCSInventory Version NG 1.02 
-##Copyleft Emmanuel GUILLORY 2008
+##OCSInventory-NG 2
+##Copyleft Emmanuel GUILLORY
 ##Web : http://ocsinventory.sourceforge.net
 ##
 ##This code is open source and may be copied and modified as long as the source
@@ -11,6 +11,9 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+; 2006 Milestone 2, new detection path, only detect download.exe, Ocsinventory.exe plus service version
+; Win 9x compatibility not tested yet
+; ;;;;; Milestone 2
 ;4050
 ; /gpo added
 ;4048
@@ -54,7 +57,7 @@ setcompressor /SOLID lzma
 !insertmacro MUI_LANGUAGE "english"
 !define OCSserver "ocsinventory-ng"
 !define TimeOut "60000"
-!define Compile_version "4.0.6.1"
+!define Compile_version "2.0.0.6"
 !define hard_option ""
 !include "WordFunc.nsh"
 !insertmacro WordReplace
@@ -179,7 +182,7 @@ no_add_local_option:
    strcpy $OcsLogon_v  "$OcsLogon_vOCS server port number: $R9"
 
   ;*******************************
-  ;     Build the url string for NSISDL
+  ;     Build the url string
   ;*******************************
    strcpy $OcsLogon_v  "$OcsLogon_v$\r$\n"
    strcmp $url "" 0 c_url
@@ -260,7 +263,7 @@ function test_installed_service
    ; test 'OCS INVENTORY' service
    ;*******************************************
    strcpy $OcsLogon_v "$OcsLogon_vTesting Service...$\r$\n"
-   ReadRegStr $3 HKLM "SYSTEM\CurrentControlSet\Services\OCS INVENTORY" "start"
+   ReadRegStr $3 HKLM "SYSTEM\CurrentControlSet\Services\OCS Inventory Service" "start"
    strcpy $OcsLogon_v "$OcsLogon_vService start parameter (should be 2): $3$\r$\n"
    call Write_Log
    strcmp $3 "2" 0 lbl_test98
@@ -517,8 +520,7 @@ suite:
 FunctionEnd
 
 Function test_install
-   ; Test all files.
-   ; if one is missing then dowload all
+   ; Test files
    push $R7
    ; VRIFYING IF NOT NT
    ClearErrors
@@ -536,10 +538,10 @@ Function test_install
    goto normalop
 lbl_winnt:
    ClearErrors
-   ReadRegStr $0 HKLM "SYSTEM\CurrentControlSet\Services\OCS INVENTORY" "imagepath"
+   ReadRegStr $0 HKLM "SYSTEM\CurrentControlSet\Services\OCS Inventory Service" "imagepath"
    strlen $1 $0
-   intop $1 $1 - 17
-   strcpy $0 $0 $1 1
+   intop $1 $1 - 15
+   strcpy $0 $0 $1 #1
    strcmp $0 "" normalop 0
    strcpy $OcsLogon_v  "$OcsLogon_vService is installed on: $0$\r$\n"
    strcpy $R7 $0
@@ -558,27 +560,10 @@ normalop:
    Strlen $0 $R9
    intcmp $0 8 set_install normalop1 set_install
 normalop1:
-   strcpy $OcsLogon_v  "$OcsLogon_vTesting: $R7\BIOSINFO.EXE$\r$\n"
-   IfFileExists "$R7\BIOSINFO.EXE" 0 set_install
+   strcpy $OcsLogon_v  "$OcsLogon_vTesting: $R7\Download.exe$\r$\n"
+   IfFileExists "$R7\Download.exe" 0 set_install
    strcpy $OcsLogon_v  "$OcsLogon_vTesting: $R7\OCSInventory.exe$\r$\n"
    IfFileExists "$R7\OCSInventory.exe" 0 set_install
-   strcpy $OcsLogon_v  "$OcsLogon_vTesting: $R7\OcsWmi.dll$\r$\n"
-   IfFileExists "$R7\OcsWmi.dll" 0 set_install
-   strcpy $OcsLogon_v  "$OcsLogon_vTesting: $R7\SysInfo.dll$\r$\n"
-   IfFileExists "$R7\SysInfo.dll" 0 set_install
-    strcpy $OcsLogon_v  "$OcsLogon_vTesting: $R7\MFC42.DLL$\r$\n"
-   IfFileExists "$R7\MFC42.DLL" 0 set_install
-   ;*********************************
-   ; veriying potenial corrupted dll
-   ;*********************************
-   GetDllVersion "$R7\MFC42.DLL" $R0 $R1
-   IntOp $R2 $R0 / 0x00010000
-   IntOp $R3 $R0 & 0x0000FFFF
-   IntOp $R4 $R1 / 0x00010000
-   IntOp $R5 $R1 & 0x0000FFFF
-   StrCpy $0 "$R2$R3$R4$R5"
-   strcpy $OcsLogon_v  "$OcsLogon_vTesting MFC42.DLL version ($0)$\r$\n"
-   strcmp "$R0$R1" "" set_install 0
    GetDllVersion "$R7\OCSInventory.exe" $R0 $R1
    IntOp $R2 $R0 / 0x00010000
    IntOp $R3 $R0 & 0x0000FFFF
