@@ -849,9 +849,10 @@ ValidatecustomOCSFloc_ok:
    Push "/"
    Call StrStr
    Pop $1
-   Execwait "$R7\OCSInventory.exe $1"
+   Execwait '$R7\OCSInventory.exe /work_dir:"$exedir"' $1
 
    ClearErrors
+  
    CopyFiles "*.ocs" "$R0\"
    IfErrors bad_copy good_copy
 bad_copy:

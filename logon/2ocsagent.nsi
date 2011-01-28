@@ -1,17 +1,18 @@
 ################################################################################
-## Open Computer and Software Inventory Next Generation
-## Copyleft 2007 OCS Inventory NG Team
-## Web: http://www.ocsinventory-ng.org
+##OCSInventory-NG 2
+##Copyleft Emmanuel GUILLORY
+##Web : http://ocsinventory.sourceforge.net
 ##
-## This code is open source and may be copied and modified as long as the source
-## code is always made freely available.
-## Please refer to the General Public Licence Version 2.0
-## http://www.gnu.org/ or Licence.txt
+##This code is open source and may be copied and modified as long as the source
+##code is always made freely available.
+##Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 ################################################################################
-
+;
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+; 2006 Milestone 2
+;
 ; 4050 new compressor method
 ; 4048 NO CHANGE
 ; 4046
@@ -42,7 +43,7 @@
 ; HM NIS Edit Wizard helper defines
 setcompressor /SOLID lzma
 !define PRODUCT_NAME "OCS Inventory NG Standalone Agent"
-!define PRODUCT_VERSION "4.0.6.1"
+!define PRODUCT_VERSION "2.0.0.9"
 !define PRODUCT_PUBLISHER "OCS Inventory NG Team"
 !define PRODUCT_WEB_SITE "http://www.ocsinventory-ng.org"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\OCSInventory.exe"
@@ -386,15 +387,6 @@ FunctionEnd
 Section "OCS Inventory NG Standalone Agent" SEC01
     SetOutPath "$INSTDIR"
     SetOverwrite ON
-    File "..\_Release\BIOSINFO.EXE"
-    File "..\_Release\zlib.dll"
-    File "..\_Release\OcsWmi.dll"
-    File "..\_Release\PSAPI.DLL"
-    File "..\_Release\SysInfo.dll"
-    File "..\_Release\OCSInventory.exe"
-    File "..\_Release\download.exe"
-    File "..\_Release\MFC42.DLL"
-    File "..\_Release\ssleay32.dll"
-    File "..\_Release\libeay32.dll"
+    File "..\_Release\"
     File "OcsLogon.exe"
 SectionEnd
