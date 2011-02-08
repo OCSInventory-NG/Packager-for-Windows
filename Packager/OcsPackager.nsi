@@ -176,7 +176,9 @@ no_help2:
    strcmp $R7 "" chemin_defaut ; si pas option alors fin
    GOTO chemin_calcule
 chemin_defaut:
-   strcpy $R7 "$$PROGRAMFILES\OCS Inventory Agent"
+    SetShellVarContext all
+    strcpy $R7 "$$APPDATA\OCS Inventory NG\Agent"
+   ;strcpy $R7 "$$PROGRAMFILES\OCS Inventory Agent"
 chemin_calcule:
    strcpy  $Dest_Folder "$R7"
    ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'createdir' '$Dest_Folder' '/S=1' $1
