@@ -11,6 +11,8 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;1032 added default ocspackage.exe dest dir
+;1031 path correction
 ;1030 psexec usage
 ;1028 more help
 ;1027
@@ -27,7 +29,7 @@
 !insertmacro WordFind
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "1.0.3.0"
+!define Compile_version "1.0.3.1"
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
 !define COL_FILE "col.txt"
 
@@ -68,6 +70,7 @@ Function .onInit
  File /oname=$PLUGINSDIR\instocs.exe "instocs.exe"
  File /oname=$PLUGINSDIR\uninsocs.exe "uninsocs.exe"
  File /oname=$PLUGINSDIR\ListBox.exe "ListBox.exe"
+ WriteINIStr "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State" $DESKTOP
  call test_psexec
 FunctionEnd
 
