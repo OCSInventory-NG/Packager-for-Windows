@@ -54,6 +54,7 @@ function setv
 
 no_option_overload:
   ;;;;;;;;;;;;;;;
+  setshellvarcontext all
   strcpy $r2  '$R0Options' ;$R0 is user to overload options
   SetOutPath "$PLUGINSDIR\"
   WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf a $r2

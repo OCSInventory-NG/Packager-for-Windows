@@ -11,6 +11,10 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+;1032 #
+# bug patched
+#720422	 wrong new agent (v2) log file name
+#720390  wrong cacert destination dir
 ;1032 added default ocspackage.exe dest dir
 ;1031 path correction
 ;1030 psexec usage
@@ -29,7 +33,7 @@
 !insertmacro WordFind
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "1.0.3.1"
+!define Compile_version "1.0.3.2"
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
 !define COL_FILE "col.txt"
 
@@ -156,17 +160,8 @@ no_select_files:
    abort
 no_help:
    StrCmp $0 "19" 0 no_help2
-   messagebox mb_ok 'Main avaliable options for OcsAentSetup.exe :$\r$\n$\r$\n$\r$\n\
-   /S --> Silent mode.$\r$\n$\r$\n\
-   /server:[servername or IP address] --> Default: ocsinventory-ng.$\r$\n$\r$\n\
-   /np --> IE proxy setting bypass.$\r$\n$\r$\n\
-   /pnum:[Port number] --> Default: 80.$\r$\n$\r$\n\
-   /now --> Force inventory just after agent install.$\r$\n$\r$\n\
-   /NoOcs_ContactLnk -->avoid Ocs_contact link add in Start menu.$\r$\n$\r$\n\
-   /D=[installation folder] --> Must be the last parametter. No ( " ) in the path.$\r$\n$\r$\n\
-   Example 1:  /S /server:10.1.1.1 /np /now$\r$\n$\r$\n\
-   Example 2:  /S /server:myserver.fr /NoOcs_ContactLnk $\r$\n$\r$\n\
-   Example 3:  /S /server:my.server.com /np /pnum:8090 /D=D:\my app\my inventory appp'
+   execshell 'open' 'http://wiki.ocsinventory-ng.org/index.php/Documentation:WindowsAgent#OCS_Inventory_NG_Agent_for_Windows__Setup_command_line_options.'
+  ; Example 3:  /S /server=my.server.com /np  /D=D:\my app\my inventory appp'
    abort
 no_help2:
    execwait "$PLUGINSDIR\ListBox.exe /S"
@@ -183,7 +178,7 @@ chemin_defaut:
     strcpy $R7 "$$APPDATA\OCS Inventory NG\Agent"
    ;strcpy $R7 "$$PROGRAMFILES\OCS Inventory Agent"
 chemin_calcule:
-   strcpy  $Dest_Folder "$R7"
+   strcpy  $Dest_Folder $R7
    ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'createdir' '$Dest_Folder' '/S=1' $1
    ReadINIStr $R4 "$PLUGINSDIR\donnee.ini" "Field 4" "State"
    ReadINIStr $R2 "$PLUGINSDIR\donnee.ini" "Field 5" "State"

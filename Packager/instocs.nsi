@@ -6,6 +6,7 @@
 !insertmacro GetTime
 !insertmacro FileJoin
 !define appname "instocs.exe"
+!define AgentLogFileName "OCS-NG-Windows-Agent-Setup.log"
 silentinstall silent
 OutFile ${appname}
 var FILE_COLLECTION
@@ -39,6 +40,7 @@ function setv
 ;   strcpy  $FILE_COLLECTION "aaa|bbb"
 ;   messagebox mb_ok "COLLEC $FILE_COLLECTION"
    clearerrors
+   SetShellVarContext all
    createdirectory $4
    StrCpy $OcsLogon_v '${appname}_:_Attempt to create "$4" dir...$\r$\n'
    Call Write_Log
@@ -93,7 +95,7 @@ endloopfiles:
   ;insérer log de ocsagentsetup
   StrCpy $OcsLogon_v '${appname}_:_============== Start of OcsSetup.exe log =============$\r$\n'
   Call Write_Log
-  ${FileJoin} $SETUP_LOG_FILE '$exedir\OcsAgentSetup.log' $SETUP_LOG_FILE
+  ${FileJoin} $SETUP_LOG_FILE '$exedir\${AgentLogFileName}' $SETUP_LOG_FILE
   StrCpy $OcsLogon_v '${appname}_:_============== End of OcsSetup.exe log =============$\r$\n'
   Call Write_Log
 functionend
