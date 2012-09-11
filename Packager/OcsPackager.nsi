@@ -1,5 +1,5 @@
 ################################################################################
-##OCSInventory-NG 2
+##OCSInventory-NG
 ##Copyleft Emmanuel GUILLORY
 ##Web : http://ocsinventory.sourceforge.net
 ##
@@ -11,7 +11,7 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
-;1032 #
+;1033 #
 # bug patched
 #720422	 wrong new agent (v2) log file name
 #720390  wrong cacert destination dir
@@ -33,7 +33,7 @@
 !insertmacro WordFind
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "1.0.3.2"
+!define Compile_version "1.0.3.3"
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
 !define COL_FILE "col.txt"
 
