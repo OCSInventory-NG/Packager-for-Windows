@@ -1,6 +1,6 @@
 ################################################################################
-##OCSInventory Version NG 1.0 Production
-##Copyleft Emmanuel GUILLORY 2006
+##OCSInventory Version
+##Copyleft Emmanuel GUILLORY 
 ##Web http://ocsinventory.sourceforge.net
 ##
 ##This code is open source and may be copied and modified as long as the source
@@ -89,7 +89,7 @@ no_option_overload:
   
   StrCpy $OcsLogon_v "${appname}_:_Launching setup by Psexec.exe...$\r$\n"
   Call Write_Log
-  StrCpy $OcsLogon_v "${appname}_:_Psexec options: \\$9 /user:$r4 /pwd:********$\r$\n"
+  StrCpy $OcsLogon_v "${appname}_:_Psexec options: /accepteula -u $r4 -p ********$\r$\n"
   Call Write_Log
   sleep 1000
   ; Now usign Psexec if needed
