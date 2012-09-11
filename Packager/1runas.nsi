@@ -43,13 +43,13 @@ function setv
   strcpy $r1  "Password"
   ;;;;;;;;;;;;;;;
   ; Option overload if /tag:
-  Push "/TAG:"           ; push the search string onto the stack
+  Push "/TAG="           ; push the search string onto the stack
   Push ""                ; push a default value onto the stack
   Call GetParameterValue
   Pop $R0
   StrCmp "$R0" "" no_option_overload
-  strcpy $R0 '/TAG:$R0 '
-  StrCpy $OcsLogon_v '${appname}_:_Parameters value is overloaded with: /TAG:$R0$\r$\n'
+  strcpy $R0 '/TAG=$R0 '
+  StrCpy $OcsLogon_v '${appname}_:_Parameters value is overloaded with: /TAG=$R0$\r$\n'
   Call Write_Log
 
 no_option_overload:

@@ -11,6 +11,8 @@
 ;                             ###############
 ;                             #  CHANGELOG  #
 ;                             ###############
+#Bug patched
+#948150 Old /TAG: format (Thx to tiag33)
 ;1033 #
 # bug patched
 #720422	 wrong new agent (v2) log file name
@@ -160,7 +162,7 @@ no_select_files:
    abort
 no_help:
    StrCmp $0 "19" 0 no_help2
-   execshell 'open' 'http://wiki.ocsinventory-ng.org/index.php/Documentation:WindowsAgent#OCS_Inventory_NG_Agent_for_Windows__Setup_command_line_options.'
+   execshell 'open' 'http://wiki.ocsinventory-ng.org/index.php/Documentation:WindowsAgent#OCS_Inventory_NG_Agent_for_Windows_command_line_options.'
   ; Example 3:  /S /server=my.server.com /np  /D=D:\my app\my inventory appp'
    abort
 no_help2:
