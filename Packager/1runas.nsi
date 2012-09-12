@@ -439,6 +439,6 @@ Function .onInit
   ;other.rem File /oname=$PLUGINSDIR\other.file.def
   ;other1.rem File /oname=$PLUGINSDIR\other1.file.def
 ;**********************************
-;** ATUOCOMPLETED BY INSTELLER ! **
+;** ATUOCOMPLETED BY INSTALLER ! **
 ;**********************************
 
