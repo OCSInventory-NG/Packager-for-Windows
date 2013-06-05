@@ -1,138 +1,206 @@
-;!include "MUI.nsh"
-!include "WordFunc.nsh"
-!insertmacro WordFind
+################################################################################
+## OCS Inventory NG
+## Copyleft OCS Inventory NG Team
+## Web : http://www.ocsinventory-ng.org
+##
+## This code is open source and may be copied and modified as long as the source
+## code is always made freely available.
+## Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+################################################################################
+
+;
+; This is the code of installer which will setup agent, plugins and certificate
+; It requires Aministrator privileges
+; It is launched by All-One-Installer 1runas.nsi
+; It Assumes that:
+;    - agent setup files is OcsSetup.exe, and is in the same folder
+;    - subfolder OcsData contains files to copy to Agent data folder
+;    - subfolder OcsPlugins contains files to copy to Agent plugins folder
+;    - file ocsdat.ini contains various parameters for this tool. This file is created by All-In-One installer
+;
+
+!include "MUI.nsh"
+!insertmacro MUI_LANGUAGE "English"
 !include "FileFunc.nsh"
 !include "TextFunc.nsh"
 !insertmacro GetTime
 !insertmacro FileJoin
-!define appname "instocs.exe"
-!define AgentLogFileName "OCS-NG-Windows-Agent-Setup.log"
-silentinstall silent
-OutFile ${appname}
-var FILE_COLLECTION
-var SETUP_LOG_FILE
-var OcsLogon_v
-ShowInstDetails hide
-Function .onInit
-; Prevent Multiple Instances
-   System::Call 'kernel32::CreateMutexA(i 0, i 0, t "instOCSNG") i .r1 ?e'
-   Pop $R0
-   StrCmp $R0 0 not_running
-   Abort
-not_running:
-  ;InitPluginsDir
-   SetOutPath "$exedir"
-   call setv
-FunctionEnd
 
-function setv
-   readINIStr $2 "$exedir\ocsdat.ini" cnf a
-   readINIStr $3 "$exedir\ocsdat.ini" cnf z
-   readINIStr $4 "$exedir\ocsdat.ini" cnf e
-   readINIStr $5 "$exedir\ocsdat.ini" cnf r
-   readINIStr $6 "$exedir\ocsdat.ini" cnf t
-  ; readINIStr $7 "$exedir\ocsdat.ini" cnf y
-  ; readINIStr $8 "$exedir\ocsdat.ini" cnf u
-   readINIStr $9 "$exedir\ocsdat.ini" cnf v
-   readINIStr $FILE_COLLECTION "$exedir\ocsdat.ini" cnf W
-   readINIStr $SETUP_LOG_FILE "$exedir\ocsdat.ini" cnf x
+!define PRODUCT_NAME "OCS Inventory NG Packager (Privilegied Installer)"
+!define PRODUCT_VERSION "2.1.0.1"
+!define AGENT_LOG_FILENAME "OCS-NG-Windows-Agent-Setup.log"
+!define AGENT_PLUGINS_DIR "Plugins"
 
-;   strcpy  $FILE_COLLECTION "aaa|bbb"
-;   messagebox mb_ok "COLLEC $FILE_COLLECTION"
-   clearerrors
-   SetShellVarContext all
-   createdirectory $4
-   StrCpy $OcsLogon_v '${appname}_:_Attempt to create "$4" dir...$\r$\n'
-   Call Write_Log
-;   execwait '"$exedir\OcsSetup.exe" $2'
-;   messagebox mb_ok "dir créé :$4 "
-;   messagebox mb_ok 'copy "$exedir\$5" "$4\$5"'
-   clearerrors
-   strcmp $5 "othern.filen" no_cert 0
-   copyfiles "$exedir\$5" "$4\$5"
-   StrCpy $OcsLogon_v '${appname}_:_Copying certificate:$5 to "$4\"...$\r$\n'
-   Call Write_Log
-no_cert:
-   ;messagebox mb_ok '"copy2 "$7" "$8"'
-  ; clearerrors
-  ; copyfiles "$exedir\$7" "$4\$8"
-  ; StrCpy $OcsLogon_v 'Copying "$exedir\$7" to "$4\$8"...$\r$\n'
-  ; Call Write_Log
-   clearerrors
-   strcmp "" $9 suite 0
-   fileopen $0 "$4\label" w
-   filewrite $0 '$9'
-   fileclose $0
-   StrCpy $OcsLogon_v '${appname}_:_Writing label $9 to "$4\label"$\r$\n'
-   Call Write_Log
-   
-suite:
-   strcmp $FILE_COLLECTION "" endloopfiles
-   ;;;
-;   messagebox mb_ok "collect= $FILE_COLLECTION"
-   ;********************************************
-   ; TRAITEMENT DE LA COLLECTION DE FICHIERS
-   ;********************************************
-   ${WordFind} $FILE_COLLECTION "|" "*" $R0
-   strcpy $1 "0"
-loopfiles:
-   intcmp $R0 $1 0 endloopfiles
-   intop $1 $1 + 1
-   ; retrieve current indexed_file
-   ${WordFind} $FILE_COLLECTION "|" "+$1" $R1
-   strcmp $R1 "" endloopfiles
-   clearerrors
-   copyfiles "$exedir\$R1" "$4\$R1"
-   StrCpy $OcsLogon_v '${appname}_:_Copying "$exedir\$R1" to "$4\$R1"...$\r$\n'
-   Call Write_Log
-   goto loopfiles
-endloopfiles:
-  ;fin de traitement de la collection
-  clearerrors
-  execwait '"$exedir\OcsSetup.exe" $2'
-  StrCpy $OcsLogon_v '${appname}_:_Lauching OcsSetup.exe (see Contents)...$\r$\n'
-  Call Write_Log
-  ;insérer log de ocsagentsetup
-  StrCpy $OcsLogon_v '${appname}_:_============== Start of OcsSetup.exe log =============$\r$\n'
-  Call Write_Log
-  ${FileJoin} $SETUP_LOG_FILE '$exedir\${AgentLogFileName}' $SETUP_LOG_FILE
-  StrCpy $OcsLogon_v '${appname}_:_============== End of OcsSetup.exe log =============$\r$\n'
-  Call Write_Log
-functionend
+Name "${PRODUCT_NAME}"
+Icon "OCSInventory.ico"
+OutFile "instOCS.exe"
 
-function .onInstSuccess
-  ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
-  StrCpy $OcsLogon_v "${appname}_:_End of ${appname} on $0/$1/$2 at $4:$5:$6$\r$\n"
-  Call Write_Log
-functionend
+SilentInstall Silent
+ShowInstDetails Hide
 
-section
-SectionEnd
+var /GLOBAL SETUP_LOG_FILE       ; Setup log file to populate
+var /GLOBAL logBuffer           ; Variable to write log
 
+;Request application privileges for Windows Vista or higher ('user' or 'admin')
+RequestExecutionLevel admin
+
+################################################################################
+# Version information
+################################################################################
+    VIProductVersion "${PRODUCT_VERSION}"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "${PRODUCT_NAME}"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "Script for installing Agent, Certificate and Plugins from privilegied account"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "OCS Inventory NG Team"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "OCS Inventory NG Team"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "OCS Inventory NG Team"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "instOCS.exe"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${PRODUCT_VERSION}"
 
 #####################################################################
-# This function write content of OcsLogon_v variable in log file in
+# GetParameters
+# input, none
+# output, top of stack (replaces, with e.g. whatever)
+# modifies no other variables.
+#####################################################################
+Function GetParameters
+	Push $R0
+	Push $R1
+	Push $R2
+	Push $R3
+	StrCpy $R2 1
+	StrLen $R3 $CMDLINE
+	;Check for quote or space
+	StrCpy $R0 $CMDLINE $R2
+	StrCmp $R0 '"' 0 +3
+	StrCpy $R1 '"'
+	Goto loop
+	StrCpy $R1 " "
+loop:
+	IntOp $R2 $R2 + 1
+	StrCpy $R0 $CMDLINE 1 $R2
+	StrCmp $R0 $R1 get
+	StrCmp $R2 $R3 get
+	Goto loop
+get:
+	IntOp $R2 $R2 + 1
+	StrCpy $R0 $CMDLINE 1 $R2
+	StrCmp $R0 " " get
+	StrCpy $R0 $CMDLINE "" $R2
+	Pop $R3
+	Pop $R2
+	Pop $R1
+	Exch $R0
+FunctionEnd
+
+#####################################################################
+# This function write content of logBuffer variable in log file in
 # a log file OcsAgentSetup.log located in install directory
 #####################################################################
 Function Write_Log
-  ; Save used register
-  Push $R0
-  ClearErrors
-  ; Is there something to write ?
-  StrCmp $OcsLogon_v "" WriteLog_end
-  ; Open log file
-  FileOpen $R0 $SETUP_LOG_FILE a
-  ; Seek to end
-  FileSeek $R0 END END
-  IfErrors WriteLog_end
-  ; Write
-  FileWrite $R0 "$OcsLogon_v"
-  StrCpy $OcsLogon_v ""
-  ; Close file
-  FileClose $R0
+    ; Save used register
+    Push $R0
+    ClearErrors
+    ; Is there something to write ?
+    StrCmp $logBuffer "" WriteLog_end
+    ; Open log file
+    FileOpen $R0 $SETUP_LOG_FILE a
+    ; Seek to end
+    FileSeek $R0 END END
+    IfErrors WriteLog_end
+    ; Write
+    FileWrite $R0 "$logBuffer"
+    StrCpy $logBuffer ""
+    ; Close file
+    FileClose $R0
 WriteLog_end:
-  ; Restore used register
-  Pop $R0
+    ; Restore used register
+    Pop $R0
 FunctionEnd
 
 
+#####################################################################
+# Init script
+#####################################################################
+Function .onInit
+    InitPluginsDir
+    SetOutPath "$exedir"
+    ; Read log file to populate from config
+    readINIStr $SETUP_LOG_FILE "$exedir\ocsdat.ini" "Config" "LogFile"
+	StrCpy $logBuffer "${PRODUCT_NAME} : ********************************************************$\r$\n"
+	Call Write_Log
+	${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+	StrCpy $logBuffer "${PRODUCT_NAME} : Starting ${PRODUCT_NAME} ${PRODUCT_VERSION} on $0/$1/$2 at $4:$5:$6$\r$\n"
+	Call Write_Log
+    ; Prevent Multiple Instances
+    System::Call 'kernel32::CreateMutexA(i 0, i 0, t "instOCSNG") i .r1 ?e'
+    Pop $R0
+    StrCmp $R0 0 not_running
+	StrCpy $logBuffer "${PRODUCT_NAME} : ABORT because setup already running !$\r$\n"
+	Call Write_Log
+    Abort
+not_running:
+FunctionEnd
+
+#####################################################################
+# Main section - read parameters and start setup
+#####################################################################
+Section "Run setup"
+    SetShellVarContext all
+    ; Read agent setup folder from config
+    readINIStr $R0 "$exedir\ocsdat.ini" "Config" "InstallFolder"
+    ; Read agent data folder from config
+    readINIStr $R1 "$exedir\ocsdat.ini" "Config" "DataFolder"
+    ; Create agent install and data directories
+    StrCpy $logBuffer '${PRODUCT_NAME} : Creating OCS Inventort NG Agent install directory <$R0>...$\r$\n'
+    Call Write_Log
+    CreateDirectory "$R0"
+    StrCpy $logBuffer '${PRODUCT_NAME} : Creating OCS Inventort NG Agent ${AGENT_PLUGINS_DIR} directory <$R0\${AGENT_PLUGINS_DIR}>...$\r$\n'
+    Call Write_Log
+    CreateDirectory "$R0\${AGENT_PLUGINS_DIR}"
+    StrCpy $logBuffer '${PRODUCT_NAME} : Creating OCS Inventort NG Agent data directory <$R1>...$\r$\n'
+    Call Write_Log
+    CreateDirectory "$R1"
+    ; Copy certificate and label file to agent data folder
+    StrCpy $logBuffer '${PRODUCT_NAME} : Installing OCS Inventort NG Agent data files to <$R1>...$\r$\n'
+    Call Write_Log
+    CopyFiles /SILENT "$exedir\OcsData\*" "$R1"
+    ; Copy plugin files to agent plugins folder
+    StrCpy $logBuffer '${PRODUCT_NAME} : Installing OCS Inventort NG Agent plugin files to <$R0\${AGENT_PLUGINS_DIR}>...$\r$\n'
+    Call Write_Log
+    CopyFiles /SILENT "$exedir\OcsPlugins\*" "$R0\${AGENT_PLUGINS_DIR}"
+    ; Launch agent setup
+    StrCpy $logBuffer '${PRODUCT_NAME}: Lauching OCS Inventory NG Agent Setup...$\r$\n'
+    Call Write_Log
+    ; Read agent setup command line from config
+    readINIStr $R0 "$exedir\ocsdat.ini" "Config" "CmdLine"
+    ; Read optional parameters to overload config
+    Call GetParameters
+    Pop $R1
+    ; Launch agent setup with overloaded parameters before config parameters
+    ExecWait '"$exedir\OcsSetup.exe" $R1 $R0'
+    ;********************************************
+    ; read and paste OCS Agent Setup log
+    StrCpy $logBuffer '${PRODUCT_NAME} : ============== Start of OCS Inventory NG Agent setup log =============$\r$\n'
+    Call Write_Log
+    ${FileJoin} $SETUP_LOG_FILE '$exedir\${AGENT_LOG_FILENAME}' $SETUP_LOG_FILE
+    StrCpy $logBuffer '${PRODUCT_NAME} : ============== End of OCS Inventory NG Agent setup log =============$\r$\n'
+    Call Write_Log
+SectionEnd
+
+#####################################################################
+#
+#####################################################################
+Function .onInstFailed
+    ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+    StrCpy $logBuffer "${PRODUCT_NAME} : Failed end of ${PRODUCT_NAME} on $0/$1/$2 at $4:$5:$6$\r$\n"
+    Call Write_Log
+FunctionEnd
+
+#####################################################################
+#
+#####################################################################
+Function .onInstSuccess
+    ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+    StrCpy $logBuffer "${PRODUCT_NAME} : successfull end of ${PRODUCT_NAME} on $0/$1/$2 at $4:$5:$6$\r$\n"
+    Call Write_Log
+FunctionEnd

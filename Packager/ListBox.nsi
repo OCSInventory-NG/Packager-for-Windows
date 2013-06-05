@@ -1,22 +1,47 @@
+################################################################################
+## OCS Inventory NG
+## Copyleft OCS Inventory NG Team
+## Web : http://www.ocsinventory-ng.org
+##
+## This code is open source and may be copied and modified as long as the source
+## code is always made freely available.
+## Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+################################################################################
 
 ; 2005 Shengalts Aleksander aka Instructor (Shengalts@mail.ru)
 ; Modified 2007 by Emmanuel GUILLORY (bibi92) for OCSPACKAGER
 ;-----------------------------------------------------------------------------------------------
+
 !include "MUI.nsh"
 !include "WordFunc.nsh"
-!insertmacro WordReplace
-!insertmacro WordFind
+
 !insertmacro MUI_LANGUAGE "English"
-!define COL_FILE "col.txt"
-!define Compile_version "1.0.2.6"
+
+!define COL_FILE "Plugins.lst"
+!define Compile_Version "2.1.0.1"
+
 Var /GLOBAL HWND
-;Var /GLOBAL FILELIST_NUMBER
-BRANDINGTEXT "OCS Packager ${Compile_version}"
-Icon "logoOCS3.ico"
+
+BRANDINGTEXT "OCS Inventory NG Packager"
+Icon "OCSInventory.ico"
 ShowInstDetails hide
-Name "OCS Packager"
+Name "OCS Inventory NG Packager (ListBox component)"
 OutFile "ListBox.exe"
 XPStyle on
+
+
+################################################################################
+# Version information
+################################################################################
+    VIProductVersion "${Compile_version}"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "OCS Inventory NG Packager for Windows (ListBox component)"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "ListBox handling component for OCS Inventory NG Packager, used to select OCS Inventory NG Agent Plugins"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "OCS Inventory NG Team"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "OCS Inventory NG Team"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "OCS Inventory NG Team"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "ListBox.exe"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "${Compile_version}"
+
 Function .onInit
 	setoutpath $EXEDIR
 	delete "$exedir\${COL_FILE}"
@@ -27,12 +52,12 @@ FunctionEnd
 Page Custom ShowCustom LeaveCustom
 Page instfiles
 
-LangString TEXT_IO_TITLE ${LANG_ENGLISH} "Additional files"
-LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Select additonal files to package..."
+LangString TEXT_IO_TITLE ${LANG_ENGLISH} "OCS Inventory NG Agent Plugins"
+LangString TEXT_IO_SUBTITLE ${LANG_ENGLISH} "Select plugin files to package..."
 
 Function ShowCustom
- !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
- !insertmacro MUI_INSTALLOPTIONS_INITDIALOG "ListBox.ini"
+    !insertmacro MUI_HEADER_TEXT "$(TEXT_IO_TITLE)" "$(TEXT_IO_SUBTITLE)"
+    !insertmacro MUI_INSTALLOPTIONS_INITDIALOG "ListBox.ini"
 	Pop $HWND
 ;	GetDlgItem $1 $HWNDPARENT 1
 ;	EnableWindow $1 0
@@ -132,7 +157,7 @@ Function enumreg
 Functionend
 
 Section "Empty"
-setautoclose true
+   setautoclose true
    ReadRegStr $2 HKCU Software\OCS_PACKAGER\SETTINGS\FILELIST  File
    writeinistr "$exedir\${COL_FILE}" "collection" "Liste" $2
    ; open coll file and read collection

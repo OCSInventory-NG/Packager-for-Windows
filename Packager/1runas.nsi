@@ -1,239 +1,139 @@
 ################################################################################
-##OCSInventory Version
-##Copyleft Emmanuel GUILLORY 
-##Web http://ocsinventory.sourceforge.net
+## OCS Inventory NG
+## Copyleft OCS Inventory NG Team
+## Web : http://www.ocsinventory-ng.org
 ##
-##This code is open source and may be copied and modified as long as the source
-##code is always made freely available.
-##Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
+## This code is open source and may be copied and modified as long as the source
+## code is always made freely available.
+## Please refer to the General Public Licence http://www.gnu.org/ or Licence.txt
 ################################################################################
+
 ;
-;                             ###############
-;                             #  CHANGELOG  #
-;                             ###############
+; This is the All-In-One installer for OCS Inventory agent
+; It is the script compiled to include agent, plugins, certificate, and to launch privilegied installer under Admin Account
+; It requires that pacckger:
+;      - put agent setup file named OcsSetup.exe into same folder
+;      - put PsExec.exe file into same folder, or comment line including PsExec
+;      - put plugins into subfolder OcsPlugins
+;      - put Certificate and Label file into subfolder OcsData
+;      - modify some values of this script, especially
+;           - OcsAgentSetupFilePathToReplace = full path to Agent setup file
+;           - OcsAgentSetupFileTitleToReplace = Agent setup filename without path
+;           - OcsAgentSetupVersionToReplace = Agent setup version
+;           - OcsCmdLineToReplace = Command line options to use
+;           - OcsInstallFolderToReplace = Agent install folder (if modified with /D=)
+;           - OcsDataFolderToReplace =  (Agent data folder (if modified with /work_dir=)
+;           - OcsIncludeDataFolderToReplace = Folder containing certificate and label file
+;           - AdminIdToReplace = Administrative login
+;           - AdminPwdToReplace = Administrative passwd
+;           - OcsIncludePluginsFolderToReplace = Folder containing plugin files
 ;
-;
-; propager le TAG de $CMDLINE
-;
-; Setup log file
-!define SETUP_LOG_FILE "$exedir\ocspackage.log"
-!define COL_FILE "col.txt"
-!define Time_out "10"
-!define appname "ocspackage.exe"
+
+!include "MUI.nsh"
+!insertmacro MUI_LANGUAGE "English"
 !include "FileFunc.nsh"
 !include "TextFunc.nsh"
 !insertmacro GetTime
 !insertmacro FileJoin
-var /GLOBAL OcsLogon_v ; To complete the setup log file
-silentinstall silent
-OutFile ${appname}
-ShowInstDetails hide
-Icon "pack.ico"
-VIProductVersion "Compile_version"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "Package made by OcsPackager"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "file_x_name vCompile_version for OCS Inventory NG"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "Ocs Inventory Team"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "OcsPackager is an addon for Ocs Inventory NG."
-VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "Ocs Inventory Team"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "file_x_name vCompile_version for OCS Inventory NG"
-VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "Compile_version"
 
-function setv
-  strcpy $r4  "Administrateur"
-  strcpy $r1  "Password"
-  ;;;;;;;;;;;;;;;
-  ; Option overload if /tag:
-  Push "/TAG="           ; push the search string onto the stack
-  Push ""                ; push a default value onto the stack
-  Call GetParameterValue
-  Pop $R0
-  StrCmp "$R0" "" no_option_overload
-  strcpy $R0 '/TAG=$R0 '
-  StrCpy $OcsLogon_v '${appname}_:_Parameters value is overloaded with: /TAG=$R0$\r$\n'
-  Call Write_Log
+!define PRODUCT_NAME "OCS Inventory NG Packager (All-In-One Agent Installer)"
+!define PRODUCT_VERSION "2.1.0.1"
+!define TIME_OUT "300" ; seconds
 
-no_option_overload:
-  ;;;;;;;;;;;;;;;
-  setshellvarcontext all
-  strcpy $r2  '$R0Options' ;$R0 is user to overload options
-  SetOutPath "$PLUGINSDIR\"
-  WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf a $r2
-  WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf z "$PLUGINSDIR\"
-  WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf e "createdir"
-  WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf r "othern.filen"
-  WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf t "No certificate"
-  WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf V "label.txt"
-  WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf W "No_FILE_COLLECTION"
-  WriteINIStr "$PLUGINSDIR\ocsdat.ini" cnf x "${SETUP_LOG_FILE}"
-  sleep 500
-  StrCpy $OcsLogon_v '${appname}_:_Parameters: $r2 $\r$\n'
-  Call Write_Log
-  StrCpy $OcsLogon_v '${appname}_:_Install folder: createdir $\r$\n'
-  Call Write_Log
-  StrCpy $OcsLogon_v '${appname}_:_Certificate: No certificate $\r$\n'
-  Call Write_Log
-  StrCpy $OcsLogon_v '${appname}_:_File collection: No_FILE_COLLECTION $\r$\n'
-  Call Write_Log
-  StrCpy $OcsLogon_v "${appname}_:_Testing current user IsUserAdmin:$\r$\n"
-  Call Write_Log
-  Call IsUserAdmin
-  Pop "$R0"
-  strcmp $R0 "true" Okadmin 0
-  StrCpy $OcsLogon_v "${appname}_:_Current user is not admin:$\r$\n"
-  Call Write_Log
-  Call get_computer_name
-  pop $9
-  ; bug Psexec*********************************
-  strcpy $9 "localhost"
-  ; bug Psexec*********************************
-  
-  StrCpy $OcsLogon_v "${appname}_:_Launching setup by Psexec.exe...$\r$\n"
-  Call Write_Log
-  StrCpy $OcsLogon_v "${appname}_:_Psexec options: /accepteula -u $r4 -p ********$\r$\n"
-  Call Write_Log
-  sleep 1000
-  ; Now usign Psexec if needed
-  ;messagebox mb_ok "'cmd /c psexec /accepteula -u $r4 -p $r1 instocs.exe > Psexec.log 2>&1'"
-  nsexec::ExecToStack 'cmd /c psexec /accepteula -u $r4 -p $r1 instocs.exe > Psexec.log 2>&1'
-  sleep 1000
- ; pop $1
- ; FileOpen $0 Psexec.log a
- ; IfErrors done
- ; messagebox mb_ok "'cmd /c psexec /accepteula -h -u $r4 -p $r1 instocs.exe > Psexec.log 2>&1'"
- ; fileseek $0 END END
- ; FileWrite $0 "some text"
- ; FileClose $0
-;done:
-  
-  ;messagebox mb_ok "$1"
+Name "${PRODUCT_NAME}"
+Icon "OCSInventory.ico"
+OutFile "OcsPackage.exe"
 
-  ;nsexec::exec 'cmd /c Psexec.exe \\$9 /user:$r4 /pwd:$r1 "$PLUGINSDIR\instocs.exe" > Psexec.log 2>&1'
-  ;sleep 4000
-  StrCpy $OcsLogon_v "${appname}_:_Waiting for Psexec.exe log:"
-  Call Write_Log
-wait_for_log:
-  intop $9 $9 + 1
-  StrCpy $OcsLogon_v ".$9"
-  Call Write_Log
-  strcmp $9 ${time_out} 0 no_timeout
-  StrCpy $OcsLogon_v "$\r$\n${appname}_:_Timeout: ${time_out} Reached."
-  Call Write_Log
-  abort
-no_timeout:
-  sleep 1000
-  IfFileExists "Psexec.log" 0 wait_for_log
-  StrCpy $OcsLogon_v '$\r$\n${appname}_:_============== Start of Psexec.exe log =============$\r$\n'
-  Call Write_Log
-  ${FileJoin} ${SETUP_LOG_FILE} 'Psexec.log' ${SETUP_LOG_FILE}
-  StrCpy $OcsLogon_v "$\r$\n${appname}_:_============== End of Psexec.exe log ==============$\r$\n"
-  Call Write_Log
-  goto NOkadmin
-Okadmin:
-  StrCpy $OcsLogon_v "${appname}_:_User is Admin:$\r$\n"
-  Call Write_Log
-  StrCpy $OcsLogon_v "${appname}_:_Launching setup directly...$\r$\n"
-  Call Write_Log
-  execwait 'instocs.exe'
+SilentInstall Silent
+ShowInstDetails Hide
 
-NOkadmin:
-functionend
+;Request application privileges for Windows Vista or higher ('user' or 'admin')
+RequestExecutionLevel user
 
-section
-  ;setoutpath "$PLUGINSDIR"
-SectionEnd
+var /GLOBAL logBuffer      ; To complete the setup log file
+var /GLOBAL Admin_ID       ; Administrative ID to use
+var /GLOBAL Admin_Pwd      ; Administrarive password
+var /GLOBAL Setup_Log_File ; File where to store logs
 
-Function IsUserAdmin
- Push $R0
- Push $R1
- Push $R2
-
- ClearErrors
- UserInfo::GetName
- IfErrors Win9x
- Pop $R1
- UserInfo::GetAccountType
- Pop $R2
-
- StrCmp $R2 "Admin" 0 Continue
- ; Observation: I get here when running Win98SE. (Lilla)
- ; The functions UserInfo.dll looks for are there on Win98 too,
- ; but just don't work. So UserInfo.dll, knowing that admin isn't required
- ; on Win98, returns admin anyway. (per kichik)
- ; MessageBox MB_OK 'User "$R1" is in the Administrators group'
- StrCpy $R0 "true"
- Goto Done
-
-Continue:
- ; You should still check for an empty string because the functions
- ; UserInfo.dll looks for may not be present on Windows 95. (per kichik)
- StrCmp $R2 "" Win9x
- StrCpy $R0 "false"
- ;MessageBox MB_OK 'User "$R1" is in the "$R2" group'
- Goto Done
-
-Win9x:
- ; comment/message below is by UserInfo.nsi author:
- ; This one means you don't need to care about admin or
- ; not admin because Windows 9x doesn't either
- ;MessageBox MB_OK "Error! This DLL can't run under Windows 9x!"
- StrCpy $R0 "true"
-
-Done:
- StrCpy $OcsLogon_v '${appname}_:_User= "$R1"  AccountType= "$R2"  IsUserAdmin= "$R0"$\r$\n'
- Call Write_Log
- Pop $R2
- Pop $R1
- Exch $R0
-FunctionEnd
+################################################################################
+# Version information
+################################################################################
+    VIProductVersion "OcsAgentSetupVersionToReplace"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "ProductName" "${PRODUCT_NAME}"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "Comments" "${PRODUCT_NAME} ${PRODUCT_VERSION} for installing OCS Inventory NG Agent, Certificate and Plugins from an unprivilegied account"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "CompanyName" "OCS Inventory NG Team"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalTrademarks" "OCS Inventory NG Team"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "LegalCopyright" "OCS Inventory NG Team"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileDescription" "Package includes <OcsAgentSetupFileTitleToReplace> version <OcsAgentSetupVersionToReplace>"
+    VIAddVersionKey /LANG=${LANG_ENGLISH} "FileVersion" "OcsAgentSetupVersionToReplace"
 
 #####################################################################
-# This function write content of OcsLogon_v variable in log file in
+# This function write content of logBuffer variable in log file in
 # a log file OcsAgentSetup.log located in install directory
 #####################################################################
 Function Write_Log
-  ; Save used register
-  Push $R0
-  ClearErrors
-  ; Is there something to write ?
-  StrCmp $OcsLogon_v "" WriteLog_end
-  ; Open log file
-  FileOpen $R0 ${SETUP_LOG_FILE} a
-  ; Seek to end
-  FileSeek $R0 END END
-  IfErrors WriteLog_end
-  ; Write
-  FileWrite $R0 "$OcsLogon_v"
-  StrCpy $OcsLogon_v ""
-  ; Close file
-  FileClose $R0
+    ; Save used register
+    Push $R0
+    ClearErrors
+    ; Is there something to write ?
+    StrCmp $logBuffer "" WriteLog_end
+    ; Open log file
+    FileOpen $R0 $Setup_Log_File a
+    ; Seek to end
+    FileSeek $R0 END END
+    IfErrors WriteLog_end
+    ; Write
+    FileWrite $R0 "$logBuffer"
+    StrCpy $logBuffer ""
+    ; Close file
+    FileClose $R0
 WriteLog_end:
-  ; Restore used register
-  Pop $R0
+    ; Restore used register
+    Pop $R0
 FunctionEnd
 
-Function get_computer_name
-  ReadRegStr $0 HKLM "System\CurrentControlSet\Control\ComputerName\ActiveComputerName" "ComputerName"
-  StrCmp $0 "" win9x
-  StrCpy $1 $0 4 3
-;  MessageBox MB_OK "Your ComputerName : $0"
-  Goto done
-win9x:
-  ReadRegStr $0 HKLM "System\CurrentControlSet\Control\ComputerName\ComputerName" "ComputerName"
-  StrCpy $1 $0 4 3
-;  MessageBox MB_OK "Your ComputerName : $0"
-done:
- push $0 
+#####################################################################
+# This function try to find if logged in user has admin rights
+#####################################################################
+Function IsUserAdmin
+	Push $R0
+	Push $R1
+	Push $R2
+	ClearErrors
+	UserInfo::GetName
+	IfErrors IsUserAdmin_Win9x
+	; Assuming Windows NT
+	Pop $R1
+	UserInfo::GetAccountType
+	Pop $R2
+	StrCmp $R2 "Admin" 0 IsUserAdmin_Continue
+	; Observation: I get here when running Win98SE. (Lilla)
+	; The functions UserInfo.dll looks for are there on Win98 too,
+	; but just don't work. So UserInfo.dll, knowing that admin isn't required
+	; on Win98, returns admin anyway. (per kichik)
+	; MessageBox MB_OK 'User "$R1" is in the Administrators group'
+	StrCpy $R0 "true"
+	Goto IsUserAdmin_end
+IsUserAdmin_Continue:
+	; You should still check for an empty string because the functions
+	; UserInfo.dll looks for may not be present on Windows 95. (per kichik)
+	StrCmp $R2 "" IsUserAdmin_Win9x
+	StrCpy $R0 "false"
+	;MessageBox MB_OK 'User "$R1" is in the "$R2" group'
+	Goto IsUserAdmin_end
+IsUserAdmin_Win9x:
+	; comment/message below is by UserInfo.nsi author:
+	; This one means you don't need to care about admin or
+	; not admin because Windows 9x doesn't either
+	;MessageBox MB_OK "Error! This DLL can't run under Windows 9x!"
+	StrCpy $R0 "true"
+IsUserAdmin_end:
+	;MessageBox MB_OK 'User= "$R1"  AccountType= "$R2"  IsUserAdmin= "$R0"'
+	Pop $R2
+	Pop $R1
+	Exch $R0
 FunctionEnd
 
-function .onInstSuccess
-  ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
-  StrCpy $OcsLogon_v "${appname}_:_End of ${appname} on $0/$1/$2 at $4:$5:$6$\r$\n"
-  Call Write_Log
-functionend
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; ajout du 15 3 2008
-; BUT: TESTER LE TAG ET LE PASSER AU SETUP
 #####################################################################
 # GetParameters
 # input, none
@@ -241,204 +141,168 @@ functionend
 # modifies no other variables.
 #####################################################################
 Function GetParameters
-  Push $R0
-  Push $R1
-  Push $R2
-  Push $R3
-  StrCpy $R2 1
-  StrLen $R3 $CMDLINE
-  ;Check for quote or space
-  StrCpy $R0 $CMDLINE $R2
-  StrCmp $R0 '"' 0 +3
-  StrCpy $R1 '"'
-  Goto loop
-  StrCpy $R1 " "
+	Push $R0
+	Push $R1
+	Push $R2
+	Push $R3
+	StrCpy $R2 1
+	StrLen $R3 $CMDLINE
+	;Check for quote or space
+	StrCpy $R0 $CMDLINE $R2
+	StrCmp $R0 '"' 0 +3
+	StrCpy $R1 '"'
+	Goto loop
+	StrCpy $R1 " "
 loop:
-  IntOp $R2 $R2 + 1
-  StrCpy $R0 $CMDLINE 1 $R2
-  StrCmp $R0 $R1 get
-  StrCmp $R2 $R3 get
-  Goto loop
+	IntOp $R2 $R2 + 1
+	StrCpy $R0 $CMDLINE 1 $R2
+	StrCmp $R0 $R1 get
+	StrCmp $R2 $R3 get
+	Goto loop
 get:
-  IntOp $R2 $R2 + 1
-  StrCpy $R0 $CMDLINE 1 $R2
-  StrCmp $R0 " " get
-  StrCpy $R0 $CMDLINE "" $R2
-  Pop $R3
-  Pop $R2
-  Pop $R1
-  Exch $R0
+	IntOp $R2 $R2 + 1
+	StrCpy $R0 $CMDLINE 1 $R2
+	StrCmp $R0 " " get
+	StrCpy $R0 $CMDLINE "" $R2
+	Pop $R3
+	Pop $R2
+	Pop $R1
+	Exch $R0
 FunctionEnd
 
 #####################################################################
-# GetParameterValue
-# Chris Morgan<cmorgan@alum.wpi.edu> 5/10/2004
-# -Updated 4/7/2005 to add support for retrieving a command line switch
-#  and additional documentation
-#
-# Searches the command line input, retrieved using GetParameters, for the
-# value of an option given the option name.  If no option is found the
-# default value is placed on the top of the stack upon function return.
-#
-# This function can also be used to detect the existence of just a
-# command line switch like /OUTPUT  Pass the default and "/OUTPUT"
-# on the stack like normal.  An empty return string "" will indicate
-# that the switch was found, the default value indicates that
-# neither a parameter or switch was found.
-#
-# Inputs - Top of stack is default if parameter isn't found,
-#  second in stack is parameter to search for, ex. "/OUTPUT:"
-# Outputs - Top of the stack contains the value of this parameter
-#  So if the command line contained /OUTPUT:somedirectory, "somedirectory"
-#  will be on the top of the stack when this function returns
-#
-# USAGE:
-#  Push "/OUTPUT:"       ; push the search string onto the stack
-#  Push "DefaultValue"   ; push a default value onto the stack
-#  Call GetParameterValue
-#  Pop $2
-#  MessageBox MB_OK "Value of OUTPUT parameter is '$2'"
+# Init script
 #####################################################################
-Function GetParameterValue
-  Exch $R0  ; get the top of the stack(default parameter) into R0
-  Exch      ; exchange the top of the stack(default) with
-            ; the second in the stack(parameter to search for)
-  Exch $R1  ; get the top of the stack(search parameter) into $R1
-
-  ;Preserve on the stack the registers used in this function
-  Push $R2
-  Push $R3
-  Push $R4
-  Push $R5
-
-  Strlen $R2 $R1      ; store the length of the search string into R2
-
-  Call GetParameters  ; get the command line parameters
-  Pop $R3             ; store the command line string in R3
-
-  # search for quoted search string
-  StrCpy $R5 '"'      ; later on we want to search for a open quote
-  Push $R3            ; push the 'search in' string onto the stack
-  Push '"$R1'         ; push the 'search for'
-  Call StrStr         ; search for the quoted parameter value
-  Pop $R4
-  StrCpy $R4 $R4 "" 1   ; skip over open quote character, "" means no maxlen
-  StrCmp $R4 "" "" next ; if we didn't find an empty string go to next
-
-  # search for non-quoted search string
-  StrCpy $R5 ' '      ; later on we want to search for a space since we
-                      ; didn't start with an open quote '"' we shouldn't
-                      ; look for a close quote '"'
-  Push $R3            ; push the command line back on the stack for searching
-  Push '$R1'          ; search for the non-quoted search string
-  Call StrStr
-  Pop $R4
-
-  ; $R4 now contains the parameter string starting at the search string,
-  ; if it was found
-next:
-  StrCmp $R4 "" check_for_switch ; if we didn't find anything then look for
-                                 ; usage as a command line switch
-  # copy the value after $R1 by using StrCpy with an offset of $R2,
-  # the length of 'OUTPUT'
-  StrCpy $R0 $R4 "" $R2  ; copy commandline text beyond parameter into $R0
-  # search for the next parameter so we can trim this extra text off
-  Push $R0
-  Push $R5            ; search for either the first space ' ', or the first
-                      ; quote '"'
-                      ; if we found '"/output' then we want to find the
-                      ; ending ", as in '"/output=somevalue"'
-                      ; if we found '/output' then we want to find the first
-                      ; space after '/output=somevalue'
-  Call StrStr         ; search for the next parameter
-  Pop $R4
-  StrCmp $R4 "" done  ; if 'somevalue' is missing, we are done
-  StrLen $R4 $R4      ; get the length of 'somevalue' so we can copy this
-                      ; text into our output buffer
-  StrCpy $R0 $R0 -$R4 ; using the length of the string beyond the value,
-                      ; copy only the value into $R0
-  goto done           ; if we are in the parameter retrieval path skip over
-                      ; the check for a command line switch
-
-; See if the parameter was specified as a command line switch, like '/output'
-check_for_switch:
-  Push $R3            ; push the command line back on the stack for searching
-  Push '$R1'         ; search for the non-quoted search string
-  Call StrStr
-  Pop $R4
-  StrCmp $R4 "" done  ; if we didn't find anything then use the default
-  StrCpy $R0 ""       ; otherwise copy in an empty string since we found the
-                      ; parameter, just didn't find a value
-
-done:
-  Pop $R5
-  Pop $R4
-  Pop $R3
-  Pop $R2
-  Pop $R1
-  Exch $R0 ; put the value in $R0 at the top of the stack
-FunctionEnd
-
-
-#####################################################################
-# This function try to find a string in another one
-# Case insensitive
-#####################################################################
-Function StrStr
-  Exch $R1 ; st=haystack,old$R1, $R1=needle
-  Exch    ; st=old$R1,haystack
-  Exch $R2 ; st=old$R1,old$R2, $R2=haystack
-  Push $R3
-  Push $R4
-  Push $R5
-  StrLen $R3 $R1
-  StrCpy $R4 0
-  ; $R1=needle
-  ; $R2=haystack
-  ; $R3=len(needle)
-  ; $R4=cnt
-  ; $R5=tmp
-loop:
-  StrCpy $R5 $R2 $R3 $R4
-  StrCmp $R5 $R1 done
-  StrCmp $R5 "" done
-  IntOp $R4 $R4 + 1
-  Goto loop
-done:
-  StrCpy $R1 $R2 "" $R4
-  Pop $R5
-  Pop $R4
-  Pop $R3
-  Pop $R2
-  Exch $R1
-FunctionEnd
-
-; FIN AJOUT DU 15
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 Function .onInit
-  InitPluginsDir
-  ; Init debug log$
-  Delete "${SETUP_LOG_FILE}"
-  StrCpy $OcsLogon_v "${appname}_:_********************************************************$\r$\n"
-  Call Write_Log
-  ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
-  StrCpy $OcsLogon_v "${appname}_:_Starting Ocspackager on $0/$1/$2 at $4:$5:$6$\r$\n"
-  Call Write_Log
-  StrCpy $OcsLogon_v "${appname}_:_Contents: file_x_name vCompile_version$\r$\n"
-  Call Write_Log
-  StrCpy $OcsLogon_v "${appname}_:_Temp dir: $PLUGINSDIR\$\r$\n"
-  Call Write_Log
-  ; definir si on souhaite psexec et le gérer....
-  ; File /oname=$PLUGINSDIR\Psexec.exe "Psexec.exe"
-  ;other-psex.rem File /oname=$PLUGINSDIR\psexec.exe "psexec.exe"
-  File /oname=$PLUGINSDIR\OcsSetup.exe "OcsAgentSetupTMP"
-  File /oname=$PLUGINSDIR\pack.ico "pack.ico"
-  File /oname=$PLUGINSDIR\instocs.exe "instocs.exe"
-  ;other.rem File /oname=$PLUGINSDIR\other.file.def
-  ;other1.rem File /oname=$PLUGINSDIR\other1.file.def
-;**********************************
-;** ATUOCOMPLETED BY INSTALLER ! **
-;**********************************
+    InitPluginsDir
+    ; Init debug log$
+    StrCpy $Setup_Log_File "$TEMP\ocspackage.log"
+    Delete "$Setup_Log_File"
+    StrCpy $logBuffer "${PRODUCT_NAME} : ********************************************************$\r$\n"
+    Call Write_Log
+    ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+    StrCpy $logBuffer "${PRODUCT_NAME} : Starting ${PRODUCT_NAME} on $0/$1/$2 at $4:$5:$6$\r$\n"
+    Call Write_Log
+    StrCpy $logBuffer "${PRODUCT_NAME} : Installing <OcsAgentSetupFileTitleToReplace> version <OcsAgentSetupVersionToReplace>$\r$\n"
+    Call Write_Log
+    StrCpy $logBuffer "${PRODUCT_NAME} : Installing from <$PLUGINSDIR>\$\r$\n"
+    Call Write_Log
+FunctionEnd
+
+
+#####################################################################
+# Main section - Extract files and start privilegied installer
+#####################################################################
+Section "Run Setup"
+    ; Run installer for all users
+    SetShellVarContext All
+    ; First extract files to temp directory
+    SetOutPath "$PLUGINSDIR"
+    ; Privilegied installer
+    StrCpy $logBuffer '${PRODUCT_NAME} : Extracting privilegied installer$\r$\n'
+    Call Write_Log
+    File "instocs.exe"
+    ; Agent setup file
+    StrCpy $logBuffer '${PRODUCT_NAME} : Extracting Agent setup file$\r$\n'
+    Call Write_Log
+    File /ONAME=OcsSetup.exe "OcsAgentSetupFilePathToReplace"
+    ; Agent data files
+    StrCpy $logBuffer '${PRODUCT_NAME} : Extracting Agent configuration files$\r$\n'
+    Call Write_Log
+    SetOutPath "$PLUGINSDIR\OcsData"
+    File /R "OcsIncludeDataFolderToReplace\*"
+    ; Agent plugins files
+    StrCpy $logBuffer '${PRODUCT_NAME} : Extracting Agent plugin files$\r$\n'
+    Call Write_Log
+    SetOutPath "$PLUGINSDIR\OcsPlugins"
+    File /R "OcsIncludePluginsFolderToReplace\*"
+    ; Generate parameter file
+    SetOutPath "$PLUGINSDIR"
+    Delete "$PLUGINSDIR\ocsdat.ini"
+    StrCpy $logBuffer '${PRODUCT_NAME} : Installing Agent to folder <OcsInstallFolderToReplace>$\r$\n'
+    Call Write_Log
+    WriteINIStr "$PLUGINSDIR\ocsdat.ini" "Config" "InstallFolder" "OcsInstallFolderToReplace"
+    StrCpy $logBuffer '${PRODUCT_NAME} : Configuring Agent from folder <OcsDataFolderToReplace>$\r$\n'
+    Call Write_Log
+    WriteINIStr "$PLUGINSDIR\ocsdat.ini" "Config" "DataFolder" "OcsDataFolderToReplace"
+    StrCpy $logBuffer '${PRODUCT_NAME} : Loging privilegied installer to <$Setup_Log_File>$\r$\n'
+    Call Write_Log
+    WriteINIStr "$PLUGINSDIR\ocsdat.ini" "Config" "LogFile" "$Setup_Log_File"
+    ; Get overloaded command line options from this tool command line
+    StrCpy $R0 ""
+    Call GetParameters
+    Pop $R0
+    StrCmp "$R0" "" No_Option_Overload
+    StrCpy $logBuffer '${PRODUCT_NAME} : Command line options to overload are <$R0>$\r$\n'
+    Call Write_Log
+No_Option_Overload:
+    ; Write agent setup command line to parameter file
+    WriteINIStr "$PLUGINSDIR\ocsdat.ini" "Config" "CmdLine" '$R0 OcsCmdLineToReplace'
+    ; Intialize Admin credentials
+    StrCpy $Admin_ID "AdminIdToReplace"
+    StrCpy $Admin_Pwd "AdminPwdToReplace"
+    ; Check if Current User is Administrator
+    Call IsUserAdmin
+    Pop "$R0"
+    StrCmp $R0 "true" Run_No_PsExec 0
+    StrCpy $logBuffer "${PRODUCT_NAME} : Current user does not have Administrator privileges$\r$\n"
+    Call Write_Log
+    ; Check if AdminID provided
+    StrCmp "$Admin_ID" "" 0 Run_PsExec
+    ; No PsExec or No Admin ID
+    StrCpy $logBuffer "${PRODUCT_NAME} : ABORT because PsExec not used or empty Account credentials !$\r$\n"
+    Call Write_Log
+    Abort
+
+Run_PsExec:
+    StrCpy $logBuffer '${PRODUCT_NAME} : Extracting Microsoft SysInternals PsExec.exe$\r$\n'
+    Call Write_Log
+    ; The following line willbe commented by OcsPackager if no PsExec use, so do not modify
+    File "PsExec.exe"
+    StrCpy $logBuffer "${PRODUCT_NAME} : Launching Privilegied Installer with command <PsExec.exe /accepteula -h -u $Admin_ID -p ******** instOCS.exe>$\r$\n"
+    Call Write_Log
+    Sleep 1000
+    ; Now usign Psexec if needed
+    nsexec::ExecToStack 'cmd /c PsExec.exe /accepteula -u $Admin_ID -p $Admin_Pwd instocs.exe > Psexec.log 2>&1'
+    Sleep 1000
+Wait_For_Log:
+    IntOp $9 $9 + 1
+    StrCpy $logBuffer "${PRODUCT_NAME} : Waiting for Psexec.exe ending (.$9 seconds)$\r$\n"
+    Call Write_Log
+    StrCmp $9 ${TIME_OUT} 0 No_Timeout
+    StrCpy $logBuffer "$\r$\n${PRODUCT_NAME} : ABORT because timeout <${TIME_OUT} seconds> reached !$\r$\n"
+    Call Write_Log
+    Abort
+
+No_Timeout:
+    sleep 1000
+    IfFileExists "Psexec.log" 0 Wait_For_Log
+    StrCpy $logBuffer '$\r$\n${PRODUCT_NAME} : ============== Start of Psexec.exe log =============$\r$\n'
+    Call Write_Log
+    ${FileJoin} $Setup_Log_File 'Psexec.log' $Setup_Log_File
+    StrCpy $logBuffer "$\r$\n${PRODUCT_NAME} : ============== End of Psexec.exe log ==============$\r$\n"
+    Call Write_Log
+    Goto EndExec
+  
+Run_No_PsExec:
+    StrCpy $logBuffer "${PRODUCT_NAME} : Current user has Administrator privileges$\r$\n"
+    Call Write_Log
+    StrCpy $logBuffer "${PRODUCT_NAME} : Launching Privilegied Installer directly...$\r$\n"
+    Call Write_Log
+    ExecWait 'instocs.exe'
+
+EndExec:
+SectionEnd
+
+Function .onInstFailed
+    ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+    StrCpy $logBuffer "${PRODUCT_NAME} : Failed end of ${PRODUCT_NAME} on $0/$1/$2 at $4:$5:$6$\r$\n"
+    Call Write_Log
+FunctionEnd
+
+Function .onInstSuccess
+    ${GetTime} "" "L" $0 $1 $2 $3 $4 $5 $6
+    StrCpy $logBuffer "${PRODUCT_NAME} : Successfull end of ${PRODUCT_NAME} on $0/$1/$2 at $4:$5:$6$\r$\n"
+    Call Write_Log
+FunctionEnd
 
