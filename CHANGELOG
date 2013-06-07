@@ -1,0 +1,10 @@
+2.1RC1 (aka 2.1.0.1)
+    * Fix bug #988838 UAC kicking in when starting OCS package 
+	* Fix bug #910424 OcsPackager uses wrong PsExec-Params: Login failed: unknown username.
+	* Fix bug #948150 Old /TAG: format 
+	* Fix bug #957354 OcsPackager.exe Version 1.0.3.3 psexec error 
+	* Fix bug #785590 It is not possible to deploy a new certificate with the OCS packager.
+2.1 Branch	
+	* Completly rewrite of code to fully support 2.X OCS Inventory NG Agent and embedding plugins
+	
+
