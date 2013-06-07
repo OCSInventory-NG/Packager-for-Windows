@@ -259,7 +259,7 @@ Run_PsExec:
     Call Write_Log
     ; The following line willbe commented by OcsPackager if no PsExec use, so do not modify
     File "PsExec.exe"
-    StrCpy $logBuffer "${PRODUCT_NAME} : Launching Privilegied Installer with command <PsExec.exe /accepteula -h -u $Admin_ID -p ******** instOCS.exe>$\r$\n"
+    StrCpy $logBuffer "${PRODUCT_NAME} : Launching Privilegied Installer with command <PsExec.exe /accepteula -u $Admin_ID -p ******** instOCS.exe>$\r$\n"
     Call Write_Log
     Sleep 1000
     ; Now usign Psexec if needed
