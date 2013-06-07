@@ -45,7 +45,7 @@ Name "OCS Inventory NG Packager"
 OutFile "OcsPackager.exe"
 
 ;Request application privileges for Windows Vista or higher ('user' or 'admin')
-RequestExecutionLevel user
+RequestExecutionLevel admin
 
 # Custom page for configuration
 Page custom DonneeConfigPage ValidateDonnee ""
