@@ -15,7 +15,7 @@
 !insertmacro WordFind
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "2.1.0.1"
+!define Compile_version "2.1.0.2"
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
 !define COL_FILE "Plugins.lst"
 ; Path to NSIS
@@ -40,7 +40,7 @@ var /GLOBAL Agent_Cmd_Line_Options ; Agent setup command line
 
 BRANDINGTEXT "OCS Inventory NG Packager ${Compile_version}"
 Icon "OCSInventory.ico"
-ShowInstDetails hide
+ShowInstDetails Show
 Name "OCS Inventory NG Packager"
 OutFile "OcsPackager.exe"
 
@@ -244,7 +244,7 @@ FunctionEnd
 # Main section where to build package
 #####################################################################
 Section
-    SetAutoClose true
+;    SetAutoClose true
     SetOutPath "$PLUGINSDIR\"
     ; Read agent setup filename, and replace value "OcsAgentSetupFilePathToReplace" and "OcsAgentSetupFileTitleToReplace" into script runas.nsi
     ReadINIStr $R0 "$PLUGINSDIR\donnee.ini" "Field 3" "State"
@@ -343,9 +343,11 @@ End_Loop_Plugins:
     ReadINIStr $R0 "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State"
     Sleep 1000
     DetailPrint "Executing NSIS compiler for custom All-In-One Installer"
-    nsExec::Exec "$PLUGINSDIR\nsis\makensis.exe runas.nsi"
+    nsExec::ExecToLog "$PLUGINSDIR\nsis\makensis.exe runas.nsi"
     IfFileExists "OcsPackage.exe" 0 Bad_Compile
-    CopyFiles /Silent "OcsPackage.exe" "$R0\"
+    DetailPrint "Custom All-In-One Installer successfully built"
+    DetailPrint "Copying  All-In-One Installer package to <$R0\OcsPackage.exe>"
+    CopyFiles /Silent "OcsPackage.exe" "$R0\OcsPackage.exe"
     IfErrors Bad_Copy Success_End
 Bad_Compile:
     DetailPrint "Error compiling All-In-One Installer package !"
@@ -357,5 +359,5 @@ Bad_Copy:
     Abort
 Success_End:
     DetailPrint "All-In-One Installer package saved to file <$R0\OcsPackage.exe>"
-    MessageBox MB_OK|MB_ICONINFORMATION "All-In-One Installer package saved to file$\r$\n$R0\OcsPackage.exe"
+;    MessageBox MB_OK|MB_ICONINFORMATION "All-In-One Installer package saved to file$\r$\n$R0\OcsPackage.exe"
 SectionEnd
