@@ -345,6 +345,7 @@ End_Loop_Plugins:
     DetailPrint "Executing NSIS compiler for custom All-In-One Installer"
     nsExec::ExecToLog "$PLUGINSDIR\nsis\makensis.exe runas.nsi"
     IfFileExists "OcsPackage.exe" 0 Bad_Compile
+    ClearErrors
     DetailPrint "Custom All-In-One Installer successfully built"
     DetailPrint "Copying  All-In-One Installer package to <$R0\OcsPackage.exe>"
     CopyFiles /Silent "OcsPackage.exe" "$R0\OcsPackage.exe"
