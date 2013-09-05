@@ -15,7 +15,7 @@
 !insertmacro WordFind
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "2.1.0.2"
+!define Compile_version "2.1.0.3"
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
 !define COL_FILE "Plugins.lst"
 ; Path to NSIS
@@ -64,6 +64,7 @@ Function GetInstallFolder
 	; Save used registers
 	Exch $R0
 	Push $R1
+	ClearErrors
     ${GetOptions} '$R0' '/D=' $R1
     IfErrors 0 InstallFolder_Use
     ; No switch in command line, use default location
@@ -87,6 +88,7 @@ Function GetDataFolder
 	; Save used registers
 	Exch $R0
 	Push $R1
+	ClearErrors
     ${GetOptions} '$R0' '/work_dir=' $R1
     IfErrors 0 DataFolder_Use
     ; No switch in command line, use default location
