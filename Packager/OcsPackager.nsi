@@ -18,8 +18,11 @@
 !define Compile_version "2.1.0.3"
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
 !define COL_FILE "Plugins.lst"
-; Path to NSIS
-!define NSIS_PATH "C:\Program Files\NSIS"
+; Path to NSIS compiler
+; UPDATE IF NEEDED !!!
+; To build on Windows 64 bits, you must set "C:\Program Files (x86)\NSIS"
+; To build on Windows 32 bits, you must set "C:\Program Files\NSIS"
+!define NSIS_PATH "C:\Program Files (x86)\NSIS"
 
 ################################################################################
 # Version information
