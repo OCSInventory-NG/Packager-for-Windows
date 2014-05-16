@@ -1,3 +1,8 @@
+2.1.1 (aka 2.1.1.1)
+	* Fix bug Bug #1217451: Last copy sometimes returns failed, but file really copied
+2.1 (aka 2.1.0.3)
+	* Fix: Bug #1217451: Error when copying package to destination directory
+	* Packager, under Windows 8, require Admin privs to allow diaplaying listbox to select plugins :-(
 2.1RC1 (aka 2.1.0.1)
     * Fix bug #988838 UAC kicking in when starting OCS package 
 	* Fix bug #910424 OcsPackager uses wrong PsExec-Params: Login failed: unknown username.
