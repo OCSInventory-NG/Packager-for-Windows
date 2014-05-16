@@ -354,15 +354,16 @@ End_Loop_Plugins:
     DetailPrint "Custom All-In-One Installer successfully built"
     DetailPrint "Copying  All-In-One Installer package to <$R0\OcsPackage.exe>"
     CopyFiles /Silent "OcsPackage.exe" "$R0\OcsPackage.exe"
-    IfErrors Bad_Copy Success_End
+;    IfErrors Bad_Copy Success_End
+     Goto Success_End
 Bad_Compile:
     DetailPrint "Error compiling All-In-One Installer package !"
     MessageBox MB_ICONSTOP "Error compiling All-In-One Installer package !"
     Abort
-Bad_Copy:
-    DetailPrint "Error writing All-In-One Installer package into folder <$R0> !"
-    MessageBox MB_ICONSTOP "Error writing All-In-One Installer package into folder$\r$\n$R0 !"
-    Abort
+;Bad_Copy:
+;    DetailPrint "Error writing All-In-One Installer package into folder <$R0> !"
+;    MessageBox MB_ICONSTOP "Error writing All-In-One Installer package into folder$\r$\n$R0 !"
+;    Abort
 Success_End:
     DetailPrint "All-In-One Installer package saved to file <$R0\OcsPackage.exe>"
 ;    MessageBox MB_OK|MB_ICONINFORMATION "All-In-One Installer package saved to file$\r$\n$R0\OcsPackage.exe"
