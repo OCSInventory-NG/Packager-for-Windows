@@ -37,7 +37,7 @@
 !insertmacro FileJoin
 
 !define PRODUCT_NAME "OCS Inventory NG Packager (All-In-One Agent Installer)"
-!define PRODUCT_VERSION "2.1.0.1"
+!define PRODUCT_VERSION "2.3.0.0"
 !define TIME_OUT "300" ; seconds
 
 Name "${PRODUCT_NAME}"
