@@ -1,3 +1,6 @@
+2.3.0
+	* Fix bugs
+	* New graphics charts
 2.1.1 (aka 2.1.1.1)
 	* Fix bug Bug #1217451: Last copy sometimes returns failed, but file really copied
 2.1 (aka 2.1.0.3)
