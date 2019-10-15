@@ -18,7 +18,7 @@
 !insertmacro MUI_LANGUAGE "English"
 
 !define COL_FILE "Plugins.lst"
-!define Compile_Version "2.3.0.0"
+!define Compile_Version "2.6.0.0"
 
 Var /GLOBAL HWND
 
