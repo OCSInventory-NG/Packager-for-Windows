@@ -48,7 +48,7 @@ SilentInstall Silent
 ShowInstDetails Hide
 
 ;Request application privileges for Windows Vista or higher ('user' or 'admin')
-RequestExecutionLevel user
+RequestExecutionLevel admin
 
 var /GLOBAL logBuffer      ; To complete the setup log file
 var /GLOBAL Admin_ID       ; Administrative ID to use
