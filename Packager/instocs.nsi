@@ -27,7 +27,7 @@
 !insertmacro FileJoin
 
 !define PRODUCT_NAME "OCS Inventory NG Packager (Privilegied Installer)"
-!define PRODUCT_VERSION "2.6.0.0"
+!define PRODUCT_VERSION "2.8.0.0"
 !define AGENT_LOG_FILENAME "OCS-NG-Windows-Agent-Setup.log"
 !define AGENT_PLUGINS_DIR "Plugins"
 
