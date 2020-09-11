@@ -1,3 +1,5 @@
+2.8.0
+	* Generated exetucable will be run as admin by default
 2.3.0
 	* Fix bugs
 	* New graphics charts
