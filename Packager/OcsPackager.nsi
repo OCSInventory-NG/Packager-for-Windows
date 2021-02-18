@@ -201,12 +201,12 @@ Function ValidateDonnee
 ValidateDonnee_No_Plugins:
     ; Check if packager help clicked
     StrCmp $0 "4" 0 ValidateDonnee_No_Help
-    ExecShell 'open' 'http://wiki.ocsinventory-ng.org/index.php?title=OCS_Inventory_NG:Packager'
+    ExecShell 'open' 'http://wiki.ocsinventory-ng.org/07.OCS-Tools/OCS-Windows-Packager/'
     Abort
 ValidateDonnee_No_Help:
     ; Check if agent command line help clicked
     StrCmp $0 "8" 0 ValidateDonnee_No_Cmd_Help
-    ExecShell 'open' 'http://wiki.ocsinventory-ng.org/index.php/Documentation:WindowsAgent#OCS_Inventory_NG_Agent_for_Windows_command_line_options.'
+    ExecShell 'open' 'http://wiki.ocsinventory-ng.org/03.Basic-documentation/Setting-up-the-Windows-Agent-2.x-on-client-computers/#ocs-inventory-ng-agent-for-windows-command-line-options'
     ; Example 3:  /S /server=http://my.server.com/ocsinventory /D='D:\my app\my inventory appp'
     Abort
 ValidateDonnee_No_Cmd_Help:
