@@ -151,21 +151,21 @@ Section "Run setup"
     ; Read agent data folder from config
     readINIStr $R1 "$exedir\ocsdat.ini" "Config" "DataFolder"
     ; Create agent install and data directories
-    StrCpy $logBuffer '${PRODUCT_NAME} : Creating OCS Inventort NG Agent install directory <$R0>...$\r$\n'
+    StrCpy $logBuffer '${PRODUCT_NAME} : Creating OCS Inventory NG Agent install directory <$R0>...$\r$\n'
     Call Write_Log
     CreateDirectory "$R0"
-    StrCpy $logBuffer '${PRODUCT_NAME} : Creating OCS Inventort NG Agent ${AGENT_PLUGINS_DIR} directory <$R0\${AGENT_PLUGINS_DIR}>...$\r$\n'
+    StrCpy $logBuffer '${PRODUCT_NAME} : Creating OCS Inventory NG Agent ${AGENT_PLUGINS_DIR} directory <$R0\${AGENT_PLUGINS_DIR}>...$\r$\n'
     Call Write_Log
     CreateDirectory "$R0\${AGENT_PLUGINS_DIR}"
-    StrCpy $logBuffer '${PRODUCT_NAME} : Creating OCS Inventort NG Agent data directory <$R1>...$\r$\n'
+    StrCpy $logBuffer '${PRODUCT_NAME} : Creating OCS Inventory NG Agent data directory <$R1>...$\r$\n'
     Call Write_Log
     CreateDirectory "$R1"
     ; Copy certificate and label file to agent data folder
-    StrCpy $logBuffer '${PRODUCT_NAME} : Installing OCS Inventort NG Agent data files to <$R1>...$\r$\n'
+    StrCpy $logBuffer '${PRODUCT_NAME} : Installing OCS Inventory NG Agent data files to <$R1>...$\r$\n'
     Call Write_Log
     CopyFiles /SILENT "$exedir\OcsData\*" "$R1"
     ; Copy plugin files to agent plugins folder
-    StrCpy $logBuffer '${PRODUCT_NAME} : Installing OCS Inventort NG Agent plugin files to <$R0\${AGENT_PLUGINS_DIR}>...$\r$\n'
+    StrCpy $logBuffer '${PRODUCT_NAME} : Installing OCS Inventory NG Agent plugin files to <$R0\${AGENT_PLUGINS_DIR}>...$\r$\n'
     Call Write_Log
     CopyFiles /SILENT "$exedir\OcsPlugins\*" "$R0\${AGENT_PLUGINS_DIR}"
     ; Launch agent setup
