@@ -15,7 +15,7 @@
 !insertmacro WordFind
 !include "TextReplace.nsh"
 !insertmacro MUI_LANGUAGE "English"
-!define Compile_version "2.8.0.0"
+!define Compile_version "2.8.1.0"
 ; Do not forget to change the following line in both Ocspackager and 1runas.nsi files...
 !define COL_FILE "Plugins.lst"
 ; Path to NSIS compiler
