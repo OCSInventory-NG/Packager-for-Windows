@@ -14,6 +14,7 @@ REQUIREMENTS
 ============
 
 - NSIS 2.46 or higher (http://nsis.sourceforge.net)
+- NSIS TextReplace plugin (https://nsis.sourceforge.io/TextReplace_plugin)
 
 
 BUILDING STEPS
