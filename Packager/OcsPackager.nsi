@@ -40,6 +40,13 @@ Var /GLOBAL hWnd                   ; Window handle for modifying properties
 var /GLOBAL Dest_Folder            ; Folder where to create ocspackage.exe
 var /GLOBAL Use_PsExec             ; Contain "Yes" if PsExec available to launch setup under admin account
 var /GLOBAL Agent_Cmd_Line_Options ; Agent setup command line
+Var /GLOBAL SilentMode             ; Initialize global variable
+; Var Dest_Folder $R0
+Var /GLOBAL AgentSourceBinaryPath
+Var /GLOBAL CmdLineOptions
+Var /GLOBAL CACertificateFilePath
+Var /GLOBAL Label
+Var /GLOBAL OcsPluginsFiles
 
 BRANDINGTEXT "OCS Inventory NG Packager ${Compile_version}"
 Icon "OCSInventory.ico"
@@ -110,6 +117,8 @@ FunctionEnd
 # Check if PsExec provided, and use it
 #####################################################################
 Function CheckPsExec
+    StrCmp $SilentMode "Yes" CheckPsExec_No CheckPsExec_Start
+
 CheckPsExec_Start:
     IfFileExists "psexec.exe" CheckPsExec_ok
     MessageBox MB_ICONEXCLAMATION|MB_YESNO "Using alternate account to launch setup requires Microsoft SysInternals <PsExec.exe> tool.$\r$\n$\r$\nPlease, put it in the same directory as OCS Inventory NG Packager and click <Yes> to try again.$\r$\n$\r$\nClick <No> to disable installing under alternate account." IDYES CheckPsExec_Start IDNO CheckPsExec_No
@@ -131,6 +140,15 @@ FunctionEnd
 # Installer script startup
 #####################################################################
 Function .onInit
+    ; Default value
+    StrCpy $SilentMode "No"
+    MessageBox MB_OK "SILENT MODE <$SilentMode>"
+    ; Check for Silent Mode
+    IfSilent 0 +3
+        StrCpy $SilentMode "Yes"
+    ; Read parameters from params.ini if in silent mode
+    Call ReadParamsIni
+    MessageBox MB_OK "151"
      InitPluginsDir
      ; Page resources for agent setup parameters
      !insertmacro MUI_INSTALLOPTIONS_EXTRACT_AS "donnee.ini" "donnee.ini"
@@ -144,9 +162,10 @@ Function .onInit
      File /oname=$PLUGINSDIR\instOCS.exe "instOCS.exe"
      ; Tool to select plugin files
      File /oname=$PLUGINSDIR\ListBox.exe "ListBox.exe"
-     ; By default, export created package on Desktop folder
-     WriteINIStr "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State" $DESKTOP
-     ; Check if PsExec available, to enable or not credential fields
+        ; By default, export created package on Desktop folder
+    WriteINIStr "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State" $DESKTOP
+    MessageBox MB_OK "167"
+    ; Check if PsExec available, to enable or not credential fields
      Call CheckPsExec
     ; Ensure plugins selection always launched at leat one time to create required fields, even if empty
     ExecWait "$PLUGINSDIR\ListBox.exe /S"
@@ -222,14 +241,16 @@ Function OCSFlocPage
 FunctionEnd
 
 #####################################################################
-# Valaidate and save output folder
-#####################################################################
+# Validate and save output folder
+###########################################0##########################
 Function ValidateOCSFloc
     ; Read destination choice
+    ; If silent mode is enabled, use global variable $Dest_Folder
+    ; if silent mode if disabled, use user choice
+    StrCmp $SilentMode "Yes" 0 +3
+        StrCpy $0 $Dest_Folder
+        Goto ValidateOCSFloc_done
     ReadINIStr $0 "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State"
-    StrCmp $0 "" 0 ValidateOCSFloc_done
-    MessageBox MB_ICONEXCLAMATION "Please, select a valid target directory !"
-    Abort
 ValidateOCSFloc_done:
     ; Try to create a file into directory
     FileOpen $1 "$0\file.dat" w
@@ -246,13 +267,57 @@ ValidateOCSFloc_ok:
 FunctionEnd
 
 #####################################################################
+# Read parameters from params.ini file in silent mode
+#####################################################################
+Function ReadParamsIni
+    MessageBox MB_OK "SILENT MODE in readparams <$SilentMode>"
+    ; Only proceed if in Silent Mode
+    StrCmp $SilentMode "Yes" +3
+        DetailPrint "Not in silent mode, skipping params.ini"
+        Return
+    MessageBox MB_OK "ENTRE DEUX"
+    ; Check if params.ini exists
+    IfFileExists "$EXEDIR\params.ini" 0 +3
+        MessageBox MB_OK "IN SILENT MODE"
+        DetailPrint "params.ini not found, skipping"
+        Return
+    
+    ; Read parameters from params.ini
+    ReadINIStr $R0 "$EXEDIR\params.ini" "Variables" "DestinationFolder"
+    ReadINIStr $R1 "$EXEDIR\params.ini" "Variables" "AgentSourceBinaryPath"
+    ReadINIStr $R2 "$EXEDIR\params.ini" "Variables" "CmdLineOptions"
+    ReadINIStr $R3 "$EXEDIR\params.ini" "Variables" "CACertificateFilePath"
+    ReadINIStr $R4 "$EXEDIR\params.ini" "Variables" "Label"
+    ReadINIStr $R5 "$EXEDIR\params.ini" "Variables" "OcsPluginsFiles"
+
+    ; Store these in global variables
+    StrCpy $Dest_Folder $R0
+    StrCpy $AgentSourceBinaryPath $R1
+    StrCpy $CmdLineOptions $R2
+    StrCpy $CACertificateFilePath $R3
+    StrCpy $Label $R4
+    StrCpy $OcsPluginsFiles $R5
+    MessageBox MB_OK "END GLOBAL VARS"
+
+FunctionEnd
+
+#####################################################################
 # Main section where to build package
 #####################################################################
 Section
 ;    SetAutoClose true
     SetOutPath "$PLUGINSDIR\"
     ; Read agent setup filename, and replace value "OcsAgentSetupFilePathToReplace" and "OcsAgentSetupFileTitleToReplace" into script runas.nsi
+    ; either from params.ini file if in silent mode, or from donnee.ini file if in interactive mode
+    MessageBox MB_OK "312 SECTION"
+    MessageBox MB_OK "Silent mode ? <$SilentMode>"
+    StrCmp $SilentMode "Yes" 0 +3
+        StrCpy $R0 $AgentSourceBinaryPath
+        Goto done_reading_agent_setup_filename
     ReadINIStr $R0 "$PLUGINSDIR\donnee.ini" "Field 3" "State"
+
+    done_reading_agent_setup_filename:
+        MessageBox MB_OK "<$R0>"
     ${textreplace::ReplaceInFile} '$PLUGINSDIR\1runas.nsi' '$PLUGINSDIR\runas.nsi' 'OcsAgentSetupFilePathToReplace' "$R0" '/S=1' $0
     DetailPrint "Using file <$R0> as OCS Inventory NG Agent Setup file"
     ${GetFileName} "$R0" $0
@@ -265,8 +330,15 @@ Section
     IntOp $6 $2 & 0x0000FFFF
     ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'OcsAgentSetupVersionToReplace' '$3.$4.$5.$6' '/S=1' $0
     DetailPrint "OCS Inventory NG Agent for Windows version is <$3.$4.$5.$6>"
-   ; Read agent setup command line options
+    ; Read agent setup command line options
+    ; silent mode : use global variable $CmdLineOptions or no silent mode : use donnee.ini file
+    StrCmp $SilentMode "Yes" 0 +3
+        StrCpy $R0 $CmdLineOptions
+        Goto done_reading_cmd_line_options
     ReadINIStr $R0 "$PLUGINSDIR\donnee.ini" "Field 7" "State"
+
+    done_reading_cmd_line_options:
+        MessageBox MB_OK "<$R0>"
     StrCpy $Agent_Cmd_Line_Options "$R0"
     DetailPrint "Using <$R0> as OCS Inventory NG Agent setup command line options"
     ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'OcsCmdLineToReplace' '$Agent_Cmd_Line_Options' '/S=1' $1
@@ -283,12 +355,28 @@ Section
     DetailPrint "Using <$R0> as OCS Inventory NG agent data folder"
     ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'OcsDataFolderToReplace' '$R0' '/S=1' $1
     ; Read certificate file and copy it to data folder to include into installer
+    ; silent mode : use global variable $CACertificateFilePath or no silent mode : use donnee.ini file
+    StrCmp $SilentMode "Yes" 0 +3
+        StrCpy $R0 $CACertificateFilePath
+        Goto done_reading_certificate_file
     ReadINIStr $R0 "$PLUGINSDIR\donnee.ini" "Field 5" "State"
+
+
+    done_reading_certificate_file:
+        MessageBox MB_OK "<$R0>"
     DetailPrint "Using <$R0> as certificate file to include"
     CreateDirectory "$PLUGINSDIR\OcsData"
     CopyFiles /Silent "$R0" "$PLUGINSDIR\OcsData"
     ; Read label and create file to data folder to include into installer
+    ; silent mode : use global variable $Label or no silent mode : use donnee.ini file
+    StrCmp $SilentMode "Yes" 0 +3
+        StrCpy $R0 $Label
+        Goto done_reading_label
     ReadINIStr $R0 "$PLUGINSDIR\donnee.ini" "Field 9" "State"
+
+
+    done_reading_label:
+        MessageBox MB_OK "<$R0>"
     DetailPrint "Using <$R0> as Label text"
     FileOpen $R1 "$PLUGINSDIR\OcsData\Label" w
     FileWrite $R1 "$R0"
@@ -320,13 +408,22 @@ Include_Plugins:
     CreateDirectory "$PLUGINSDIR\OcsPlugins"
     FileOpen $R0 "$PLUGINSDIR\OcsPlugins\DO_NOT_REMOVE.txt" w
     FileClose $R0
-    ; Copy plugin files to OcsPlugins folder
+
+    ; Check for Silent Mode
+    StrCmp $SilentMode "Yes" 0 +3
+        StrCpy $R6 $OcsPluginsFiles
+        Goto Copy_Plugin_Files
+
+    ; Normal mode - get plugin files from list
     Readinistr $R6 "$PLUGINSDIR\${COL_FILE}" "collection" "Liste"
-    StrCmp $R6 "" End_Loop_Plugins ; Collection does not contain file
-    ; Find number of files in collection in $r0
+
+Copy_Plugin_Files:
+    StrCmp $R6 "" End_Loop_Plugins ; No plugins to include
+    ; Find number of files in collection
     ${WordFind} $R6 "|" "*" $R0
     ; Copy each file
     StrCpy $1 "0"
+
 Loop_Plugin_File:
     IntCmp $R0 $1 0 End_Loop_Plugins
     IntOp $1 $1 + 1
@@ -345,7 +442,13 @@ End_Loop_Plugins:
     DetailPrint "Extracting NSIS compiler"
     File /R "${NSIS_PATH}"
     ; Read export folder location
+    ; silent mode : use global variable $Dest_Folder or no silent mode : use OCSFloc.ini file
+    StrCmp $SilentMode "Yes" 0 +3
+        StrCpy $R0 $Dest_Folder
+        Goto done_reading_export_folder
     ReadINIStr $R0 "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State"
+    
+    done_reading_export_folder:
     Sleep 1000
     DetailPrint "Executing NSIS compiler for custom All-In-One Installer"
     nsExec::ExecToLog "$PLUGINSDIR\nsis\makensis.exe runas.nsi"
