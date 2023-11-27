@@ -41,12 +41,13 @@ var /GLOBAL Dest_Folder            ; Folder where to create ocspackage.exe
 var /GLOBAL Use_PsExec             ; Contain "Yes" if PsExec available to launch setup under admin account
 var /GLOBAL Agent_Cmd_Line_Options ; Agent setup command line
 Var /GLOBAL SilentMode             ; Initialize global variable
-; Var Dest_Folder $R0
 Var /GLOBAL AgentSourceBinaryPath
 Var /GLOBAL CmdLineOptions
 Var /GLOBAL CACertificateFilePath
 Var /GLOBAL Label
 Var /GLOBAL OcsPluginsFiles
+Var /GLOBAL AdminId
+Var /GLOBAL AdminPwd
 
 BRANDINGTEXT "OCS Inventory NG Packager ${Compile_version}"
 Icon "OCSInventory.ico"
@@ -117,11 +118,15 @@ FunctionEnd
 # Check if PsExec provided, and use it
 #####################################################################
 Function CheckPsExec
-    StrCmp $SilentMode "Yes" CheckPsExec_No CheckPsExec_Start
+    StrCmp $SilentMode "Yes" CheckPsExec_silent CheckPsExec_Start
 
 CheckPsExec_Start:
     IfFileExists "psexec.exe" CheckPsExec_ok
     MessageBox MB_ICONEXCLAMATION|MB_YESNO "Using alternate account to launch setup requires Microsoft SysInternals <PsExec.exe> tool.$\r$\n$\r$\nPlease, put it in the same directory as OCS Inventory NG Packager and click <Yes> to try again.$\r$\n$\r$\nClick <No> to disable installing under alternate account." IDYES CheckPsExec_Start IDNO CheckPsExec_No
+CheckPsExec_silent:
+    ; in silent mode, we check for psexec in current dir and disable credentials fields if not present
+    IfFileExists "psexec.exe" CheckPsExec_ok
+    Goto CheckPsExec_No
 CheckPsExec_No:
     ; PsExec not available, disable credential fields
     StrCpy $Use_PsExec "No"
@@ -142,13 +147,11 @@ FunctionEnd
 Function .onInit
     ; Default value
     StrCpy $SilentMode "No"
-    MessageBox MB_OK "SILENT MODE <$SilentMode>"
     ; Check for Silent Mode
     IfSilent 0 +3
         StrCpy $SilentMode "Yes"
     ; Read parameters from params.ini if in silent mode
     Call ReadParamsIni
-    MessageBox MB_OK "151"
      InitPluginsDir
      ; Page resources for agent setup parameters
      !insertmacro MUI_INSTALLOPTIONS_EXTRACT_AS "donnee.ini" "donnee.ini"
@@ -164,7 +167,6 @@ Function .onInit
      File /oname=$PLUGINSDIR\ListBox.exe "ListBox.exe"
         ; By default, export created package on Desktop folder
     WriteINIStr "$PLUGINSDIR\OCSFloc.ini" "Field 2" "State" $DESKTOP
-    MessageBox MB_OK "167"
     ; Check if PsExec available, to enable or not credential fields
      Call CheckPsExec
     ; Ensure plugins selection always launched at leat one time to create required fields, even if empty
@@ -270,15 +272,13 @@ FunctionEnd
 # Read parameters from params.ini file in silent mode
 #####################################################################
 Function ReadParamsIni
-    MessageBox MB_OK "SILENT MODE in readparams <$SilentMode>"
     ; Only proceed if in Silent Mode
     StrCmp $SilentMode "Yes" +3
         DetailPrint "Not in silent mode, skipping params.ini"
         Return
-    MessageBox MB_OK "ENTRE DEUX"
+
     ; Check if params.ini exists
-    IfFileExists "$EXEDIR\params.ini" 0 +3
-        MessageBox MB_OK "IN SILENT MODE"
+    IfFileExists "$EXEDIR\params.ini" +3 0
         DetailPrint "params.ini not found, skipping"
         Return
     
@@ -289,6 +289,8 @@ Function ReadParamsIni
     ReadINIStr $R3 "$EXEDIR\params.ini" "Variables" "CACertificateFilePath"
     ReadINIStr $R4 "$EXEDIR\params.ini" "Variables" "Label"
     ReadINIStr $R5 "$EXEDIR\params.ini" "Variables" "OcsPluginsFiles"
+    ReadINIStr $R6 "$EXEDIR\params.ini" "Variables" "PsExecAdminId"
+    ReadINIStr $R7 "$EXEDIR\params.ini" "Variables" "PsExecAdminPwd"
 
     ; Store these in global variables
     StrCpy $Dest_Folder $R0
@@ -297,7 +299,8 @@ Function ReadParamsIni
     StrCpy $CACertificateFilePath $R3
     StrCpy $Label $R4
     StrCpy $OcsPluginsFiles $R5
-    MessageBox MB_OK "END GLOBAL VARS"
+    StrCpy $AdminId $R6
+    StrCpy $AdminPwd $R7
 
 FunctionEnd
 
@@ -309,15 +312,12 @@ Section
     SetOutPath "$PLUGINSDIR\"
     ; Read agent setup filename, and replace value "OcsAgentSetupFilePathToReplace" and "OcsAgentSetupFileTitleToReplace" into script runas.nsi
     ; either from params.ini file if in silent mode, or from donnee.ini file if in interactive mode
-    MessageBox MB_OK "312 SECTION"
-    MessageBox MB_OK "Silent mode ? <$SilentMode>"
     StrCmp $SilentMode "Yes" 0 +3
         StrCpy $R0 $AgentSourceBinaryPath
         Goto done_reading_agent_setup_filename
     ReadINIStr $R0 "$PLUGINSDIR\donnee.ini" "Field 3" "State"
 
     done_reading_agent_setup_filename:
-        MessageBox MB_OK "<$R0>"
     ${textreplace::ReplaceInFile} '$PLUGINSDIR\1runas.nsi' '$PLUGINSDIR\runas.nsi' 'OcsAgentSetupFilePathToReplace' "$R0" '/S=1' $0
     DetailPrint "Using file <$R0> as OCS Inventory NG Agent Setup file"
     ${GetFileName} "$R0" $0
@@ -338,7 +338,6 @@ Section
     ReadINIStr $R0 "$PLUGINSDIR\donnee.ini" "Field 7" "State"
 
     done_reading_cmd_line_options:
-        MessageBox MB_OK "<$R0>"
     StrCpy $Agent_Cmd_Line_Options "$R0"
     DetailPrint "Using <$R0> as OCS Inventory NG Agent setup command line options"
     ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'OcsCmdLineToReplace' '$Agent_Cmd_Line_Options' '/S=1' $1
@@ -361,9 +360,7 @@ Section
         Goto done_reading_certificate_file
     ReadINIStr $R0 "$PLUGINSDIR\donnee.ini" "Field 5" "State"
 
-
     done_reading_certificate_file:
-        MessageBox MB_OK "<$R0>"
     DetailPrint "Using <$R0> as certificate file to include"
     CreateDirectory "$PLUGINSDIR\OcsData"
     CopyFiles /Silent "$R0" "$PLUGINSDIR\OcsData"
@@ -374,9 +371,7 @@ Section
         Goto done_reading_label
     ReadINIStr $R0 "$PLUGINSDIR\donnee.ini" "Field 9" "State"
 
-
     done_reading_label:
-        MessageBox MB_OK "<$R0>"
     DetailPrint "Using <$R0> as Label text"
     FileOpen $R1 "$PLUGINSDIR\OcsData\Label" w
     FileWrite $R1 "$R0"
@@ -387,10 +382,22 @@ Section
     StrCmp $Use_PsExec "Yes" 0 No_Psexec
     ; Yes, so read user and password and replace them into installer
     DetailPrint "Using Microsoft SysInternals PsExec.exe tool"
+
+    StrCmp $SilentMode "Yes" 0 +3
+        StrCpy $R0 $AdminId
+        Goto done_psexec_id
     ReadINIStr $R0 "$PLUGINSDIR\donnee.ini" "Field 10" "State"
+    
+    done_psexec_id:
     ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'AdminIdToReplace' "$R0" '/S=1' $0
     DetailPrint "Using <$R0> as Administrator account"
+
+    StrCmp $SilentMode "Yes" 0 +3
+        StrCpy $R0 $AdminPwd
+        Goto done_psexec_pwd
     ReadINIStr $R0 "$PLUGINSDIR\donnee.ini" "Field 11" "State"
+    
+    done_psexec_pwd:
     ${textreplace::ReplaceInFile} '$PLUGINSDIR\runas.nsi' '$PLUGINSDIR\runas.nsi' 'AdminPwdToReplace' "$R0" '/S=1' $0
     DetailPrint "Using <$R0> as Administrator password"
     Goto Include_Plugins
